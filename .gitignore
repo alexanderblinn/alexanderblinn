@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+dist/
+.sites-preview/
+.qa/
+*.tar.gz
+

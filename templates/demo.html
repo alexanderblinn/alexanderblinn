@@ -1,0 +1,78 @@
+<p class="eyebrow">Visuals / Demo</p>
+<h1>Ein Regler zum Ausprobieren.</h1>
+<p>Wie verändern Horizont und Kosten das Verhalten eines Reglers? Dieses kleine Beispiel rechnet direkt im Browser. Verschiebe die Regler und beobachte, wie der Zustand zum Sollwert null zurückkehrt.</p>
+
+<div class="demo-equation" aria-label="System und Kostenfunktion">
+  <div>x[k + 1] = x[k] + u[k], &nbsp; x[0] = 4</div>
+  <div>J = Σ<sub>k=0</sub><sup>N−1</sup> (x[k]² + r · u[k]²) + p · x[N]²</div>
+</div>
+
+<form id="control-demo" hidden>
+  <div class="demo-controls">
+    <div class="demo-control">
+      <label for="demo-horizon">Horizont N</label>
+      <output id="demo-horizon-value" for="demo-horizon">5 Schritte</output>
+      <input id="demo-horizon" type="range" min="1" max="30" step="1" value="5">
+    </div>
+    <div class="demo-control">
+      <label for="demo-input-weight">Stellgrößenkosten r</label>
+      <output id="demo-input-weight-value" for="demo-input-weight">1,0</output>
+      <input id="demo-input-weight" type="range" min="0.1" max="10" step="0.1" value="1">
+    </div>
+    <div class="demo-control">
+      <label for="demo-terminal-weight">Terminalkosten p</label>
+      <output id="demo-terminal-weight-value" for="demo-terminal-weight">0,0</output>
+      <input id="demo-terminal-weight" type="range" min="0" max="10" step="0.1" value="0">
+    </div>
+  </div>
+  <button class="demo-reset" type="reset">Werte zurücksetzen</button>
+</form>
+
+<div id="demo-result" hidden>
+  <figure class="demo-figure">
+    <svg class="demo-chart" viewBox="0 0 720 366" role="img" aria-labelledby="demo-chart-title demo-chart-description">
+      <title id="demo-chart-title">Zustand und Stellgröße über 25 Regelschritte</title>
+      <desc id="demo-chart-description">Der Zustand startet bei vier. Beide Größen nähern sich null.</desc>
+      <text x="54" y="20">Zustand x[k]</text>
+      <g class="demo-grid">
+        <path d="M54 42H682 M54 96H682 M54 42V150 M179.6 42V150 M305.2 42V150 M430.8 42V150 M556.4 42V150 M682 42V150" fill="none"/>
+      </g>
+      <path class="demo-zero" d="M54 150H682"/>
+      <g text-anchor="end">
+        <text x="40" y="46">4</text><text x="40" y="100">2</text><text x="40" y="154">0</text>
+      </g>
+      <g text-anchor="middle">
+        <text x="54" y="172">0</text><text x="179.6" y="172">5</text><text x="305.2" y="172">10</text><text x="430.8" y="172">15</text><text x="556.4" y="172">20</text><text x="682" y="172">25</text>
+      </g>
+      <path id="demo-state-path" class="demo-state" d="M54 42H682"/>
+      <text x="54" y="194">Stellgröße u[k]</text>
+      <g class="demo-grid">
+        <path d="M54 268H682 M54 322H682 M54 214V322 M179.6 214V322 M305.2 214V322 M430.8 214V322 M556.4 214V322 M682 214V322" fill="none"/>
+      </g>
+      <path class="demo-zero" d="M54 214H682"/>
+      <g text-anchor="end">
+        <text x="40" y="218">0</text><text x="40" y="272">−2</text><text x="40" y="326">−4</text>
+      </g>
+      <g text-anchor="middle">
+        <text x="54" y="344">0</text><text x="179.6" y="344">5</text><text x="305.2" y="344">10</text><text x="430.8" y="344">15</text><text x="556.4" y="344">20</text><text x="682" y="344">25</text>
+      </g>
+      <path id="demo-input-path" class="demo-input" d="M54 214H682"/>
+      <text x="682" y="363" text-anchor="end">Zeitschritt k →</text>
+    </svg>
+    <figcaption>Blau: Zustand. Dunkelgrau: Stellgröße. Punkte ganzzahliger Zeitschritte sind zur Orientierung verbunden; Stellgrößen sind für k = 0 bis 24 dargestellt.</figcaption>
+  </figure>
+  <dl class="demo-metrics" aria-live="polite" aria-atomic="true">
+    <div><dt>K =</dt><dd id="demo-gain">—</dd></div>
+    <div><dt>u[0] =</dt><dd id="demo-first-input">—</dd></div>
+    <div><dt>x[25] =</dt><dd id="demo-final-state">—</dd></div>
+  </dl>
+  <p id="demo-observation" class="demo-observation"></p>
+</div>
+
+<noscript><p>Für die interaktive Berechnung brauchst du JavaScript. Die Erklärung und alle anderen Beiträge kannst du auch ohne lesen.</p></noscript>
+
+<h2>Was hier gerechnet wird</h2>
+<p>Eine rückwärts laufende Riccati-Rekursion bestimmt die optimale Rückführung für einen endlichen Horizont. Angewendet wird jeweils nur die erste Stellgröße. Danach beginnt die Planung mit dem neuen Zustand von vorn: das Prinzip des gleitenden Horizonts.</p>
+<p>Die Zustandskosten sind auf q = 1 gesetzt. Ein größeres r verteuert die Stellgröße; p gewichtet den Zustand am Ende des Horizonts. Probiere N = 1 und p = 0 aus, und erhöhe dann die Terminalkosten.</p>
+<p>Das Modell ist skalar und hat keine Zustands- oder Stellgrößenbeschränkungen. Es veranschaulicht eine endliche LQR-Regelung im gleitenden Horizont. Für eine vollständige MPC-Anwendung mit Beschränkungen wären weitere Schritte nötig.</p>
+<p>Weiterlesen: <a href="/notes/lqr-intuition.html">LQR: Zustände und Stellgrößen gegeneinander abwägen</a>.</p>
