@@ -22,7 +22,7 @@ Unter macOS/Linux gelten `python3 -m venv .venv` und `.venv/bin/python`. Der Ser
 .venv\Scripts\python.exe scripts/new.py notes versuch-terminalkosten --title "Terminalkosten bei MPC"
 ```
 
-Der Befehl erstellt `content/notes/versuch-terminalkosten.md` als Entwurf. Als Bereich sind `notes`, `projects` und `research` möglich. Alternativ kann [templates/content-example.md](../templates/content-example.md) kopiert werden.
+Der Befehl erstellt `content/notes/versuch-terminalkosten.md` als Entwurf. Als Bereich sind `notes` und `projects` möglich. Alternativ kann [templates/content-example.md](../templates/content-example.md) kopiert werden.
 
 ```markdown
 ---
@@ -45,7 +45,7 @@ Hier beginnt der Beitrag.
 | `description` | Kurztext für die Übersicht. |
 | `tags` | Liste von Schlagwörtern. |
 | `draft: true` | Vom Build ausschließen. |
-| `featured: true` | Projekt auf der Startseite anzeigen. |
+| `featured: true` | Beitrag unter „Ausgewählte Projekte und Notizen“ auf der Startseite anzeigen. |
 | `kind: build` | Praktischen Aufbau unter Projects kennzeichnen. |
 | `status` | Projektstatus. |
 | `layout: wide` | Breitere Inhaltsfläche für Diagramme. |
@@ -57,7 +57,7 @@ Bilder liegen unter `public/images/`. Formeln zwischen eigenen `$$`-Zeilen werde
 ```markdown
 ![Versuchsaufbau](/images/versuchsaufbau.jpg)
 
-[Verwandte Notiz](/notes/lqr-intuition.html)
+[Verwandtes Projekt](/projects/msci.html)
 
 $$
 x_{k+1}=Ax_k+Bu_k
@@ -77,6 +77,8 @@ Eigenständige HTML-Diagramme liegen unter `public/img/` und werden beim Build n
 </figure>
 ```
 
+Die Schriftgrößen der Achsen und Bedienelemente werden zentral in `assets/msci-charts.js` über `fontSize` und `titleSize` eingestellt. Die Darstellung der Einbettung steht in `assets/style.css`. Dafür müssen die Diagramme nicht neu exportiert werden.
+
 Das Projekt steht in `content/projects/msci.md`. Die sieben Exporte aus ShowMeMSCI lassen sich erneut importieren:
 
 ```powershell
@@ -85,13 +87,22 @@ python scripts/import_msci.py C:/pfad/zum/msci-repository
 
 Der Import übernimmt die vorhandenen Plotly-Daten und Bedienelemente in eine reduzierte HTML-Hülle. Die Quelldateien bleiben unverändert. Bei einem neuen Datenstand müssen die Datumsangaben im Projekttext und in `scripts/import_msci.py` mit aktualisiert werden. Die Plotly-Bibliothek liegt unter `assets/vendor/`; das Histogramm verwendet zusätzlich die MathJax-Einbindung des Originalexports.
 
-## Dateien
+### Fission or Fiction
+
+Der Beitrag liegt in `content/projects/fissionorfiction.md`, die sechs Diagramme unter `public/img/fissionorfiction/`. Die Originalexporte lassen sich erneut übernehmen:
+
+```powershell
+python scripts/import_fission.py C:/pfad/zum/fissionorfiction
+```
+
+Der Import übernimmt Daten, Animationen und Filter sowie die im Original enthaltene Plotly-Version 2.27.0. Diagramme 3–6 werden über `assets/fission-charts.js` und `assets/fission-charts.css` dargestellt. Die Standortkarte verwendet den Originalexport. `assets/fission-map.css` und `.js` passen die Schrift und die Position der Hoverboxen an die Einbettung an. Die animierte Karte nutzt dieselbe Einbettung wie die ?brigen Plotly-Diagramme; Titel und Quellenzeile innerhalb der Grafik werden ausgeblendet. Die Standortkarte verwendet die externen Leaflet-Abhängigkeiten und Kartenanbieter des Originals, die animierte Weltkarte lädt geografische Grunddaten vom Plotly-CDN. Der Datenstand bleibt Juli 2024.
+
+## Verzeichnisübersicht
 
 | Pfad | Inhalt |
 | --- | --- |
 | `content/notes/` | Notizen und Erklärungen. |
 | `content/projects/` | Projekte und praktische Aufbauten. |
-| `content/research/` | Forschungsbeiträge. |
 | `content/about.md` | Profiltext. |
 | `templates/home.html` | Startseite. |
 | `templates/base.html` | Gemeinsames Seitenlayout. |

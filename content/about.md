@@ -12,7 +12,7 @@ Hier sammle ich Themen, Erklärungen und Experimente: von Model Predictive Contr
 
 Eine Idee muss nicht fertig sein, um sie aufzuschreiben. Mich interessiert der Weg: Welche Annahme steckt im Modell? Was zeigt die Simulation? Und was passiert, wenn echte Messdaten dazukommen?
 
-[Projects](/projects/) bündeln die Themen. In den [Notes](/notes/) stehen einzelne Gedanken und Grundlagen. [Research](/research/) hält die Forschungsfragen zusammen.
+[Projects](/projects/) bündeln die Arbeiten. In den [Notes](/notes/) ist Platz für einzelne Gedanken und Grundlagen.
 
 ## Anderswo
 

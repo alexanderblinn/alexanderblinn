@@ -1,0 +1,14 @@
+:root { color-scheme: light; background: #faf9f6; color: #252525; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 18px; font: 14px/1.5 "Courier New", Courier, monospace; }
+a { color: #173fbe; text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid #173fbe; outline-offset: 3px; }
+header, footer, .chart-shell { max-width: 1400px; margin: auto; }
+h1 { font-size: 24px; margin: 12px 0; }
+footer { margin-top: 15px; font-size: 12px; }
+.chart-shell { min-width: 960px; height: max(880px, calc(100svh - 155px)); }
+#chart { width: 100%; height: 100%; }
+.embedded body { padding: 0; }
+.embedded header, .embedded footer { display: none; }
+.embedded .chart-shell { height: calc(100vh - 20px); max-width: none; }
+#chart-status { padding: 12px; }

@@ -90,7 +90,7 @@ class BuildTests(unittest.TestCase):
                 self.assertNotIn(marker, path.read_text(encoding="utf-8"))
 
     def test_drafts_do_not_leak_into_pages_feed_or_sitemap(self):
-        for section in ("projects", "notes", "research"):
+        for section in ("projects", "notes"):
             self.contribution(section, f"private-draft-{section}", draft=True)
         self.build()
         self.assert_not_published("private-draft-")

@@ -20,9 +20,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 SECTIONS = {
-    "projects": ("Projects", "Projekte und Experimente zu Regelung, Energiesystemen und Datenvisualisierung."),
-    "notes": ("Notes", "Kurze Erklärungen und Arbeitsnotizen. Ein Gedanke, ein Versuch, eine Erkenntnis nach der anderen."),
-    "research": ("Research", "Forschungsfragen an der Schnittstelle von modellbasierter Regelung, Lernen und Energie."),
+    "projects": ("Projects", "Optimierung, Regelung, Programmierung und Datenanalyse."),
+    "notes": ("Notes", "Kurze Erklärungen und Arbeitsnotizen."),
 }
 
 
@@ -104,9 +103,10 @@ def entries_html(entries, projects=False):
     rows = []
     for entry in entries:
         date = entry["date"]
-        stamp = f'<time datetime="{date.isoformat()}">{date.strftime("%d.%m.%Y")}</time>' if date and not projects else ''
-        undated = ' undated' if not date and not projects else ''
-        kind = entry.get("kind", {"notes": "note", "research": "research", "projects": "project"}.get(entry["section"], "note"))
+        stamp = f'<time datetime="{date.isoformat()}">{date.strftime("%d.%m.%Y")}</time>' if date else ''
+        undated = ' undated' if not date else ''
+        kind = entry.get("kind", {"notes": "note", "projects": "project"}.get(entry["section"], "note"))
+        kind = {"note": "Note", "project": "Project", "build": "Build"}.get(kind, kind)
         rows.append(f'''<li class="entry{undated}"><div class="entry-line">{stamp}
           <a class="entry-title" href="{entry['url']}">{escape(entry['title'])}</a>
           <span class="entry-kind">{escape(kind)}</span></div>
@@ -135,7 +135,6 @@ def build(root=ROOT):
         raise ValueError("Die About-Seite darf kein Entwurf sein")
     articles.sort(key=lambda a: (a["date"] or dt.date.min, a["slug"]), reverse=True)
     # Rendering and metadata validation happen before touching an existing build.
-    demo = (root / "templates/demo.html").read_text(encoding="utf-8")
     pages = {}
 
     def page(url, title, body, active="", description=None, extra_head="", wide=False):
@@ -147,19 +146,16 @@ def build(root=ROOT):
             page_class='page-wide' if wide else '')
 
     dated = [a for a in articles if a['date']]
-    featured = [a for a in articles if a['section'] == 'projects' and a.get('featured')]
-    demo_teaser = '''<aside class="demo-link"><a href="/demos/regelkreis.html">↗ Ein Regler zum Ausprobieren</a><p>Horizont und Kosten verändern. Sehen, was mit dem Regelkreis passiert.</p></aside>'''
+    featured = [a for a in articles if a.get('featured')]
     home = Template((root / 'templates/home.html').read_text(encoding='utf-8')).substitute(
-        journal=entries_html(dated[:5]), projects=entries_html(featured[:3], projects=True), demo_teaser=demo_teaser)
+        notes=entries_html([a for a in articles if a['section'] == 'notes'][:5]),
+        projects=entries_html([a for a in articles if a['section'] == 'projects'][:5], projects=True),
+        selected=entries_html(featured))
     page('/', '', home, 'start')
     for section, (title, description) in SECTIONS.items():
         selected = [a for a in articles if a['section'] == section]
         body = f'<p class="eyebrow">alexanderblinn.com / {section}</p><h1>{title}</h1><p class="section-intro">{description}</p>'
-        if section == 'research':
-            body += '<p class="aside-note">Hier ist auch Platz für Papers, Poster, Vorträge und den zugehörigen Code. Bisher sind keine Publikationen hinterlegt.</p>'
         body += entries_html(selected, projects=section != 'notes') if selected else '<p>Noch keine Einträge.</p>'
-        if section == 'notes':
-            body += demo_teaser
         page(f'/{section}/', title, body, section, description)
     for item in articles + [about]:
         section = item['section']
@@ -172,11 +168,9 @@ def build(root=ROOT):
         body += (f'<p class="meta">{meta}</p>' if meta else '') + tags_html(item['tags']) + '</header>'
         body += '<div class="article-body">' + item['body'] + '</div></article>'
         if section in SECTIONS:
-            body += f'<p class="backlink"><a href="/{section}/">← Alle {section_title}</a></p>'
+            body += f'<p class="backlink"><a href="/{section}/">← All {section_title}</a></p>'
         page(item['url'], item['title'], body, section, item.get('description'), wide=item.get('layout') == 'wide')
-    page('/demos/regelkreis.html', 'Ein Regler zum Ausprobieren', demo, 'notes', 'Interaktive LQR-Demo: den Einfluss von Horizont und Terminalkosten auf einen einfachen Regelkreis erkunden.',
-         '<link rel="stylesheet" href="/assets/control-demo.css"><script src="/assets/control-demo.js" defer></script>')
-    page('/404.html', 'Seite nicht gefunden', '<p class="eyebrow">404 / Seite nicht gefunden</p><h1>Hier ist noch nichts.</h1><p>Vielleicht wurde der Beitrag verschoben. Auf der <a href="/">Startseite</a> oder in den <a href="/notes/">Notes</a> geht es weiter.</p>')
+    page('/404.html', 'Seite nicht gefunden', '<p class="eyebrow">404 / Seite nicht gefunden</p><h1>Hier ist noch nichts.</h1><p>Vielleicht wurde der Beitrag verschoben. Über <a href="/">Start</a> oder <a href="/notes/">Notes</a> geht es weiter.</p>')
 
     if output.exists():
         shutil.rmtree(output)

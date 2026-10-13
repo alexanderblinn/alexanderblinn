@@ -6,7 +6,7 @@ from pathlib import Path
 import re
 
 parser = argparse.ArgumentParser(description='Neuen Markdown-Entwurf anlegen')
-parser.add_argument('section', choices=['notes', 'projects', 'research'])
+parser.add_argument('section', choices=['notes', 'projects'])
 parser.add_argument('slug', help='Dateiname, z. B. mein-erster-versuch')
 parser.add_argument('--title', required=True, help='Titel des Beitrags')
 args = parser.parse_args()
