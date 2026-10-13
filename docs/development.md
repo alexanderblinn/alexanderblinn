@@ -19,10 +19,10 @@ Unter macOS/Linux gelten `python3 -m venv .venv` und `.venv/bin/python`. Der Ser
 ## Beiträge
 
 ```powershell
-.venv\Scripts\python.exe scripts/new.py notes mpc-terminalkosten --title "Terminalkosten bei MPC"
+.venv\Scripts\python.exe scripts/new.py notes versuch-terminalkosten --title "Terminalkosten bei MPC"
 ```
 
-Der Befehl erstellt `content/notes/mpc-terminalkosten.md` als Entwurf. Als Bereich sind `notes`, `projects` und `research` möglich. Alternativ kann [templates/content-example.md](../templates/content-example.md) kopiert werden.
+Der Befehl erstellt `content/notes/versuch-terminalkosten.md` als Entwurf. Als Bereich sind `notes`, `projects` und `research` möglich. Alternativ kann [templates/content-example.md](../templates/content-example.md) kopiert werden.
 
 ```markdown
 ---
@@ -36,7 +36,7 @@ draft: true
 Hier beginnt der Beitrag.
 ```
 
-`draft: false` nimmt den Beitrag in den nächsten Build auf. Entwürfe sind auch in der Vorschau ausgeblendet. Der Dateiname bestimmt die URL, beispielsweise `/notes/mpc-terminalkosten.html`.
+`draft: false` nimmt den Beitrag in den nächsten Build auf. Entwürfe sind auch in der Vorschau ausgeblendet. Der Dateiname bestimmt die URL, beispielsweise `/notes/versuch-terminalkosten.html`.
 
 | Feld | Bedeutung |
 | --- | --- |
@@ -48,6 +48,7 @@ Hier beginnt der Beitrag.
 | `featured: true` | Projekt auf der Startseite anzeigen. |
 | `kind: build` | Praktischen Aufbau unter Projects kennzeichnen. |
 | `status` | Projektstatus. |
+| `layout: wide` | Breitere Inhaltsfläche für Diagramme. |
 
 ## Bilder und Formeln
 
@@ -64,6 +65,25 @@ $$
 ```
 
 Markdown unterstützt Tabellen, Codeblöcke und HTML. Eingebettetes HTML wird unverändert übernommen.
+
+## Interaktive Diagramme
+
+Eigenständige HTML-Diagramme liegen unter `public/img/` und werden beim Build nach `/img/` übernommen. Ein Beitrag kann sie direkt einbetten:
+
+```html
+<figure class="interactive-figure">
+  <iframe src="/img/single.html" title="MSCI World: Indexverlauf" height="620" loading="lazy"></iframe>
+  <figcaption><a href="/img/single.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+</figure>
+```
+
+Das Projekt steht in `content/projects/msci.md`. Die sieben Exporte aus ShowMeMSCI lassen sich erneut importieren:
+
+```powershell
+python scripts/import_msci.py C:/pfad/zum/msci-repository
+```
+
+Der Import übernimmt die vorhandenen Plotly-Daten und Bedienelemente in eine reduzierte HTML-Hülle. Die Quelldateien bleiben unverändert. Bei einem neuen Datenstand müssen die Datumsangaben im Projekttext und in `scripts/import_msci.py` mit aktualisiert werden. Die Plotly-Bibliothek liegt unter `assets/vendor/`; das Histogramm verwendet zusätzlich die MathJax-Einbindung des Originalexports.
 
 ## Dateien
 

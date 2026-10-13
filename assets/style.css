@@ -10,6 +10,15 @@
 html { background: var(--paper); color: var(--ink); scrollbar-gutter: stable; }
 body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monospace; font-size: 16px; line-height: 1.65; }
 .page { max-width: 850px; margin: 0 auto; padding: 55px 30px 24px; }
+.page-wide { max-width: 1140px; }
+.page-wide .article-header, .page-wide .article-body > p { max-width: 76ch; }
+.figure-index { columns: 2; font-size: 14px; margin: 24px 0 35px; }
+.figure-index li { break-inside: avoid; }
+.interactive-figure { margin: 16px 0 42px; }
+.interactive-figure iframe { display: block; width: 100%; height: 620px; border: 1px solid var(--line); background: var(--paper); }
+.interactive-figure.figure-tall iframe { height: 960px; }
+.interactive-figure figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 20px; font-size: 12px; margin-top: 8px; color: var(--muted); }
+.interactive-figure figcaption a { white-space: nowrap; }
 a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:visited { color: #654386; }
 a:hover { color: var(--ink); background: #eae7df; }
@@ -81,6 +90,9 @@ math { font-size: 1.12em; }
 .colophon { color: var(--muted); }
 ::selection { background: #dddfe9; }
 @media (max-width: 560px) {
+  .figure-index { columns: 1; }
+  .interactive-figure iframe { height: 540px; }
+  .interactive-figure.figure-tall iframe { height: 850px; }
   body { font-size: 15px; }
   .page { padding: 28px 19px 20px; }
   .site-header { margin-bottom: 27px; }

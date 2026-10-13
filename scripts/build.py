@@ -20,7 +20,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 SECTIONS = {
-    "projects": ("Projects", "Fragestellungen, Konzepte und praktische Aufbauten. Von der Regelung bis zum Energiesystem."),
+    "projects": ("Projects", "Projekte und Experimente zu Regelung, Energiesystemen und Datenvisualisierung."),
     "notes": ("Notes", "Kurze Erklärungen und Arbeitsnotizen. Ein Gedanke, ein Versuch, eine Erkenntnis nach der anderen."),
     "research": ("Research", "Forschungsfragen an der Schnittstelle von modellbasierter Regelung, Lernen und Energie."),
 }
@@ -138,12 +138,13 @@ def build(root=ROOT):
     demo = (root / "templates/demo.html").read_text(encoding="utf-8")
     pages = {}
 
-    def page(url, title, body, active="", description=None, extra_head=""):
+    def page(url, title, body, active="", description=None, extra_head="", wide=False):
         links = [("/", "Start", "start"), *[(f"/{key}/", value[0], key) for key, value in SECTIONS.items()], ("/about.html", "About", "about")]
         nav = ' '.join(f'<a href="{href}"' + (' aria-current="page"' if key == active else '') + f'>{label}</a>' for href, label, key in links)
         pages[url] = template.substitute(title=escape(f"{title} — {config['name']}" if title else config['name']),
             description=escape(description or config['description'], quote=True), canonical=escape(config['url'].rstrip('/') + url, quote=True),
-            github=escape(config['github'], quote=True), navigation=nav, content=body, extra_head=extra_head)
+            github=escape(config['github'], quote=True), navigation=nav, content=body, extra_head=extra_head,
+            page_class='page-wide' if wide else '')
 
     dated = [a for a in articles if a['date']]
     featured = [a for a in articles if a['section'] == 'projects' and a.get('featured')]
@@ -154,8 +155,6 @@ def build(root=ROOT):
     for section, (title, description) in SECTIONS.items():
         selected = [a for a in articles if a['section'] == section]
         body = f'<p class="eyebrow">alexanderblinn.com / {section}</p><h1>{title}</h1><p class="section-intro">{description}</p>'
-        if section == 'projects':
-            body += '<p class="aside-note">Die Einträge beginnen als Themenübersichten. Versuche, Ergebnisse und praktische Builds können hier Schritt für Schritt dazukommen.</p>'
         if section == 'research':
             body += '<p class="aside-note">Hier ist auch Platz für Papers, Poster, Vorträge und den zugehörigen Code. Bisher sind keine Publikationen hinterlegt.</p>'
         body += entries_html(selected, projects=section != 'notes') if selected else '<p>Noch keine Einträge.</p>'
@@ -174,7 +173,7 @@ def build(root=ROOT):
         body += '<div class="article-body">' + item['body'] + '</div></article>'
         if section in SECTIONS:
             body += f'<p class="backlink"><a href="/{section}/">← Alle {section_title}</a></p>'
-        page(item['url'], item['title'], body, section, item.get('description'))
+        page(item['url'], item['title'], body, section, item.get('description'), wide=item.get('layout') == 'wide')
     page('/demos/regelkreis.html', 'Ein Regler zum Ausprobieren', demo, 'notes', 'Interaktive LQR-Demo: den Einfluss von Horizont und Terminalkosten auf einen einfachen Regelkreis erkunden.',
          '<link rel="stylesheet" href="/assets/control-demo.css"><script src="/assets/control-demo.js" defer></script>')
     page('/404.html', 'Seite nicht gefunden', '<p class="eyebrow">404 / Seite nicht gefunden</p><h1>Hier ist noch nichts.</h1><p>Vielleicht wurde der Beitrag verschoben. Auf der <a href="/">Startseite</a> oder in den <a href="/notes/">Notes</a> geht es weiter.</p>')
