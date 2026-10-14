@@ -27,7 +27,7 @@ def adapt_chart(source, slug, title):
     fragment = section[1]
     after = source[section.end():]
     # Keep chart-specific interactions (year highlighting, histogram statistics).
-    # The source site's shared sizing/decorative code is replaced by msci-charts.js.
+    # Shared sizing is handled by assets/projects/msci/charts.js.
     scripts = [match[0] for match in re.finditer(r'<script\b[^>]*>.*?</script>', after, re.S)
                if 'const applyFinish' not in match[0]]
     styles = re.findall(r'<style\b[^>]*>.*?</style>', after, re.S)
@@ -38,13 +38,13 @@ def adapt_chart(source, slug, title):
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{escape(title)} — Alexander Blinn</title>
-  <link rel="canonical" href="https://alexanderblinn.com/img/{slug}.html">
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://alexanderblinn.com/img/projects/msci/{slug}.html">
+  <link rel="icon" href="/assets/site/favicon.svg" type="image/svg+xml">
   {''.join(styles)}
-  <link rel="stylesheet" href="/assets/msci-charts.css">
+  <link rel="stylesheet" href="/assets/projects/msci/charts.css">
   <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
   <script src="/assets/vendor/plotly-3.0.1.min.js"></script>
-  <script src="/assets/msci-charts.js" defer></script>
+  <script src="/assets/projects/msci/charts.js" defer></script>
 </head>
 <body class="chart-page{tall}">
   <header class="chart-heading">
@@ -66,7 +66,7 @@ def main():
     parser.add_argument('source', type=Path, help='Pfad zum ShowMeMSCI-Repository')
     args = parser.parse_args()
     source = args.source.resolve()
-    destination = ROOT / 'public/img'
+    destination = ROOT / 'public/img/projects/msci'
     # Prepare every figure first, so incomplete exports fail before any writes.
     pages = {slug: adapt_chart((source / 'img' / f'{slug}.html').read_text(encoding='utf-8'), slug, title)
              for slug, title in CHARTS.items()}
@@ -74,7 +74,7 @@ def main():
     destination.mkdir(parents=True, exist_ok=True)
     for slug, html in pages.items():
         (destination / f'{slug}.html').write_text(html, encoding='utf-8')
-    (destination / 'LICENSE-msci.txt').write_text(license_text, encoding='utf-8')
+    (destination / 'LICENSE.txt').write_text(license_text, encoding='utf-8')
     print(f'{len(pages)} Diagramme importiert: {destination}')
 
 

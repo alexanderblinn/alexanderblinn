@@ -52,10 +52,10 @@ Hier beginnt der Beitrag.
 
 ## Bilder und Formeln
 
-Bilder liegen unter `public/images/`. Formeln zwischen eigenen `$$`-Zeilen werden beim Build in MathML umgewandelt.
+Bilder liegen beim jeweiligen Beitrag unter `public/img/<Bereich>/<Slug>/`, beispielsweise `public/img/projects/mein-projekt/`. Formeln zwischen eigenen `$$`-Zeilen werden beim Build in MathML umgewandelt.
 
 ```markdown
-![Versuchsaufbau](/images/versuchsaufbau.jpg)
+![Versuchsaufbau](/img/projects/mein-projekt/versuchsaufbau.jpg)
 
 [Verwandtes Projekt](/projects/msci.html)
 
@@ -68,16 +68,16 @@ Markdown unterstützt Tabellen, Codeblöcke und HTML. Eingebettetes HTML wird un
 
 ## Interaktive Diagramme
 
-Eigenständige HTML-Diagramme liegen unter `public/img/` und werden beim Build nach `/img/` übernommen. Ein Beitrag kann sie direkt einbetten:
+Eigenständige HTML-Diagramme liegen gemeinsam mit den Bildern unter `public/img/<Bereich>/<Slug>/`. Der Build übernimmt sie nach `/img/<Bereich>/<Slug>/`. Ein Beitrag kann sie direkt einbetten:
 
 ```html
 <figure class="interactive-figure">
-  <iframe src="/img/single.html" title="MSCI World: Indexverlauf" height="620" loading="lazy"></iframe>
-  <figcaption><a href="/img/single.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/msci/single.html" title="MSCI World: Indexverlauf" height="620" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/msci/single.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 ```
 
-Die Schriftgrößen der Achsen und Bedienelemente werden zentral in `assets/msci-charts.js` über `fontSize` und `titleSize` eingestellt. Die Darstellung der Einbettung steht in `assets/style.css`. Dafür müssen die Diagramme nicht neu exportiert werden.
+Die Schriftgrößen der Achsen und Bedienelemente werden für MSCI in `assets/projects/msci/charts.js` über `fontSize` und `titleSize` eingestellt. Die Darstellung der Einbettung steht in `assets/site/style.css`. Dafür müssen die Diagramme nicht neu exportiert werden.
 
 Das Projekt steht in `content/projects/msci.md`. Die sieben Exporte aus ShowMeMSCI lassen sich erneut importieren:
 
@@ -89,15 +89,47 @@ Der Import übernimmt die vorhandenen Plotly-Daten und Bedienelemente in eine re
 
 ### Fission or Fiction
 
-Der Beitrag liegt in `content/projects/fissionorfiction.md`, die sechs Diagramme unter `public/img/fissionorfiction/`. Die Originalexporte lassen sich erneut übernehmen:
+Der Beitrag liegt in `content/projects/fissionorfiction.md`, die sechs Diagramme unter `public/img/projects/fissionorfiction/`. Die Originalexporte lassen sich erneut übernehmen:
 
 ```powershell
 python scripts/import_fission.py C:/pfad/zum/fissionorfiction
 ```
 
-Der Import übernimmt Daten, Animationen und Filter sowie die im Original enthaltene Plotly-Version 2.27.0. Diagramme 3–6 werden über `assets/fission-charts.js` und `assets/fission-charts.css` dargestellt. Die Standortkarte verwendet den Originalexport. `assets/fission-map.css` und `.js` passen die Schrift und die Position der Hoverboxen an die Einbettung an. Die animierte Karte nutzt dieselbe Einbettung wie die ?brigen Plotly-Diagramme; Titel und Quellenzeile innerhalb der Grafik werden ausgeblendet. Die Standortkarte verwendet die externen Leaflet-Abhängigkeiten und Kartenanbieter des Originals, die animierte Weltkarte lädt geografische Grunddaten vom Plotly-CDN. Der Datenstand bleibt Juli 2024.
+Der Import übernimmt Daten, Animationen und Filter sowie die im Original enthaltene Plotly-Version 2.27.0. Die zugehörigen Dateien liegen unter `assets/projects/fissionorfiction/`: `charts.js` und `charts.css` für die Plotly-Diagramme, `map.js` und `map.css` für Schrift und Hoverboxen der Standortkarte. Die animierte Karte nutzt dieselbe Einbettung wie die übrigen Plotly-Diagramme; Titel und Quellenzeile innerhalb der Grafik werden ausgeblendet. Die Standortkarte verwendet die externen Leaflet-Abhängigkeiten und Kartenanbieter des Originals, die animierte Weltkarte lädt geografische Grunddaten vom Plotly-CDN. Der Datenstand bleibt Juli 2024.
+
+### Zentralpfad
+
+Der Beitrag liegt in `content/notes/zentralpfad.md`. Die eigenständige Animation liegt unter `public/img/notes/zentralpfad/index.html`. Ihre Dateien sind unter `assets/notes/zentralpfad/` gebündelt: `style.css` für die Darstellung, `animation.mjs` für Bedienung und Zeichnung, `math.mjs` für Geometrie und Zielkosten und `barrier.mjs` für das Barriereproblem, den Zentralpfad und das exakte Optimum. Das Modell ist ein quadratisches Programm in der Ebene mit einem Viereck als zulässigem Bereich. Zur klassischen Log-Barriere kommt ein Proximalterm (μ²/2)‖x − x₀‖², sodass der Zentralpfad in x₀ beginnt, den Kanten ausweicht und im Optimum endet. Für 301 logarithmisch verteilte Werte von μ zwischen 10³ und 10⁻³ wird je ein Barriereoptimum berechnet; Schieberegler und Animation wählen eines davon aus, gleichmäßig entlang der Bogenlänge des Pfads, und die Kurve wird bis zum gewählten μ gezeichnet. Bei Änderungen von x₀ wird neu gerechnet, ohne μ zurückzusetzen. Die Demo benötigt keine externen Bibliotheken oder Serverberechnungen.
+
+Die drei statischen Abbildungen des Beitrags (`barriere.svg`, `pfade.svg`, `abstaende.svg` unter `public/img/notes/zentralpfad/`) erzeugt `scripts/zentralpfad_figures.mjs` aus demselben Löser; nach Änderungen am Modell neu erzeugen:
+
+```sh
+node scripts/zentralpfad_figures.mjs
+```
+
+Die numerischen Prüfungen laufen mit Node.js 22 oder neuer und ohne zusätzliche Pakete:
+
+```sh
+node --test tests/central-path.test.mjs
+```
+
+Sie prüfen die μ-Stützstellen, Anfang und Ende des Pfads, Zulässigkeit und Stationarität entlang des Pfads, die Abstoßung durch eine näher rückende Kante, die Dualitätsschranke, den Übergang in den klassischen Zentralpfad, die Unabhängigkeit vom Startwert des Lösers, die Ableitungen, das exakte Optimum und die Begrenzung beim Verschieben des Vierecks. Der Pages-Workflow führt sie vor der Veröffentlichung aus.
 
 ## Verzeichnisübersicht
+
+Für jeden Beitrag gilt dieselbe Zuordnung über Bereich (`projects` oder `notes`) und Slug. Zusätzliche Ordner werden nur angelegt, wenn sie gebraucht werden; eine reine Textnotiz benötigt ausschließlich ihre Markdown-Datei.
+
+```text
+content/notes/zentralpfad.md          Beitrag
+assets/notes/zentralpfad/            CSS und JavaScript
+public/img/notes/zentralpfad/        Diagramme, Bilder und Downloads
+
+content/projects/msci.md            Beitrag
+assets/projects/msci/               CSS und JavaScript
+public/img/projects/msci/           Diagramme, Bilder und Downloads
+```
+
+`assets/site/` enthält das gemeinsame Seitendesign; `assets/vendor/` enthält unveränderte Bibliotheken mit Lizenzdateien. Beitragsspezifische Dateien gehören in die passenden Unterordner. `public/` wird unverändert nach `dist/` kopiert, `assets/` nach `dist/assets/`. Dateien unter `public/` und `assets/` sind dadurch unabhängig vom Entwurfsstatus eines Beitrags öffentlich.
 
 | Pfad | Inhalt |
 | --- | --- |
@@ -107,8 +139,11 @@ Der Import übernimmt Daten, Animationen und Filter sowie die im Original enthal
 | `templates/home.html` | Startseite. |
 | `templates/base.html` | Gemeinsames Seitenlayout. |
 | `site.json` | Name, Domain, Beschreibung und GitHub-Link. |
-| `assets/style.css` | Darstellung. |
-| `public/` | Dateien, die unverändert übernommen werden. |
+| `assets/site/` | Gemeinsames CSS und Favicon. |
+| `assets/projects/<Slug>/` | CSS und JavaScript eines Projekts. |
+| `assets/notes/<Slug>/` | CSS und JavaScript einer Notiz. |
+| `assets/vendor/` | Externe Bibliotheken und Lizenzen. |
+| `public/img/<Bereich>/<Slug>/` | Diagramme, Bilder und weitere Dateien eines Beitrags. |
 | `dist/` | Erzeugte Webseite; Änderungen gehören in die Quelldateien. |
 
 ## Build und GitHub Pages
@@ -121,3 +156,5 @@ Der Import übernimmt Daten, Animationen und Filter sowie die im Original enthal
 [.github/workflows/pages.yml](../.github/workflows/pages.yml) baut und veröffentlicht `dist/` bei einem Push auf `main`. Ein manueller Start ist unter **Actions → Publish website → Run workflow** möglich.
 
 GitHub Pages verwendet unter **Settings → Pages → Build and deployment → Source** die Einstellung **GitHub Actions**. Die eigene Domain wird unter **Custom domain** eingerichtet; die DNS-Einträge müssen auf GitHub Pages zeigen. Der Build übernimmt die `CNAME`-Datei für `alexanderblinn.com`.
+
+Alte Diagramm-URLs stehen als Weiterleitungen in `site.json` unter `redirects`. Der Build erzeugt dafür kleine HTML-Seiten ausschließlich in `dist/`; die eigentlichen Diagramme bleiben nur einmal unter ihrem neuen Pfad liegen. Nach Änderungen an `scripts/build.py` den lokalen Vorschau-Server neu starten.

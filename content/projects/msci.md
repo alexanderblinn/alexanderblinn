@@ -29,8 +29,8 @@ Datenstand: **2. April 2026** · USD · [Quellcode auf GitHub](https://github.co
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Über die Jahrzehnte überwog der Wertzuwachs selbst die großen Kurseinbrüche.</span></p>
 
 <figure class="interactive-figure">
-  <iframe src="/img/single.html" title="MSCI World: historischer Indexverlauf, linear und logarithmisch" height="620" loading="eager"></iframe>
-  <figcaption><a href="/img/single.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/msci/single.html" title="MSCI World: historischer Indexverlauf, linear und logarithmisch" height="620" loading="eager"></iframe>
+  <figcaption><a href="/img/projects/msci/single.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="multiple">02 / Jahresverläufe im Vergleich</h2>
@@ -40,8 +40,8 @@ Datenstand: **2. April 2026** · USD · [Quellcode auf GitHub](https://github.co
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Die Jahresrenditen streuen stark. Der langfristige Durchschnitt beschreibt selten ein einzelnes Jahr.</span></p>
 
 <figure class="interactive-figure">
-  <iframe src="/img/multiple.html" title="MSCI World: normierte Verläufe einzelner Kalenderjahre" height="620" loading="lazy"></iframe>
-  <figcaption><a href="/img/multiple.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/msci/multiple.html" title="MSCI World: normierte Verläufe einzelner Kalenderjahre" height="620" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/msci/multiple.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="returns-one">03 / Jahresrenditen nach Klassen</h2>
@@ -51,8 +51,8 @@ Datenstand: **2. April 2026** · USD · [Quellcode auf GitHub](https://github.co
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>39 Jahre mit Gewinn stehen 14 Jahren mit Verlust gegenüber. Die Jahresrenditen reichten von −42 % bis +39 %.</span></p>
 
 <figure class="interactive-figure figure-bands">
-  <iframe src="/img/returns-one.html" title="MSCI World: Jahresrenditen in Klassen von zehn Prozentpunkten" height="820" loading="lazy"></iframe>
-  <figcaption><a href="/img/returns-one.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/msci/returns-one.html" title="MSCI World: Jahresrenditen in Klassen von zehn Prozentpunkten" height="820" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/msci/returns-one.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="returns-two">04 / Jahresrenditen im Zeitverlauf</h2>
@@ -62,8 +62,8 @@ Datenstand: **2. April 2026** · USD · [Quellcode auf GitHub](https://github.co
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Starke und schwache Jahre waren nicht gleichmäßig verteilt, sondern häuften sich in bestimmten Phasen.</span></p>
 
 <figure class="interactive-figure">
-  <iframe src="/img/returns-two.html" title="MSCI World: jährliche Renditen im Zeitverlauf" height="620" loading="lazy"></iframe>
-  <figcaption><a href="/img/returns-two.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/msci/returns-two.html" title="MSCI World: jährliche Renditen im Zeitverlauf" height="620" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/msci/returns-two.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="long-term">05 / Renditen nach Haltedauer</h2>
@@ -73,8 +73,8 @@ Datenstand: **2. April 2026** · USD · [Quellcode auf GitHub](https://github.co
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Mit längerer Haltedauer fiel der Einstiegszeitpunkt weniger ins Gewicht. Ab 15 Jahren war die Rendite in allen untersuchten Zeitfenstern positiv.</span></p>
 
 <figure class="interactive-figure">
-  <iframe src="/img/long-term.html" title="MSCI World: Spannweite annualisierter Renditen nach Haltedauer" height="620" loading="lazy"></iframe>
-  <figcaption><a href="/img/long-term.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/msci/long-term.html" title="MSCI World: Spannweite annualisierter Renditen nach Haltedauer" height="620" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/msci/long-term.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="heatmap">06 / Renditedreieck</h2>
@@ -84,8 +84,8 @@ Datenstand: **2. April 2026** · USD · [Quellcode auf GitHub](https://github.co
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Bei kurzer Haltedauer lagen die Ergebnisse weit auseinander. Mit längerem Anlagezeitraum wurde die Streuung kleiner.</span></p>
 
 <figure class="interactive-figure figure-tall">
-  <iframe src="/img/heatmap.html" title="MSCI World: Renditedreieck nach Startjahr und Haltedauer" height="960" loading="lazy"></iframe>
-  <figcaption><a href="/img/heatmap.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/msci/heatmap.html" title="MSCI World: Renditedreieck nach Startjahr und Haltedauer" height="960" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/msci/heatmap.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="dist">07 / Verteilung der Renditen</h2>
@@ -95,8 +95,8 @@ Datenstand: **2. April 2026** · USD · [Quellcode auf GitHub](https://github.co
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Der kleine positive Tagesmittelwert überwog den Verlusteffekt der Schwankungen. Durch den Zinseszinseffekt wurden daraus im Mittel deutlich positive Monats- und Jahresrenditen.</span></p>
 
 <figure class="interactive-figure">
-  <iframe src="/img/dist.html" title="MSCI World: Verteilung von Tages-, Monats- und Jahresrenditen" height="620" loading="lazy"></iframe>
-  <figcaption><a href="/img/dist.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/msci/dist.html" title="MSCI World: Verteilung von Tages-, Monats- und Jahresrenditen" height="620" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/msci/dist.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 ## Daten und Umsetzung

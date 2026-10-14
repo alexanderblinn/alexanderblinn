@@ -172,10 +172,31 @@ def build(root=ROOT):
         page(item['url'], item['title'], body, section, item.get('description'), wide=item.get('layout') == 'wide')
     page('/404.html', 'Seite nicht gefunden', '<p class="eyebrow">404 / Seite nicht gefunden</p><h1>Hier ist noch nichts.</h1><p>Vielleicht wurde der Beitrag verschoben. Über <a href="/">Start</a> oder <a href="/notes/">Notes</a> geht es weiter.</p>')
 
+    # Keep old diagram bookmarks working without keeping copies in public/.
+    # Redirects are output files, not articles or sitemap entries.
+    redirects = {}
+    for old, new in config.get('redirects', {}).items():
+        if not all(isinstance(url, str) and re.fullmatch(r'/(?:[a-z0-9-]+/)*[a-z0-9-]+\.html', url)
+                   for url in (old, new)):
+            raise ValueError(f'Ungültige Weiterleitung: {old} -> {new}')
+        if old in pages or (root / 'public' / old.lstrip('/')).exists():
+            raise ValueError(f'Weiterleitung würde eine Seite überschreiben: {old}')
+        if new not in pages and not (root / 'public' / new.lstrip('/')).is_file():
+            raise ValueError(f'Ziel der Weiterleitung fehlt: {new}')
+        href = escape(new, quote=True)
+        canonical = escape(config['url'].rstrip('/') + new, quote=True)
+        redirects[old] = f'''<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<title>Weiterleitung</title><link rel="canonical" href="{canonical}">
+<script>location.replace({json.dumps(new)} + location.search + location.hash);</script>
+<noscript><meta http-equiv="refresh" content="0; url={href}"></noscript>
+</head><body><p><a href="{href}">Zur Abbildung</a></p></body></html>
+'''
+
     if output.exists():
         shutil.rmtree(output)
     output.mkdir()
-    for url, html in pages.items():
+    for url, html in {**pages, **redirects}.items():
         target = output / (url.lstrip('/') + 'index.html' if url.endswith('/') else url.lstrip('/'))
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(html, encoding='utf-8')

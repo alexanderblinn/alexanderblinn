@@ -3,5 +3,21 @@
   "url": "https://alexanderblinn.com",
   "description": "Notizen und Projekte zu Regelung, Optimierung und Energiesystemen.",
   "github": "https://github.com/alexanderblinn",
-  "language": "de"
+  "language": "de",
+  "redirects": {
+    "/demos/zentralpfad.html": "/img/notes/zentralpfad/index.html",
+    "/img/dist.html": "/img/projects/msci/dist.html",
+    "/img/heatmap.html": "/img/projects/msci/heatmap.html",
+    "/img/long-term.html": "/img/projects/msci/long-term.html",
+    "/img/multiple.html": "/img/projects/msci/multiple.html",
+    "/img/returns-one.html": "/img/projects/msci/returns-one.html",
+    "/img/returns-two.html": "/img/projects/msci/returns-two.html",
+    "/img/single.html": "/img/projects/msci/single.html",
+    "/img/fissionorfiction/capacity.html": "/img/projects/fissionorfiction/capacity.html",
+    "/img/fissionorfiction/commissioning.html": "/img/projects/fissionorfiction/commissioning.html",
+    "/img/fissionorfiction/construction.html": "/img/projects/fissionorfiction/construction.html",
+    "/img/fissionorfiction/count.html": "/img/projects/fissionorfiction/count.html",
+    "/img/fissionorfiction/evolution.html": "/img/projects/fissionorfiction/evolution.html",
+    "/img/fissionorfiction/map.html": "/img/projects/fissionorfiction/map.html"
+  }
 }

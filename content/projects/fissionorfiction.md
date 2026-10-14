@@ -30,8 +30,8 @@ Datengrundlage: **Global Nuclear Power Tracker, Juli 2024** · Global Energy Mon
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Ein Standort kann mehrere Reaktorblöcke mit unterschiedlicher Leistung und unterschiedlichem Status umfassen.</span></p>
 
 <figure class="interactive-figure figure-location-map">
-  <iframe src="/img/fissionorfiction/map.html" title="Fission or Fiction: Weltkarte der Kernkraftwerke" height="900" loading="eager"></iframe>
-  <figcaption><a href="/img/fissionorfiction/map.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/fissionorfiction/map.html" title="Fission or Fiction: Weltkarte der Kernkraftwerke" height="900" loading="eager"></iframe>
+  <figcaption><a href="/img/projects/fissionorfiction/map.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="evolution">02 / Entwicklung auf der Weltkarte</h2>
@@ -41,8 +41,8 @@ Datengrundlage: **Global Nuclear Power Tracker, Juli 2024** · Global Energy Mon
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Die zeitliche Ansicht macht sichtbar, wann und wo sich die Reaktorflotte verändert hat.</span></p>
 
 <figure class="interactive-figure figure-nuclear">
-  <iframe src="/img/fissionorfiction/evolution.html" title="Fission or Fiction: animierte Entwicklung der Kernenergie von 1955 bis 2024" height="660" loading="lazy"></iframe>
-  <figcaption><a href="/img/fissionorfiction/evolution.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/fissionorfiction/evolution.html" title="Fission or Fiction: animierte Entwicklung der Kernenergie von 1955 bis 2024" height="660" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/fissionorfiction/evolution.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="commissioning">03 / Inbetriebnahme und Stilllegung</h2>
@@ -52,8 +52,8 @@ Datengrundlage: **Global Nuclear Power Tracker, Juli 2024** · Global Energy Mon
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Neubau, Alterung und Stilllegung gehören zusammen, um die Entwicklung der Reaktorflotte einzuordnen.</span></p>
 
 <figure class="interactive-figure figure-nuclear">
-  <iframe src="/img/fissionorfiction/commissioning.html" title="Fission or Fiction: Inbetriebnahmen, Stilllegungen und Reaktoralter" height="920" loading="lazy"></iframe>
-  <figcaption><a href="/img/fissionorfiction/commissioning.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/fissionorfiction/commissioning.html" title="Fission or Fiction: Inbetriebnahmen, Stilllegungen und Reaktoralter" height="920" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/fissionorfiction/commissioning.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="count">04 / Reaktoranzahl und Alter</h2>
@@ -63,8 +63,8 @@ Datengrundlage: **Global Nuclear Power Tracker, Juli 2024** · Global Energy Mon
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Eine ähnliche Reaktoranzahl kann mit einer ganz anderen Altersstruktur einhergehen.</span></p>
 
 <figure class="interactive-figure figure-nuclear">
-  <iframe src="/img/fissionorfiction/count.html" title="Fission or Fiction: Zahl und mittleres Alter der Reaktoren" height="920" loading="lazy"></iframe>
-  <figcaption><a href="/img/fissionorfiction/count.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/fissionorfiction/count.html" title="Fission or Fiction: Zahl und mittleres Alter der Reaktoren" height="920" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/fissionorfiction/count.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="capacity">05 / Installierte Leistung</h2>
@@ -74,8 +74,8 @@ Datengrundlage: **Global Nuclear Power Tracker, Juli 2024** · Global Energy Mon
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Reaktoranzahl und Leistung sind unterschiedliche Größen: Die Leistung einzelner Blöcke unterscheidet sich deutlich.</span></p>
 
 <figure class="interactive-figure figure-nuclear">
-  <iframe src="/img/fissionorfiction/capacity.html" title="Fission or Fiction: installierte Reaktorleistung nach Land und Jahr" height="920" loading="lazy"></iframe>
-  <figcaption><a href="/img/fissionorfiction/capacity.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/fissionorfiction/capacity.html" title="Fission or Fiction: installierte Reaktorleistung nach Land und Jahr" height="920" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/fissionorfiction/capacity.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <h2 id="construction">06 / Reaktoren im Bau</h2>
@@ -85,8 +85,8 @@ Datengrundlage: **Global Nuclear Power Tracker, Juli 2024** · Global Energy Mon
 <p class="figure-takeaway"><span class="figure-symbol" role="img" aria-label="Kernaussage">!</span><span>Ein Baubeginn ist noch keine Inbetriebnahme.</span></p>
 
 <figure class="interactive-figure figure-nuclear">
-  <iframe src="/img/fissionorfiction/construction.html" title="Fission or Fiction: Reaktoren im Bau und später abgebrochene Vorhaben" height="920" loading="lazy"></iframe>
-  <figcaption><a href="/img/fissionorfiction/construction.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
+  <iframe src="/img/projects/fissionorfiction/construction.html" title="Fission or Fiction: Reaktoren im Bau und später abgebrochene Vorhaben" height="920" loading="lazy"></iframe>
+  <figcaption><a href="/img/projects/fissionorfiction/construction.html" target="_blank" rel="noopener">Einzelansicht ↗</a></figcaption>
 </figure>
 
 <details markdown="1">

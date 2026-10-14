@@ -199,6 +199,34 @@ $$
                 if url.fragment and target in parsed_pages:
                     self.assertIn(unquote(url.fragment), parsed_pages[target].ids)
 
+    def test_moved_diagram_links_redirect_without_duplicate_sitemap_entries(self):
+        self.build()
+        config = json.loads((self.root / 'site.json').read_text(encoding='utf-8'))
+        sitemap = (self.dist / 'sitemap.xml').read_text(encoding='utf-8')
+        for old, new in config['redirects'].items():
+            with self.subTest(old=old):
+                html = (self.dist / old.lstrip('/')).read_text(encoding='utf-8')
+                self.assertIn(f'href="{new}"', html)
+                self.assertIn('location.search + location.hash', html)
+                self.assertTrue((self.dist / new.lstrip('/')).is_file())
+                self.assertNotIn(config['url'] + old, sitemap)
+
+    def test_invalid_redirect_does_not_replace_existing_build(self):
+        self.build()
+        home = (self.dist / 'index.html').read_bytes()
+        config_path = self.root / 'site.json'
+        config = json.loads(config_path.read_text(encoding='utf-8'))
+        for old, new in [('/old.html', '/missing.html'),
+                         ('/about.html', '/notes/zentralpfad.html'),
+                         ('/../outside.html', '/about.html')]:
+            with self.subTest(old=old, new=new):
+                config['redirects'] = {old: new}
+                config_path.write_text(json.dumps(config), encoding='utf-8')
+                result = subprocess.run([sys.executable, str(self.root / 'scripts/build.py')],
+                                        cwd=self.root, capture_output=True, timeout=30)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual((self.dist / 'index.html').read_bytes(), home)
+
 
 if __name__ == "__main__":
     unittest.main()

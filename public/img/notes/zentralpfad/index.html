@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zentralpfad — interaktive Animation</title>
+  <link rel="stylesheet" href="/assets/notes/zentralpfad/style.css">
+  <script type="module" src="/assets/notes/zentralpfad/animation.mjs"></script>
+</head>
+<body>
+<main id="experiment">
+  <div class="experiment-heading"><span>ZENTRALPFAD / PARAMETER x₀</span><span id="live-state">Wird berechnet …</span></div>
+  <div class="experiment-layout">
+    <section class="drawing" aria-label="Zentralpfad und zulässiger Bereich">
+      <svg id="plot" viewBox="0 0 680 680" role="group" aria-labelledby="plot-title plot-description">
+        <title id="plot-title">Zentralpfad vom Anfangspunkt x₀ zum Optimum</title>
+        <desc id="plot-description">Die orangefarbene Kurve ist der Zentralpfad: die Optima des Barriereproblems Φ(x, μ; x₀) von μ = 10³ bis zum gewählten μ. Sie beginnt im Anfangspunkt x₀, wächst mit fallendem μ und endet im Optimum x* des beschränkten Problems. Der orangefarbene Punkt x*(μ) ist das Optimum des Barriereproblems für das gewählte μ. Wird x₀ verändert, wird der Pfad bei unverändertem μ neu berechnet. Beim Verschieben der Grenzen bleibt x₀ fest. Ecken, Kantenmitten, Ziel und Anfangspunkt können gezogen oder mit Pfeiltasten verschoben werden.</desc>
+        <defs>
+          <clipPath id="plot-clip"><rect x="42" y="24" width="602" height="602" rx="2"/></clipPath>
+          <clipPath id="feasible-clip"><polygon id="clip-polygon"/></clipPath>
+          <radialGradient id="point-glow"><stop stop-color="#b95a28" stop-opacity=".22"/><stop offset="1" stop-color="#b95a28" stop-opacity="0"/></radialGradient>
+        </defs>
+        <g id="grid"></g>
+        <g clip-path="url(#plot-clip)">
+          <g id="contours-outside" class="contours outside"></g>
+          <polygon id="feasible"/>
+          <g clip-path="url(#feasible-clip)"><g id="contours-inside" class="contours inside"></g></g>
+          <g id="edges"></g>
+          <path id="central-path"/>
+          <g id="optimum-marker"><rect x="-5.5" y="-5.5" width="11" height="11" transform="rotate(45)"/></g>
+          <circle id="glow" r="24" fill="url(#point-glow)"/>
+          <g id="current-marker"><circle class="point-outline" r="8"/><circle r="4.5"/><text id="current-label" x="13" y="-13">x*(μ)</text></g>
+        </g>
+        <g id="handles"></g>
+        <g id="initial-handle" class="handle initial" role="button" tabindex="0" aria-label="Anfangspunkt x₀ verschieben" data-kind="initial">
+          <circle class="hit-area" r="20"/><rect class="initial-square" x="-8" y="-8" width="16" height="16" rx="2"/>
+          <text id="initial-label" x="-14" y="-14" text-anchor="end">x₀</text>
+        </g>
+        <g id="target-handle" class="handle target" role="button" tabindex="0" aria-label="Zielpunkt z verschieben" data-kind="target">
+          <circle class="hit-area" r="20"/><circle class="target-ring" r="10"/>
+          <path d="M-6,0 H6 M0,-6 V6"/><text x="15" y="-12">z</text>
+        </g>
+        <text x="644" y="661" class="axis-label" text-anchor="end">x₁</text><text x="8" y="16" class="axis-label">x₂</text>
+      </svg>
+      <div class="legend" aria-label="Legende">
+        <span><i class="key area"></i>Zulässiger Bereich</span><span><i class="key contour"></i>Höhenlinien von f</span>
+        <span><i class="key path"></i>Zentralpfad von x₀ bis zum aktuellen μ</span><span><i class="key point"></i>Optimum x*(μ) des Barriereproblems</span>
+        <span><i class="key optimum"></i>Optimum x*</span><span><i class="key initial"></i>Anfangspunkt x₀</span>
+      </div>
+    </section>
+    <section class="playback" aria-label="Animation des Barriereparameters">
+      <div class="playback-top"><div class="playback-buttons"><button id="play" type="button" aria-pressed="false">▶ Abspielen</button><button id="rewind" type="button" title="Zurück zu μ = 10³">↤ Anfang</button></div><label for="speed">Tempo <select id="speed"><option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label></div>
+      <label class="range-label" for="progress">Fortschritt entlang des Zentralpfads <output id="mu-value">—</output></label>
+      <input id="progress" type="range" min="0" max="1000" step="1" value="0" aria-describedby="progress-help">
+      <div class="scale-labels" id="progress-help"><span>μ = 10³ · Start in x₀</span><span>μ = 10⁻³ · Optimum</span></div>
+    </section>
+    <div class="readouts" aria-label="Aktuelle Lösung">
+      <div><span>Position x*(μ)</span><output id="position-value">—</output></div>
+      <div><span>Zielfunktionswert f(x*(μ))</span><output id="cost-value">—</output></div>
+      <div><span>Abstand zum Optimum ‖x*(μ) − x*‖</span><output id="distance-value">—</output></div>
+      <div><span>Kleinster Randabstand min sᵢ(x*(μ))</span><output id="slack-value">—</output></div>
+    </div>
+    <section class="controls" aria-label="Parameter des Optimierungsproblems">
+      <div class="preset-row"><label for="preset">Zielposition</label><select id="preset"><option value="edge">Rechts außerhalb</option><option value="corner">Rechts oben außerhalb</option><option value="inside">Im ursprünglichen Viereck</option></select></div>
+      <fieldset><legend>01 / Zielfunktion</legend>
+        <p class="formula">f(x) = ½ (x − z)ᵀ Q (x − z)</p>
+        <label class="range-label" for="target-x">Zielpunkt z₁ <output id="target-x-value">2.8</output></label>
+        <input id="target-x" type="range" min="-3.6" max="3.6" step="0.02" value="2.8">
+        <label class="range-label" for="target-y">Zielpunkt z₂ <output id="target-y-value">1.2</output></label>
+        <input id="target-y" type="range" min="-3.6" max="3.6" step="0.02" value="1.2">
+        <label class="range-label" for="curvature-one">Krümmung q₁ <output id="curvature-one-value">1.0</output></label>
+        <input id="curvature-one" type="range" min="0.4" max="6" step="0.1" value="1">
+        <label class="range-label" for="curvature-two">Krümmung q₂ <output id="curvature-two-value">3.0</output></label>
+        <input id="curvature-two" type="range" min="0.4" max="6" step="0.1" value="3">
+        <label class="range-label" for="angle">Drehung θ <output id="angle-value">−25°</output></label>
+        <input id="angle" type="range" min="-90" max="90" step="1" value="-25">
+      </fieldset>
+      <fieldset><legend>02 / Anfangspunkt x₀</legend>
+        <div class="initial-inputs">
+          <label for="initial-x">x₀,₁<input id="initial-x" type="number" min="-3.6" max="3.6" step="0.001" value="-1" aria-describedby="initial-help initial-feedback"></label>
+          <label for="initial-y">x₀,₂<input id="initial-y" type="number" min="-3.6" max="3.6" step="0.001" value="-0.8" aria-describedby="initial-help initial-feedback"></label>
+        </div>
+        <p id="initial-help" class="hint">Der Zentralpfad beginnt in x₀. Eine Änderung von x₀ berechnet ihn neu; μ bleibt erhalten. Beim Verschieben der Grenzen bleibt x₀ fest.</p>
+        <p id="initial-feedback" class="hint" role="status" aria-live="polite"></p>
+      </fieldset>
+      <fieldset><legend>03 / Grenzen</legend>
+        <p class="hint">Ecken oder Kantenmitten ziehen. Das Viereck bleibt konvex und hält mindestens 0,05 Abstand zu x₀.</p>
+        <p class="hint keyboard-hint">Mit Tab auswählen, mit Pfeiltasten verschieben. Shift für kleine Schritte.</p>
+        <button id="reset-polygon" type="button">Viereck zurücksetzen</button>
+      </fieldset>
+      <button id="reset" class="reset-all" type="button">Alles zurücksetzen ↺</button>
+    </section>
+  </div>
+  <p class="experiment-note">Zentralpfad: x*(μ; x₀) = argmin f(x) − μ Σᵢ log sᵢ(x) + (μ²/2)‖x − x₀‖². Für großes μ hält der Proximalterm die Lösung bei x₀, für mittleres μ drückt die Barriere sie von den Kanten weg, für kleines μ führt die Zielfunktion sie ins Optimum x*. Für 301 Werte von μ zwischen 10³ und 10⁻³ wird das Problem exakt gelöst; zwischen ihnen wird nicht interpoliert. Der Regler läuft gleichmäßig entlang des Pfads, μ ändert sich dabei ungleichmäßig.</p>
+  <p id="feedback" role="status" aria-live="polite"></p>
+  <noscript>Für die Animation ist JavaScript erforderlich. Die mathematische Erklärung steht im Beitrag unterhalb der Abbildung.</noscript>
+</main>
+</body>
+</html>

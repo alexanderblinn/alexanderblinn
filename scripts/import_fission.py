@@ -44,11 +44,11 @@ def adapt_plot(source, slug, title):
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{escape(title)} — Fission or Fiction</title>
-  <link rel="canonical" href="https://alexanderblinn.com/img/fissionorfiction/{slug}.html">
-  <link rel="stylesheet" href="/assets/fission-charts.css">
+  <link rel="canonical" href="https://alexanderblinn.com/img/projects/fissionorfiction/{slug}.html">
+  <link rel="stylesheet" href="/assets/projects/fissionorfiction/charts.css">
   <script>if (self !== top) document.documentElement.classList.add('embedded');</script>
   <script src="/assets/vendor/plotly-2.27.0.min.js" defer></script>
-  <script src="/assets/fission-charts.js" defer></script>
+  <script src="/assets/projects/fissionorfiction/charts.js" defer></script>
 </head>
 <body data-chart="{slug}">
   <header><a href="/projects/fissionorfiction.html#{slug}">← Zum Projekt</a><h1>{escape(title)}</h1></header>
@@ -63,8 +63,8 @@ def adapt_plot(source, slug, title):
 
 
 def adapt_map(source):
-    return source.replace('</head>', '''<link rel="stylesheet" href="/assets/fission-map.css">
-<script src="/assets/fission-map.js" defer></script>
+    return source.replace('</head>', '''<link rel="stylesheet" href="/assets/projects/fissionorfiction/map.css">
+<script src="/assets/projects/fissionorfiction/map.js" defer></script>
 </head>''', 1)
 
 
@@ -82,7 +82,7 @@ def main():
     if len(libraries) != 1:
         raise ValueError('Expected bundled Plotly 2.27.0 library')
     license_text = (source / 'LICENSE').read_text(encoding='utf-8')
-    destination = ROOT / 'public/img/fissionorfiction'
+    destination = ROOT / 'public/img/projects/fissionorfiction'
     destination.mkdir(parents=True, exist_ok=True)
     for slug, html in pages.items():
         (destination / f'{slug}.html').write_text(html, encoding='utf-8')
