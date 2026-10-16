@@ -134,6 +134,16 @@ node --test tests/central-path.test.mjs
 
 Sie prüfen die μ-Stützstellen, Anfang im analytischen Zentrum und Ende im Optimum, Zulässigkeit, Stationarität und Monotonie entlang des Pfads, die Unabhängigkeit vom Newton-Startpunkt, die Ableitungen, die Dualitätslücke mμ, die Abstoßung durch eine näher rückende Kante, die Entwicklung des Pfads am analytischen Zentrum, das exakte Optimum und die Begrenzung beim Verschieben des Vierecks. Der Pages-Workflow führt sie vor der Veröffentlichung aus.
 
+### Frozen Lake
+
+Der Beitrag liegt in `content/notes/frozen-lake.md` und behandelt `examples/discrete_tabular.py` aus dem Projekt ReinforcementLearningExamples (nicht Teil dieses Repositories). Die Codeblöcke des Beitrags sind wörtliche Ausschnitte dieser Datei; die GIFs und SVGs unter `public/img/notes/frozen-lake/` erzeugt `scripts/frozen_lake_figures.py`, das das Originalmodul importiert und mit dessen Trainingsfunktionen rechnet. Das Skript braucht die virtuelle Umgebung jenes Projekts (gymnasium mit pygame, matplotlib, Pillow, tqdm):
+
+```sh
+<venv>/python scripts/frozen_lake_figures.py [Pfad/zu/ReinforcementLearningExamples/examples]
+```
+
+Die fünf Trainingsläufe über je 100 000 Episoden werden im Temp-Verzeichnis zwischengespeichert; zum Neutrainieren die Datei `frozen_lake_note_cache.npz` dort löschen. Vor dem Zeichnen gibt das Skript die Zahlen der Vergleichstabelle des Beitrags aus: die exakte Erfolgswahrscheinlichkeit jeder gierigen Politik (Politikbewertung mit dem bekannten Übergangsmodell, mit und ohne 100-Schritt-Grenze), v(s₀) und die Zustände, in denen der gierige Pfeil von q* abweicht.
+
 ## Verzeichnisübersicht
 
 Für jeden Beitrag gilt dieselbe Zuordnung über Bereich (`projects` oder `notes`) und Slug. Zusätzliche Ordner werden nur angelegt, wenn sie gebraucht werden; eine reine Textnotiz benötigt ausschließlich ihre Markdown-Datei.

@@ -67,14 +67,29 @@ class MathExtension(Extension):
 
 # A fenced code block tagged ```lang tab="Label" joins any immediately following
 # (blank lines aside) tab-tagged fences into one switchable group, e.g. a Python
-# and a MATLAB version of the same algorithm. Plain fenced code is untouched.
+# and a MATLAB version of the same algorithm. A plain ```lang fence is highlighted
+# on its own; a fence without a language is left to the standard extension.
 TAB_FENCE = re.compile(r'^```(\S+)\s+tab="([^"]+)"\s*$')
+PLAIN_FENCE = re.compile(r'^```([A-Za-z][\w+-]*)\s*$')
 
 
 class CodeTabsPreprocessor(Preprocessor):
     def run(self, lines):
         result, i, group = [], 0, 0
         while i < len(lines):
+            plain = PLAIN_FENCE.match(lines[i])
+            if plain:
+                language, start = plain.group(1), i + 1
+                i = start
+                while i < len(lines) and lines[i].rstrip() != "```":
+                    i += 1
+                if i >= len(lines):
+                    raise ValueError("Nicht abgeschlossener Codeblock")
+                code = "\n".join(lines[start:i])
+                i += 1
+                html = f'<pre class="highlight"><code class="language-{escape(language)}">{highlight_code(language, code)}</code></pre>'
+                result.extend(["", self.md.htmlStash.store(html), ""])
+                continue
             match = TAB_FENCE.match(lines[i])
             if not match:
                 result.append(lines[i])

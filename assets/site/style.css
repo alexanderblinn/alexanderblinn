@@ -14,6 +14,7 @@ body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monosp
 .page-wide .article-header, .page-wide .article-body > p, .page-wide .article-body > .math-block, .page-wide .article-body > ul, .page-wide .article-body > ol, .page-wide .article-body > h3 { max-width: 76ch; }
 .static-figure { margin: 16px 0 36px; max-width: 76ch; }
 .static-figure img { display: block; width: 100%; max-width: 640px; height: auto; }
+.static-figure.wide img, .static-figure.wide figcaption { max-width: none; }
 .static-figure figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; max-width: 640px; }
 .figure-index { columns: 2; font-size: 14px; margin: 24px 0 35px; }
 .figure-index li { break-inside: avoid; }
@@ -104,13 +105,14 @@ math { font-size: 1.12em; }
 .code-tab-input:checked + .code-tab-label { color: var(--ink); font-weight: 700; }
 .code-tab-panel { order: 1; flex-basis: 100%; display: none; margin: 0; }
 .code-tab-input:checked + .code-tab-label + .code-tab-panel { display: block; }
-/* Highlighted at build time by Pygments; only the token classes the Python and MATLAB
-   examples actually use, colored with the accent palette already used in this note. */
-.code-tab-panel .c, .code-tab-panel .c1 { color: var(--muted); font-style: italic; }
-.code-tab-panel .k, .code-tab-panel .kn, .code-tab-panel .kc, .code-tab-panel .ow { color: var(--link); font-weight: 700; }
-.code-tab-panel .s, .code-tab-panel .s1, .code-tab-panel .sd { color: #b95a28; }
-.code-tab-panel .mi, .code-tab-panel .mf { color: #426f6b; }
-.code-tab-panel .nf { color: #685d94; font-weight: 700; }
+/* Highlighted at build time by Pygments (tabbed and plain fenced code alike); a small set
+   of token classes, colored with the accent palette already used in the notes. */
+pre .c, pre .c1, pre .cm { color: var(--muted); font-style: italic; }
+pre .k, pre .kn, pre .kc, pre .ow, pre .kd, pre .kr { color: var(--link); font-weight: 700; }
+pre .s, pre .s1, pre .s2, pre .sd, pre .sa, pre .si, pre .se { color: #b95a28; }
+pre .mi, pre .mf, pre .mh { color: #426f6b; }
+pre .nf, pre .nc { color: #685d94; font-weight: 700; }
+pre .nd { color: #685d94; }
 .backlink { margin-top: 38px; padding-top: 15px; border-top: 1px solid var(--line); font-size: 13px; }
 .site-footer { border-top: 1px solid var(--ink); margin-top: 48px; padding-top: 16px; font-size: 12px; }
 .site-footer p { margin: 0 0 5px; }
