@@ -1,14 +1,14 @@
 ---
 title: "About"
-description: "Alexander Blinn — Regelung, Optimierung und Energiesysteme."
-tags: [regelung, optimierung, energie]
+description: "Alexander Blinn — Energiesysteme, Optimierung, Regelung und Datenanalyse."
+tags: [energie, optimierung, regelung, daten]
 styles: [/assets/site/contact.css]
 scripts: [/assets/site/contact.js]
 ---
 
-Ich bin Alexander Blinn. Mich interessieren Regelung, Optimierung und Energiesysteme — und die Verbindung zwischen mathematischem Modell und praktischem Aufbau.
+Ich bin Alexander Blinn und beschäftige mich mit Energiesystemen, Optimierung und Daten, vom mathematischen Modell bis zum praktischen Aufbau.
 
-Hier sammle ich Themen, Erklärungen und Experimente: von Model Predictive Control und lernenden Terminalwerten bis zu PV, Batteriespeichern und Automatisierung mit Beckhoff und Modbus.
+Hier sammle ich Erklärungen, Experimente und Projekte, die dabei entstehen.
 
 ## Über dieses Journal
 
