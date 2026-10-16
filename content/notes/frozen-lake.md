@@ -140,7 +140,7 @@ def decay_schedule(
 ```
 
 <figure class="static-figure">
-  <img src="/img/notes/frozen-lake/schedules.svg" alt="Verlauf von Epsilon und Alpha über 100 000 Episoden: schneller Abfall von 1 am Anfang, flacher Verlauf bis 0,1 bei 90 Prozent der Episoden, danach konstant" width="512" height="278" loading="lazy">
+  <img src="/img/notes/frozen-lake/schedules.svg" alt="Verlauf von Epsilon und Alpha über 100 000 Episoden: schneller Abfall von 1 am Anfang, flacher Verlauf bis 0,1 bei 90 Prozent der Episoden, danach konstant" width="790" height="384" loading="lazy">
   <figcaption>Abbildung 3: Der gemeinsame Zeitplan für ε und α. Beide fallen in den ersten Episoden schnell, nähern sich dann langsam ihrem Minimum 0,1 und bleiben in den letzten zehn Prozent der Episoden konstant.</figcaption>
 </figure>
 

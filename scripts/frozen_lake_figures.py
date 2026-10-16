@@ -323,7 +323,7 @@ def figure_map():
 def figure_schedules():
     n = dt.NUM_EPISODES
     eps = dt.decay_schedule(dt.INIT_EPSILON, dt.MIN_EPSILON, dt.EPSILON_DECAY_RATIO, n)
-    fig, ax = plt.subplots(figsize=(NORMAL / 96, 2.9))
+    fig, ax = plt.subplots(figsize=(WIDE / 96, 4.0))
     ax.plot(np.arange(n) / 1000, eps, color=ORANGE, linewidth=2.2, label="ε (Erkundung) und α (Schrittweite)")
     ax.axvline(dt.EPSILON_DECAY_RATIO * n / 1000, color=LINE, linestyle="--", linewidth=1)
     ax.text(dt.EPSILON_DECAY_RATIO * n / 1000 + 1, 0.55, "90 % der Episoden", color=MUTED, fontsize=9)
@@ -383,7 +383,12 @@ def gif_update_step():
     vmax = max(1e-3, max(float(np.max(step["after"])) for step in steps))
     for k, step in enumerate(steps, start=1):
         for phase in ("vor", "nach"):
-            fig, (left, right) = plt.subplots(1, 2, figsize=(WIDE / 100, 4.65), gridspec_kw={"width_ratios": [1, 1.2]})
+            fig = plt.figure(figsize=(WIDE / 100, 4.65))
+            # Both panels share one height; the grid on the left is square, so its width equals that height.
+            bottom, top = 0.075, 0.83
+            side = (top - bottom) * fig.get_figheight() / fig.get_figwidth()
+            left = fig.add_axes([0.015, bottom, side, top - bottom])
+            right = fig.add_axes([0.015 + side + 0.065, bottom, 0.985 - (0.015 + side + 0.065), top - bottom])
             Q = step["before"] if phase == "vor" else step["after"]
             agent = step["state"] if phase == "vor" else step["next_state"]
             draw_grid(left, Q, agent=agent, highlight=(step["state"], step["action"]), vmax=vmax)
@@ -405,8 +410,6 @@ def gif_update_step():
                         f"Fehler δ  = Ziel − Q(s, a) = {german(step['error'], 3)}\n"
                         f"Q(s, a) ← Q(s, a) + α·δ = {german(float(step['after'][s, a]), 3)}   (α = {german(alpha)})")
             right.set_title(text, fontsize=9, loc="left", color=INK, family="Courier New")
-            # Fixed layout: both text blocks have four lines, and the axes never move between frames.
-            fig.subplots_adjust(left=0.02, right=0.985, top=0.80, bottom=0.075, wspace=0.26)
             frames.append(figure_to_array(fig)); plt.close(fig)
             durations.append(1100 if phase == "vor" else 2300)
     durations[-1] = 3500
