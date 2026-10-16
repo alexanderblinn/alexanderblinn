@@ -42,8 +42,6 @@ ENV_NAME, SEED, GAMMA = "FrozenLake-v1", dt.SEED, dt.GAMMA
 DESC = ["SFFF", "FHFH", "FFFH", "HFFG"]
 ACTIONS = ["links", "unten", "rechts", "oben"]  # gymnasium: 0 left, 1 down, 2 right, 3 up
 METHODS = [("single_q", "Q-Learning"), ("double_q", "Double Q-Learning"), ("sarsa", "SARSA"), ("sarsa_lambda", "SARSA(λ)"), ("mc", "Monte Carlo")]
-FONT = ImageFont.truetype("C:/Windows/Fonts/cour.ttf", 15)
-FONT_BOLD = ImageFont.truetype("C:/Windows/Fonts/courbd.ttf", 15)
 
 
 def german(value, digits=2):
@@ -103,16 +101,26 @@ def save_gif(path, frames, durations):
     print(f"wrote {path.name}: {len(images)} frames, {path.stat().st_size / 1024:.0f} kB")
 
 
-def captioned(frame, lines, size=384):
-    """Pygame frame scaled to `size` with a caption strip below."""
-    image = Image.fromarray(frame).resize((size, size), Image.LANCZOS)
-    strip = 24 + 20 * len(lines)
+def caption_font(text, bold, max_width):
+    """Courier New, shrunk step by step until the line fits into the strip."""
+    for size in (14, 13, 12, 11):
+        font = ImageFont.truetype("C:/Windows/Fonts/courbd.ttf" if bold else "C:/Windows/Fonts/cour.ttf", size)
+        if font.getlength(text) <= max_width:
+            break
+    return font
+
+
+def captioned(frame, lines, size=512):
+    """Pygame frame (256 px) doubled pixel for pixel, with a caption strip below."""
+    image = Image.fromarray(frame).resize((size, size), Image.NEAREST)
+    line_height = 18
+    strip = 10 + line_height * len(lines) + 8
     canvas = Image.new("RGB", (size, size + strip), PAPER)
     canvas.paste(image, (0, 0))
     draw = ImageDraw.Draw(canvas)
     draw.line([(0, size), (size, size)], fill=LINE, width=1)
     for k, (text, bold) in enumerate(lines):
-        draw.text((12, size + 10 + 20 * k), text, fill=INK if bold else MUTED, font=FONT_BOLD if bold else FONT)
+        draw.text((12, size + 10 + line_height * k), text, fill=INK if bold else MUTED, font=caption_font(text, bold, size - 24))
     return canvas
 
 

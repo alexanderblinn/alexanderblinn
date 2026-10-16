@@ -10,11 +10,13 @@
 html { background: var(--paper); color: var(--ink); scrollbar-gutter: stable; }
 body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monospace; font-size: 16px; line-height: 1.65; }
 .page { max-width: 850px; margin: 0 auto; padding: 55px 30px 24px; }
-.page-wide { max-width: 1140px; }
-.page-wide .article-header, .page-wide .article-body > p, .page-wide .article-body > .math-block, .page-wide .article-body > ul, .page-wide .article-body > ol, .page-wide .article-body > h3 { max-width: 76ch; }
-.static-figure { margin: 16px 0 36px; max-width: 76ch; }
+/* Wide layout: text, code, rules and tables keep the column of every other page; only the
+   interactive figures break out symmetrically to both sides, up to 1080px. */
+.page-wide .interactive-figure { --breakout: max(100%, min(1080px, 100vw - 80px)); width: var(--breakout); margin-left: calc((100% - var(--breakout)) / 2); }
+.static-figure { margin: 16px 0 36px; }
 .static-figure img { display: block; width: 100%; max-width: 640px; height: auto; }
 .static-figure.wide img, .static-figure.wide figcaption { max-width: none; }
+.static-figure.natural img { width: auto; max-width: 100%; }
 .static-figure figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; max-width: 640px; }
 .figure-index { columns: 2; font-size: 14px; margin: 24px 0 35px; }
 .figure-index li { break-inside: avoid; }
@@ -99,7 +101,7 @@ pre code { padding: 0; font-size: inherit; }
 math { font-size: 1.12em; }
 /* CSS-only language tabs: each radio is immediately followed by its own label and
    panel, so plain adjacent-sibling selectors show the checked one. No JS needed. */
-.code-tabs { display: flex; flex-wrap: wrap; align-items: center; margin: 18px 0; max-width: 76ch; }
+.code-tabs { display: flex; flex-wrap: wrap; align-items: center; margin: 18px 0; }
 .code-tab-input { order: 0; accent-color: var(--link); cursor: pointer; margin: 0 6px 10px 0; }
 .code-tab-label { order: 0; margin: 0 18px 10px 0; font-size: 13px; color: var(--muted); cursor: pointer; }
 .code-tab-input:checked + .code-tab-label { color: var(--ink); font-weight: 700; }

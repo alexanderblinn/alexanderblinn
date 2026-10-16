@@ -12,8 +12,8 @@ Ein Wanderer soll über einen zugefrorenen See zu einer Fahne gelangen und dabei
 
 Diese Notiz geht die Datei `discrete_tabular.py` aus dem Projekt ReinforcementLearningExamples durch. Sie löst Gymnasiums `FrozenLake-v1` mit fünf tabellarischen Verfahren: Q-Learning, Double Q-Learning, SARSA, SARSA(λ) und Monte Carlo. Der Text erklärt die Mathematik dahinter, von der Bellman-Optimalitätsgleichung bis zu den Eligibility Traces, und stellt jeder Update-Regel direkt ihre Implementierung gegenüber. Die Animationen zeigen, was in der Tabelle passiert.
 
-<figure class="static-figure">
-  <img src="/img/notes/frozen-lake/gieriger-lauf.gif" alt="Animation des Frozen-Lake-Spielfelds: Die Figur folgt der gelernten gierigen Politik vom Start zur Fahne; im zweiten Lauf rutscht sie in ein Loch" width="384" height="476" loading="lazy">
+<figure class="static-figure natural">
+  <img src="/img/notes/frozen-lake/gieriger-lauf.gif" alt="Animation des Frozen-Lake-Spielfelds: Die Figur folgt der gelernten gierigen Politik vom Start zur Fahne; im zweiten Lauf rutscht sie in ein Loch" width="512" height="566" loading="lazy">
   <figcaption>Abbildung 1: Zwei Testläufe mit der gelernten Tabelle (Q-Learning, 100 000 Episoden, gierige Politik). Der erste erreicht die Fahne, der zweite rutscht trotz gleicher Politik in ein Loch: Die Umgebung ist stochastisch, die beste Politik gewinnt nur in etwa drei von vier Fällen.</figcaption>
 </figure>
 
@@ -144,8 +144,8 @@ def decay_schedule(
   <figcaption>Abbildung 3: Der gemeinsame Zeitplan für ε und α. Beide fallen in den ersten Episoden schnell, nähern sich dann langsam ihrem Minimum 0,1 und bleiben in den letzten zehn Prozent der Episoden konstant.</figcaption>
 </figure>
 
-<figure class="static-figure">
-  <img src="/img/notes/frozen-lake/erkundung.gif" alt="Animation einer frühen Episode mit Epsilon gleich 1: Die Figur wählt in jedem Schritt eine zufällige Aktion und fällt schließlich in ein Loch" width="384" height="476" loading="lazy">
+<figure class="static-figure natural">
+  <img src="/img/notes/frozen-lake/erkundung.gif" alt="Animation einer frühen Episode mit Epsilon gleich 1: Die Figur wählt in jedem Schritt eine zufällige Aktion und fällt schließlich in ein Loch" width="512" height="566" loading="lazy">
   <figcaption>Abbildung 4: Eine Episode ganz am Anfang des Trainings mit ε = 1. Jede Aktion ist zufällig, die meisten Episoden enden in einem Loch, und die Tabelle lernt in dieser Phase vor allem, welche Felder gefährlich sind.</figcaption>
 </figure>
 
@@ -161,7 +161,7 @@ $$
 
 Das ist ein gleitender Mittelwert über verrauschte Stichproben des Erwartungswerts in der Bellman-Gleichung, eine stochastische Approximation. Die Verfahren unterscheiden sich allein darin, wie der Zielwert gebildet wird: aus einem Schritt und der eigenen Schätzung des Nachfolgers (Temporal-Difference-Lernen), aus mehreren Schritten mit Gewichten (SARSA(λ)) oder aus der vollständigen Episode (Monte Carlo). Abbildung 5 zeigt, wie sich die Tabelle beim Q-Learning über 100 000 Episoden füllt: zuerst die Felder neben dem Ziel, dann rückwärts entlang der sicheren Wege.
 
-<figure class="static-figure">
+<figure class="static-figure natural">
   <img src="/img/notes/frozen-lake/q-tabelle.gif" alt="Animation der Q-Tabelle während des Q-Learnings: Jedes Feld ist in vier Dreiecke für die vier Aktionen geteilt, deren Färbung mit dem Wert wächst; Pfeile zeigen die gierige Aktion; die Werte breiten sich vom Ziel aus rückwärts aus" width="520" height="560" loading="lazy">
   <figcaption>Abbildung 5: Die Tabelle Q während des Q-Learnings. Jedes Feld ist in vier Dreiecke geteilt, eines je Aktion; die Farbe zeigt Q(s, a), der Pfeil die gierige Aktion, die Zahl den Wert max<sub>a</sub> Q(s, a). Die Werte wachsen vom Ziel aus rückwärts, weil jeder Zielwert die Schätzung des Nachfolgers enthält.</figcaption>
 </figure>

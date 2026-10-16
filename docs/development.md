@@ -48,7 +48,7 @@ Hier beginnt der Beitrag.
 | `featured: true` | Beitrag unter „Ausgewählte Projekte und Notizen“ auf der Startseite anzeigen. |
 | `kind: build` | Praktischen Aufbau unter Projects kennzeichnen. |
 | `status` | Projektstatus. |
-| `layout: wide` | Breitere Inhaltsfläche für Diagramme. |
+| `layout: wide` | Interaktive Diagramme (`.interactive-figure`) brechen symmetrisch bis 1080 px aus der Textspalte aus; Text, Code, Tabellen und Linien behalten die Spaltenbreite aller Seiten. |
 
 ## Bilder und Formeln
 
