@@ -8,4 +8,8 @@
 #   message: |
 #     Schöne Seite! Der Zentralpfad zum Ausprobieren hat mir sehr geholfen.
 #   reply: "Danke, Anna!"
-[]
+- name: "Anna"
+  date: 2026-10-16
+  message: |
+    Schöne Seite! Der Zentralpfad zum Ausprobieren hat mir sehr geholfen.
+  reply: "Danke, Anna!"
