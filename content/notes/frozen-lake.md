@@ -10,11 +10,11 @@ layout: wide
 
 Ein Wanderer soll über einen zugefrorenen See zu einer Fahne gelangen und dabei die Löcher im Eis meiden. Das Eis ist rutschig: Wer nach rechts gehen will, landet nur in einem Drittel der Fälle rechts, sonst oben oder unten. Niemand sagt dem Wanderer, welcher Weg gut ist. Er erhält erst am Ziel eine Belohnung, sonst nichts, und muss aus vielen Versuchen selbst lernen, welche Aktion in welchem Feld sinnvoll ist. Das ist **Reinforcement Learning** in seiner einfachsten Form: eine Tabelle mit einem Wert je Feld und Aktion, die aus Erfahrung Schritt für Schritt verbessert wird.
 
-Diese Notiz geht die Datei `discrete_tabular.py` aus dem Projekt ReinforcementLearningExamples durch. Sie löst Gymnasiums `FrozenLake-v1` mit fünf tabellarischen Verfahren: Q-Learning, Double Q-Learning, SARSA, SARSA(λ) und Monte Carlo. Der Text erklärt die Mathematik dahinter, von der Bellman-Optimalitätsgleichung bis zu den Eligibility Traces, und stellt jeder Update-Regel direkt ihre Implementierung gegenüber. Die Animationen zeigen, was in der Tabelle passiert.
+Diese Notiz löst Gymnasiums `FrozenLake-v1` mit fünf tabellarischen Verfahren: Q-Learning, Double Q-Learning, SARSA, SARSA(λ) und Monte Carlo. Der Text erklärt die Mathematik dahinter, von der Bellman-Optimalitätsgleichung bis zu den Eligibility Traces, und stellt jeder Update-Regel direkt ihre Implementierung gegenüber. Die Animationen zeigen, was in der Tabelle passiert.
 
 <figure class="static-figure">
   <img src="/img/notes/frozen-lake/gieriger-lauf.gif" alt="Animation des Frozen-Lake-Spielfelds: Die Figur folgt der gelernten gierigen Politik vom Start zur Fahne; im zweiten Lauf rutscht sie in ein Loch" width="512" height="548" loading="lazy">
-  <figcaption>Abbildung 1: Zwei Testläufe mit der gelernten Tabelle (Q-Learning, 100 000 Episoden, gierige Politik). Der erste erreicht die Fahne, der zweite rutscht trotz gleicher Politik in ein Loch: Die Umgebung ist stochastisch, die beste Politik gewinnt nur in etwa drei von vier Fällen.</figcaption>
+  <figcaption>Abbildung 1: Zwei Testläufe mit der gelernten Tabelle (Q-Learning, 100 000 Episoden, <em>gierige</em> Politik). Der erste erreicht die Fahne, der zweite rutscht trotz gleicher Politik in ein Loch: Die Umgebung ist stochastisch, die beste Politik gewinnt nur in etwa drei von vier Fällen.</figcaption>
 </figure>
 
 ## Die Umgebung als Markow-Entscheidungsprozess
@@ -97,7 +97,7 @@ Kennt man q\*, ist die optimale Politik abgelesen: In jedem Zustand die Aktion m
 
 ## Erkunden und ausnutzen
 
-Wer nur die aktuell beste Aktion wählt, findet nie heraus, ob eine andere besser wäre. Die **ε-greedy-Politik** löst dieses Dilemma mit einem Münzwurf: Mit Wahrscheinlichkeit ε wird eine zufällige Aktion gewählt, sonst die gierige,
+Wer nur die aktuell beste Aktion wählt, findet nie heraus, ob eine andere besser wäre. Die **ε-greedy-Politik** löst dieses Dilemma mit einem Münzwurf: Mit Wahrscheinlichkeit ε wird eine zufällige Aktion gewählt, sonst die *gierige*,
 
 $$
 \pi_\varepsilon(a\mid s)=
@@ -163,7 +163,7 @@ Das ist ein gleitender Mittelwert über verrauschte Stichproben des Erwartungswe
 
 <figure class="static-figure">
   <img src="/img/notes/frozen-lake/q-tabelle.gif" alt="Animation der Q-Tabelle während des Q-Learnings: Jedes Feld ist in vier Dreiecke für die vier Aktionen geteilt, deren Färbung mit dem Wert wächst; Pfeile zeigen die gierige Aktion; die Werte breiten sich vom Ziel aus rückwärts aus" width="512" height="576" loading="lazy">
-  <figcaption>Abbildung 5: Die Tabelle Q während des Q-Learnings. Jedes Feld ist in vier Dreiecke geteilt, eines je Aktion; die Farbe zeigt Q(s, a), der Pfeil die gierige Aktion, die Zahl den Wert max<sub>a</sub> Q(s, a). Die Werte wachsen vom Ziel aus rückwärts, weil jeder Zielwert die Schätzung des Nachfolgers enthält.</figcaption>
+  <figcaption>Abbildung 5: Die Tabelle Q während des Q-Learnings. Jedes Feld ist in vier Dreiecke geteilt, eines je Aktion; die Farbe zeigt Q(s, a), der Pfeil die <em>gierige</em> Aktion, die Zahl den Wert max<sub>a</sub> Q(s, a). Die Werte wachsen vom Ziel aus rückwärts, weil jeder Zielwert die Schätzung des Nachfolgers enthält.</figcaption>
 </figure>
 
 ## Die Update-Regeln
@@ -178,7 +178,7 @@ $$
 Q(S_t,A_t)\leftarrow Q(S_t,A_t)+\alpha\Bigl[R_{t+1}+\gamma\max_{a}Q(S_{t+1},a)-Q(S_t,A_t)\Bigr].
 $$
 
-Das ist die Bellman-Optimalitätsgleichung als Stichprobe: Erwartungswert über s′ ersetzt durch den beobachteten Nachfolger, q\* ersetzt durch die aktuelle Schätzung. Das Maximum im Zielwert bezieht sich auf die gierige Politik, egal welche Aktion der Wanderer tatsächlich als nächstes wählt. Q-Learning ist deshalb **off-policy**: Es lernt die Werte der optimalen Politik, während es mit einer erkundenden Politik handelt. Unter den genannten Bedingungen an α und wenn jedes Paar (s, a) unendlich oft besucht wird, konvergiert Q gegen q\*.
+Das ist die Bellman-Optimalitätsgleichung als Stichprobe: Erwartungswert über s′ ersetzt durch den beobachteten Nachfolger, q\* ersetzt durch die aktuelle Schätzung. Das Maximum im Zielwert bezieht sich auf die *gierige* Politik, egal welche Aktion der Wanderer tatsächlich als nächstes wählt. Q-Learning ist deshalb **off-policy**: Es lernt die Werte der optimalen Politik, während es mit einer erkundenden Politik handelt. Unter den genannten Bedingungen an α und wenn jedes Paar (s, a) unendlich oft besucht wird, konvergiert Q gegen q\*.
 
 ```python
 def train_q_learning(
@@ -542,21 +542,21 @@ Abbildung 7 zerlegt einen einzelnen Q-Learning-Schritt. Links steht der Wanderer
 
 ## Vergleich der Verfahren
 
-Alle fünf Verfahren laufen mit denselben Zeitplänen über 100 000 Episoden. Abbildung 8 zeigt die gleitende Erfolgsquote während des Trainings, also den Anteil der Episoden, die das Ziel erreichen. Sie steigt, während ε fällt, und bleibt mit 0,1 bis 0,4 weit unter der Erfolgsquote der gierigen Politik: Die Politik erkundet bis zum Ende zu 10 Prozent, und auf dem rutschigen Eis genügt ein zufälliger Schritt neben einem Loch, um die Episode zu verlieren.
+Alle fünf Verfahren laufen mit denselben Zeitplänen über 100 000 Episoden. Abbildung 8 zeigt die gleitende Erfolgsquote während des Trainings, also den Anteil der Episoden, die das Ziel erreichen. Sie steigt, während ε fällt, und bleibt mit 0,1 bis 0,4 weit unter der Erfolgsquote der *gierigen* Politik: Die Politik erkundet bis zum Ende zu 10 Prozent, und auf dem rutschigen Eis genügt ein zufälliger Schritt neben einem Loch, um die Episode zu verlieren.
 
 <figure class="static-figure">
   <img src="/img/notes/frozen-lake/lernkurven.svg" alt="Fünf Lernkurven über 100 000 Episoden: gleitende Erfolgsquote von Q-Learning, Double Q-Learning, SARSA, SARSA-Lambda und Monte Carlo, steigend auf etwa 0,1 bis 0,4" width="790" height="384" loading="lazy">
   <figcaption>Abbildung 8: Erfolgsquote während des Trainings, gleitend gemittelt über 2000 Episoden. Die Kurven enthalten die Erkundungsschritte der ε-greedy-Politik.</figcaption>
 </figure>
 
-Abbildung 9 stellt die gelernten Tabellen der Wertiteration gegenüber, die q\* aus dem bekannten Modell berechnet. Die gierigen Pfeile stimmen weitgehend überein; die Werte selbst weichen ab, weil die Verfahren die Werte ihrer eigenen, teils erkundenden Politik schätzen und α nicht gegen null geht.
+Abbildung 9 stellt die gelernten Tabellen der Wertiteration gegenüber, die q\* aus dem bekannten Modell berechnet. Die *gierigen* Pfeile stimmen weitgehend überein; die Werte selbst weichen ab, weil die Verfahren die Werte ihrer eigenen, teils erkundenden Politik schätzen und α nicht gegen null geht.
 
 <figure class="static-figure">
   <img src="/img/notes/frozen-lake/politiken.svg" alt="Sechs Gitter nebeneinander: die gelernten Tabellen der fünf Verfahren und q-Stern aus der Wertiteration, jeweils mit gefärbten Dreiecken, gierigen Pfeilen und Zustandswerten" width="790" height="568" loading="lazy">
-  <figcaption>Abbildung 9: Die gelernten Tabellen der fünf Verfahren und q* aus der Wertiteration mit demselben γ = 0,99. Farben und Zahlen zeigen die Werte, Pfeile die gierige Aktion.</figcaption>
+  <figcaption>Abbildung 9: Die gelernten Tabellen der fünf Verfahren und q* aus der Wertiteration mit demselben γ = 0,99. Farben und Zahlen zeigen die Werte, Pfeile die <em>gierige</em> Aktion.</figcaption>
 </figure>
 
-Die folgende Tabelle bewertet die gierigen Politiken (ε = 0) nach 100 000 Episoden exakt. Weil das Übergangsmodell bekannt ist, liefert eine Politikbewertung mit γ = 1 die Wahrscheinlichkeit, von s₀ aus das Ziel zu erreichen, einmal innerhalb der 100 Schritte, nach denen die Umgebung abbricht, und einmal ohne diese Grenze. Daneben stehen der geschätzte Wert des Startzustands, v(s₀) = max<sub>a</sub> Q(s₀, a), und die Zustände, in denen der gierige Pfeil von q\* abweicht. Zum Vergleich steht die optimale Politik aus der Wertiteration.
+Die folgende Tabelle bewertet die *gierigen* Politiken (ε = 0) nach 100 000 Episoden exakt. Weil das Übergangsmodell bekannt ist, liefert eine Politikbewertung mit γ = 1 die Wahrscheinlichkeit, von s₀ aus das Ziel zu erreichen, einmal innerhalb der 100 Schritte, nach denen die Umgebung abbricht, und einmal ohne diese Grenze. Daneben stehen der geschätzte Wert des Startzustands, v(s₀) = max<sub>a</sub> Q(s₀, a), und die Zustände, in denen der *gierige* Pfeil von q\* abweicht. Zum Vergleich steht die optimale Politik aus der Wertiteration.
 
 | Verfahren | Erfolg in 100 Schritten | Erfolg ohne Grenze | geschätztes v(s₀) | Pfeile abweichend von q\* |
 | --- | --- | --- | --- | --- |
@@ -567,13 +567,13 @@ Die folgende Tabelle bewertet die gierigen Politiken (ε = 0) nach 100 000 Episo
 | Monte Carlo | 0,67 | 0,70 | 0,17 | s₁, s₂, s₃, s₆ |
 | optimale Politik (q\*) | 0,74 | 0,82 | 0,54 | – |
 
-Drei Dinge fallen auf. Erstens schätzt nur Q-Learning den Wert des Startzustands nahe am wahren v\*(s₀) = 0,54: Es lernt off-policy die Werte der gierigen Politik. SARSA, SARSA(λ) und Monte Carlo schätzen die Werte der ε-greedy-Politik, die zu 10 Prozent zufällig handelt und entsprechend öfter in Löchern landet; ihre Werte liegen deshalb zu Recht tiefer. Zweitens entscheiden einzelne Felder über die Erfolgsquote. Q-Learning weicht nur in Zustand 0 von q\* ab: „unten“ hat dort mit 0,53 fast denselben Wert wie „links“ mit 0,54, beide führen nie ins Loch, und ohne Schrittgrenze erreichen beide Politiken das Ziel mit 0,82. Aber „unten“ schiebt den Agenten mit Wahrscheinlichkeit 1/3 nach rechts in die obere Reihe, wo die einzige sichere Aktion „oben“ lange an der Wand entlangpendelt, und innerhalb von 100 Schritten fällt die Erfolgsquote dadurch von 0,74 auf 0,55. Der Abbruch nach 100 Schritten bestraft langsame Politiken, die der Wert mit γ = 0,99 kaum unterscheidet. Bei Double Q-Learning zeigt der Pfeil in Zustand 8 nach rechts statt nach oben (0,40 statt 0,59): Jeder Besuch dort rutscht mit Wahrscheinlichkeit 1/3 ins Loch 12, und die Erfolgsquote bricht auf 0,21 ein. Weil α bei 0,1 stehen bleibt, schwanken die Einträge bis zum Schluss, und ein einziger falsch gekippter Pfeil kostet viel. Drittens ist das Ergebnis eines einzelnen Laufs Zufall des Seeds. Mit den Seeds 7 und 123 statt 42 erreichen Double Q-Learning und Q-Learning je rund 0,73 innerhalb von 100 Schritten, also die Grenze der optimalen Politik; die auf zwei Tabellen verteilten Updates verlangsamen das Lernen, verschlechtern die Tabelle nach 100 000 Episoden aber nicht systematisch.
+Drei Dinge fallen auf. Erstens schätzt nur Q-Learning den Wert des Startzustands nahe am wahren v\*(s₀) = 0,54: Es lernt *off-policy* die Werte der *gierigen* Politik. SARSA, SARSA(λ) und Monte Carlo schätzen die Werte der ε-greedy-Politik, die zu 10 Prozent zufällig handelt und entsprechend öfter in Löchern landet; ihre Werte liegen deshalb zu Recht tiefer. Zweitens entscheiden einzelne Felder über die Erfolgsquote. Q-Learning weicht nur in Zustand 0 von q\* ab: „unten“ hat dort mit 0,53 fast denselben Wert wie „links“ mit 0,54, beide führen nie ins Loch, und ohne Schrittgrenze erreichen beide Politiken das Ziel mit 0,82. Aber „unten“ schiebt den Agenten mit Wahrscheinlichkeit 1/3 nach rechts in die obere Reihe, wo die einzige sichere Aktion „oben“ lange an der Wand entlangpendelt, und innerhalb von 100 Schritten fällt die Erfolgsquote dadurch von 0,74 auf 0,55. Der Abbruch nach 100 Schritten bestraft langsame Politiken, die der Wert mit γ = 0,99 kaum unterscheidet. Bei Double Q-Learning zeigt der Pfeil in Zustand 8 nach rechts statt nach oben (0,40 statt 0,59): Jeder Besuch dort rutscht mit Wahrscheinlichkeit 1/3 ins Loch 12, und die Erfolgsquote bricht auf 0,21 ein. Weil α bei 0,1 stehen bleibt, schwanken die Einträge bis zum Schluss, und ein einziger falsch gekippter Pfeil kostet viel. Drittens ist das Ergebnis eines einzelnen Laufs Zufall des Seeds. Mit den Seeds 7 und 123 statt 42 erreichen Double Q-Learning und Q-Learning je rund 0,73 innerhalb von 100 Schritten, also die Grenze der optimalen Politik; die auf zwei Tabellen verteilten Updates verlangsamen das Lernen, verschlechtern die Tabelle nach 100 000 Episoden aber nicht systematisch.
 
 Die Unterschiede in den Lernkurven folgen aus den Zielwerten: Die TD-Verfahren bootstrappen und lernen schon aus unvollständigen Episoden, Monte Carlo braucht den Ausgang jeder Episode und schwankt stärker. Q-Learning und Double Q-Learning zielen auf die optimale Politik, SARSA und SARSA(λ) auf die Werte der erkundenden Politik, was in der Nähe der Löcher zu vorsichtigeren Pfeilen führt. SARSA(λ) verteilt jede Belohnung über den ganzen Weg zurück; in diesem Beispiel verteilt es damit auch jeden Fehltritt, und seine Erfolgsquote während des Trainings bleibt niedriger als die der Ein-Schritt-Verfahren.
 
 ## Testen
 
-Nach dem Training spielt `test` eine Episode mit der gierigen Politik, also mit ε = 0, und gibt die Belohnung zurück. Im rutschigen Frozen Lake ist das Ergebnis selbst mit der optimalen Politik zufällig; erst der Mittelwert über viele Testläufe zeigt die Qualität der Tabelle. Mit bekanntem Modell geht es genauer: Die Erfolgswahrscheinlichkeiten in der Tabelle oben sind exakt aus den Übergangswahrscheinlichkeiten berechnet.
+Nach dem Training spielt `test` eine Episode mit der *gierigen* Politik, also mit ε = 0, und gibt die Belohnung zurück. Im rutschigen Frozen Lake ist das Ergebnis selbst mit der optimalen Politik zufällig; erst der Mittelwert über viele Testläufe zeigt die Qualität der Tabelle. Mit bekanntem Modell geht es genauer: Die Erfolgswahrscheinlichkeiten in der Tabelle oben sind exakt aus den Übergangswahrscheinlichkeiten berechnet.
 
 ```python
 def test(env: gym.Env, Q: np.ndarray) -> float:
@@ -591,7 +591,7 @@ def test(env: gym.Env, Q: np.ndarray) -> float:
 
 ## Der vollständige Code
 
-Die Datei `discrete_tabular.py` im Ganzen. Mit `DO_TRAINING = True` trainiert sie das in `MODEL` gewählte Verfahren, speichert die Tabelle und zeichnet die geglättete Lernkurve; mit `DO_TRAINING = False` lädt sie die Tabelle und spielt eine Episode im Fenster von Gymnasium vor. Über `ENV_NAME` lassen sich auch das 8 × 8-Feld, Cliff Walking und Taxi verwenden, alle mit diskreten Zuständen und Aktionen.
+Das vollständige Skript. Mit `DO_TRAINING = True` trainiert es das in `MODEL` gewählte Verfahren, speichert die Tabelle und zeichnet die geglättete Lernkurve; mit `DO_TRAINING = False` lädt es die Tabelle und spielt eine Episode im Fenster von Gymnasium vor. Über `ENV_NAME` lassen sich auch das 8 × 8-Feld, Cliff Walking und Taxi verwenden, alle mit diskreten Zuständen und Aktionen.
 
 ```python
 #!/usr/bin/env python3

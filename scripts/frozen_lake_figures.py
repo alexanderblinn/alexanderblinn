@@ -34,7 +34,8 @@ ORANGE, BLUE, GREEN, AREA, PURPLE, TARGET, CONTOUR, GREY = "#b95a28", "#173fbe",
 HOLE, GOAL = "#d9d5cb", "#cfe0da"
 plt.rcParams.update({"font.family": "Courier New", "font.size": 11, "figure.facecolor": PAPER, "axes.facecolor": PAPER,
                      "savefig.facecolor": PAPER, "svg.fonttype": "none", "axes.edgecolor": LINE, "text.color": INK,
-                     "axes.labelcolor": MUTED, "xtick.color": MUTED, "ytick.color": MUTED, "figure.dpi": 100})
+                     "axes.labelcolor": MUTED, "xtick.color": MUTED, "ytick.color": MUTED, "figure.dpi": 100,
+                     "mathtext.fontset": "custom", "mathtext.rm": "Courier New", "mathtext.it": "Courier New:italic", "mathtext.bf": "Courier New:bold"})
 QMAP = LinearSegmentedColormap.from_list("q", [PAPER, "#f1d6c2", ORANGE])
 TMAP = LinearSegmentedColormap.from_list("trace", [PAPER, "#c7cfe9", BLUE])
 
@@ -104,9 +105,18 @@ def save_gif(path, frames, durations):
     print(f"wrote {path.name}: {len(images)} frames, {path.stat().st_size / 1024:.0f} kB")
 
 
+def caption_text(parts):
+    """The caption as plain text: segments are joined with a middle dot unless a segment
+    starts with a space, which continues the previous one."""
+    text = ""
+    for k, (segment, _) in enumerate(parts):
+        text += ("" if k == 0 or segment.startswith(" ") else " · ") + segment
+    return text
+
+
 def caption_size(captions, width):
     """One font size per GIF: the largest of 14 … 11 px at which every caption fits on one line."""
-    longest = max((" · ".join(text for text, _ in parts) for parts in captions), key=len)
+    longest = max((caption_text(parts) for parts in captions), key=len)
     for size in (14, 13, 12, 11):
         if ImageFont.truetype("C:/Windows/Fonts/courbd.ttf", size).getlength(longest) <= width - 24:
             break
@@ -115,22 +125,21 @@ def caption_size(captions, width):
 
 def captioned(frame, parts, font_size, size=NORMAL):
     """Pygame frame (256 px) doubled pixel for pixel, with a one-line caption below;
-    `parts` are (text, bold) segments separated by a middle dot."""
+    `parts` are (text, style) segments with style bold, regular or italic."""
     image = Image.fromarray(frame).resize((size, size), Image.NEAREST)
     canvas = Image.new("RGB", (size, size + 36), PAPER)
     canvas.paste(image, (0, 0))
     draw = ImageDraw.Draw(canvas)
     draw.line([(0, size), (size, size)], fill=LINE, width=1)
-    regular = ImageFont.truetype("C:/Windows/Fonts/cour.ttf", font_size)
-    bold = ImageFont.truetype("C:/Windows/Fonts/courbd.ttf", font_size)
+    fonts = {style: ImageFont.truetype(f"C:/Windows/Fonts/{file}.ttf", font_size)
+             for style, file in (("regular", "cour"), ("bold", "courbd"), ("italic", "couri"))}
     x = 12
-    for k, (text, is_bold) in enumerate(parts):
-        if k:
-            draw.text((x, size + 10), " · ", fill=MUTED, font=regular)
-            x += regular.getlength(" · ")
-        font = bold if is_bold else regular
-        draw.text((x, size + 10), text, fill=INK if is_bold else MUTED, font=font)
-        x += font.getlength(text)
+    for k, (text, style) in enumerate(parts):
+        if k and not text.startswith(" "):
+            draw.text((x, size + 10), " · ", fill=MUTED, font=fonts["regular"])
+            x += fonts["regular"].getlength(" · ")
+        draw.text((x, size + 10), text, fill=INK if style == "bold" else MUTED, font=fonts[style])
+        x += fonts[style].getlength(text)
     return canvas
 
 
@@ -320,31 +329,39 @@ def figure_map():
     plt.close(fig)
 
 
+def line_plot():
+    """Shared frame of the two line plots: one size, fixed margins, grid, axis and legend style."""
+    fig, ax = plt.subplots(figsize=(WIDE / 96, 4.0))
+    fig.subplots_adjust(left=0.09, right=0.985, top=0.96, bottom=0.15)
+    ax.grid(alpha=0.3)
+    ax.set_xlabel("Episode in Tausend")
+    ax.set_xlim(-3, dt.NUM_EPISODES / 1000 + 3)
+    return fig, ax
+
+
 def figure_schedules():
     n = dt.NUM_EPISODES
     eps = dt.decay_schedule(dt.INIT_EPSILON, dt.MIN_EPSILON, dt.EPSILON_DECAY_RATIO, n)
-    fig, ax = plt.subplots(figsize=(WIDE / 96, 4.0))
-    ax.plot(np.arange(n) / 1000, eps, color=ORANGE, linewidth=2.2, label="ε (Erkundung) und α (Schrittweite)")
+    fig, ax = line_plot()
+    ax.plot(np.arange(n) / 1000, eps, color=ORANGE, linewidth=2, label="ε (Erkundung) und α (Schrittweite)")
     ax.axvline(dt.EPSILON_DECAY_RATIO * n / 1000, color=LINE, linestyle="--", linewidth=1)
-    ax.text(dt.EPSILON_DECAY_RATIO * n / 1000 + 1, 0.55, "90 % der Episoden", color=MUTED, fontsize=9)
-    ax.set_xlabel("Episode in Tausend"); ax.set_ylabel("Wert"); ax.set_ylim(0, 1.05); ax.grid(alpha=0.3)
-    ax.legend(frameon=False, loc="upper right")
-    fig.tight_layout()
+    ax.text(dt.EPSILON_DECAY_RATIO * n / 1000 - 1.5, 0.55, "90 % der Episoden", color=MUTED, fontsize=9, ha="right")
+    ax.set_ylabel("Wert"); ax.set_ylim(0, 1.05)
+    ax.legend(frameon=False, fontsize=10, loc="upper right")
     fig.savefig(OUT / "schedules.svg")
     plt.close(fig)
 
 
 def figure_learning_curves(results):
     window = 2000
-    fig, ax = plt.subplots(figsize=(WIDE / 96, 4.0))
+    fig, ax = line_plot()
     colours = {"single_q": ORANGE, "double_q": "#d9a066", "sarsa": BLUE, "sarsa_lambda": "#6f8ad6", "mc": GREEN}
     for key, label in METHODS:
         rewards = results[f"rewards_{key}"].astype(float)
         smoothed = np.convolve(rewards, np.ones(window) / window, mode="valid")[::50]  # every 50th point keeps the SVG small
-        ax.plot((np.arange(len(smoothed)) * 50 + window) / 1000, smoothed, color=colours[key], linewidth=1.8, label=label)
-    ax.set_xlabel("Episode in Tausend"); ax.set_ylabel(f"Erfolgsquote (gleitend, {window} Episoden)")
-    ax.set_ylim(0, 0.85); ax.grid(alpha=0.3); ax.legend(frameon=False, ncol=2, fontsize=9)
-    fig.tight_layout()
+        ax.plot((np.arange(len(smoothed)) * 50 + window) / 1000, smoothed, color=colours[key], linewidth=2, label=label)
+    ax.set_ylabel("Erfolgsquote"); ax.set_ylim(0, 0.85)
+    ax.legend(frameon=False, fontsize=10, loc="upper right", ncol=2)
     fig.savefig(OUT / "lernkurven.svg")
     plt.close(fig)
 
@@ -422,7 +439,7 @@ def gif_traces():
     for k, step in enumerate(steps, start=1):
         fig, (left, right) = plt.subplots(1, 2, figsize=(WIDE / 100, 4.44))
         draw_grid(left, step["Q"], agent=step["next_state"], vmax=max(1e-3, float(np.max(step["Q"]))))
-        left.set_title(f"SARSA(λ) · Episode {episode} · Schritt {k}\nQ(s, a) und gierige Aktionen", fontsize=10, loc="left", color=INK)
+        left.set_title(f"SARSA(λ) · Episode {episode} · Schritt {k}\n" + r"Q(s, a) und $\mathit{gierige}$ Aktionen", fontsize=10, loc="left", color=INK)
         draw_grid(right, None, traces=step["trace"], agent=step["next_state"], highlight=(step["state"], step["action"]), arrows=False, numbers=False, vmax=1.0)
         right.set_title(f"Spuren e(s, a) nach e(s, a) ← 1\nδ = {german(step['error'], 3)}, danach e ← γλ·e", fontsize=10, loc="left", color=INK)
         fig.tight_layout(pad=0.6)
@@ -438,10 +455,10 @@ def gif_exploration():
         episode_frames, log = pygame_episode(Q, epsilon=1.0, seed=seed)
         if 5 <= len(log) <= 12:
             break
-    captions = [[("Episode 1", True), ("ε = 1: jede Aktion zufällig", False), ("Start in s = 0", False)]]
+    captions = [[("Episode 1", "bold"), ("ε = 1: jede Aktion zufällig", "regular"), ("Start in s = 0", "regular")]]
     for k, (s, a, r, s2) in enumerate(log, start=1):
         outcome = "Ziel erreicht, r = 1" if r > 0 else ("ins Loch gerutscht" if k == len(log) and DESC[s2 // 4][s2 % 4] == "H" else "r = 0")
-        captions.append([(f"Schritt {k}", True), (f"{ACTIONS[a]}: s = {s} → s' = {s2}", True), (outcome, False)])
+        captions.append([(f"Schritt {k}", "bold"), (f"{ACTIONS[a]}: s = {s} → s' = {s2}", "bold"), (outcome, "regular")])
     font_size = caption_size(captions, NORMAL)
     frames = [captioned(frame, parts, font_size) for frame, parts in zip(episode_frames, captions)]
     durations = [1400] + [900] * (len(frames) - 2) + [3000]
@@ -460,12 +477,12 @@ def gif_greedy(Q):
     captions, all_frames, durations = [], [], []
     for number, key in enumerate([key for key in ("Erfolg", "Loch") if key in chosen], start=1):
         episode_frames, log = chosen[key]
-        captions.append([(f"Testlauf {number}", True), ("gierige Politik, ε = 0", False), ("Start in s = 0", False)])
+        captions.append([(f"Testlauf {number}", "bold"), ("gierige", "italic"), (" Politik, ε = 0", "regular"), ("Start in s = 0", "regular")])
         for k, (s, a, r, s2) in enumerate(log, start=1):
             intended = {0: s - 1, 1: s + 4, 2: s + 1, 3: s - 4}[a]
             slipped = s2 != intended and s2 != s
             outcome = "Ziel erreicht, r = 1" if r > 0 else ("ins Loch gerutscht" if k == len(log) else ("gerutscht" if slipped else "r = 0"))
-            captions.append([(f"Schritt {k}", True), (f"{ACTIONS[a]}: s = {s} → s' = {s2}", True), (outcome, False)])
+            captions.append([(f"Schritt {k}", "bold"), (f"{ACTIONS[a]}: s = {s} → s' = {s2}", "bold"), (outcome, "regular")])
         all_frames.extend(episode_frames)
         durations.extend([1400] + [800] * (len(log) - 1) + [3000])
     font_size = caption_size(captions, NORMAL)
