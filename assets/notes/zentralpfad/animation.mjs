@@ -1,19 +1,19 @@
-import { matrix, constraints, slacks, objective, safePolygonMove, safeInitialMove, validInitial, pathFractions, indexAt, add, sub, scale } from './math.mjs';
+import { matrix, constraints, slacks, objective, safePolygonMove, pathFractions, indexAt, add, sub, scale } from './math.mjs';
 import { centralPath } from './barrier.mjs';
 
 const $ = id => document.getElementById(id);
 const svgNS = 'http://www.w3.org/2000/svg';
 const vertices0 = [[-2.6, -1.9], [2.1, -1.7], [2.6, 2.1], [-1.8, 2.4]];
-const initial0 = [-1, -0.8];
 const presets = {
   edge: { z: [2.8, 1.2], k1: 1, k2: 3, angle: -25 },
   corner: { z: [3.4, 3.3], k1: 2, k2: 1, angle: 20 },
   inside: { z: [0.8, -0.6], k1: 1, k2: 4.5, angle: 35 }
 };
-const defaults = () => ({ ...structuredClone(presets.edge), vertices: structuredClone(vertices0), initial: [...initial0] });
+const defaults = () => ({ ...structuredClone(presets.edge), vertices: structuredClone(vertices0) });
 let state = defaults();
 // progress in [0, 1] is the share of the path length drawn, so playback moves evenly along the
-// path. It selects one of the computed barrier optima: 0 is mu = 10^3 at x0, 1 is mu = 10^-3.
+// path. It selects one of the computed barrier optima: 0 is mu = 10^3 at the analytic centre,
+// 1 is mu = 10^-3 next to the optimum.
 let solution, q, progress = 0;
 let playing = false, lastTime = 0, drag = null, scheduled = false, animationFrame = null;
 const bounds = 4.1, unit = 602 / (2 * bounds);
@@ -23,7 +23,7 @@ const pathData = points => points.map((p, i) => `${i ? 'L' : 'M'}${pair(p)}`).jo
 const clamp = v => Math.max(-3.65, Math.min(3.65, v));
 const compact = v => Math.abs(v) < 0.001 && v !== 0 ? v.toExponential(2) : v.toFixed(3);
 const move = (id, p) => $(id).setAttribute('transform', `translate(${pair(p)})`);
-// Node 0 of the drawn polyline is x0 itself; node k + 1 is the optimum for the k-th mu.
+// Node 0 of the drawn polyline is the analytic centre; node k + 1 is the optimum for the k-th mu.
 const frameIndex = () => Math.max(0, indexAt(solution.fractions, progress) - 1);
 function element(tag, attributes = {}, parent) {
   const el = document.createElementNS(svgNS, tag);
@@ -64,8 +64,6 @@ function syncControls() {
     $(id).value = get();
     $(`${id}-value`).value = id === 'angle' ? `${get().toFixed(0)}°` : get().toFixed(2);
   });
-  $('initial-x').value = state.initial[0].toFixed(3);
-  $('initial-y').value = state.initial[1].toFixed(3);
 }
 function drawGeometry() {
   const polygon = state.vertices.map(pair).join(' ');
@@ -78,8 +76,6 @@ function drawGeometry() {
     $(`vertex-${i}`).setAttribute('aria-label', `Ecke ${'ABCD'[i]}: ${p[0].toFixed(2)}, ${p[1].toFixed(2)}. Mit Pfeiltasten verschieben.`);
   });
   move('target-handle', state.z);
-  move('initial-handle', state.initial);
-  $('initial-handle').setAttribute('aria-label', `Anfangspunkt x₀: ${state.initial[0].toFixed(3)}, ${state.initial[1].toFixed(3)}. Mit Pfeiltasten verschieben.`);
   $('target-handle').setAttribute('aria-label', `Zielpunkt z: ${state.z[0].toFixed(2)}, ${state.z[1].toFixed(2)}. Mit Pfeiltasten verschieben.`);
   for (const id of ['contours-outside', 'contours-inside']) {
     const group = $(id); group.replaceChildren();
@@ -88,14 +84,16 @@ function drawGeometry() {
       element('ellipse', { cx, cy, rx: Math.sqrt(2 * level / state.k1) * unit, ry: Math.sqrt(2 * level / state.k2) * unit, transform: `rotate(${-state.angle} ${cx} ${cy})` }, group);
     }
   }
+  move('centre-marker', solution.centre);
   move('optimum-marker', solution.optimum);
 }
-// The path grows with falling mu: from x0 up to the exact barrier optimum for the selected mu.
+// The path grows with falling mu: from the analytic centre up to the exact barrier optimum
+// for the selected mu.
 function draw() {
   if (!solution) return;
   const last = solution.points.length - 1, index = frameIndex();
   const { x, mu } = solution.points[index];
-  $('central-path').setAttribute('d', pathData([state.initial, ...solution.points.slice(0, index + 1).map(p => p.x)]));
+  $('central-path').setAttribute('d', pathData([solution.centre, ...solution.points.slice(0, index + 1).map(p => p.x)]));
   move('current-marker', x);
   const [cx, cy] = point(x); $('glow').setAttribute('cx', cx); $('glow').setAttribute('cy', cy);
   // The label moves to the left near the target so that it never covers the label of z.
@@ -116,8 +114,8 @@ function recalculate() {
   const index = solution ? frameIndex() : 0;
   try {
     q = matrix(state.k1, state.k2, state.angle);
-    solution = centralPath(state.vertices, q, state.z, state.initial);
-    solution.fractions = pathFractions([state.initial, ...solution.points.map(p => p.x)]);
+    solution = centralPath(state.vertices, q, state.z);
+    solution.fractions = pathFractions([solution.centre, ...solution.points.map(p => p.x)]);
     progress = index === 0 ? 0 : solution.fractions[index + 1];
     syncControls(); drawGeometry(); draw();
     $('experiment').dataset.ready = 'true';
@@ -155,16 +153,6 @@ function animate(time) {
 controls.forEach(([id, , set]) => $(id).addEventListener('input', () => {
   set(Number($(id).value)); $('feedback').textContent = ''; schedule();
 }));
-for (const [id, index] of [['initial-x', 0], ['initial-y', 1]]) {
-  $(id).addEventListener('change', () => {
-    const desired = [...state.initial]; desired[index] = $(id).valueAsNumber;
-    if (!validInitial(state.vertices, desired) || desired.some(v => Math.abs(v) > 3.6)) {
-      $('initial-feedback').textContent = 'Bitte einen Punkt im Viereck mit mindestens 0,05 Abstand zum Rand eingeben.';
-      syncControls(); return;
-    }
-    setPlaying(false); state.initial = desired; $('initial-feedback').textContent = ''; recalculate();
-  });
-}
 $('progress').addEventListener('input', () => {
   setPlaying(false); progress = $('progress').valueAsNumber / 1000; draw();
 });
@@ -176,27 +164,17 @@ $('preset').addEventListener('change', () => {
 });
 $('reset').addEventListener('click', () => {
   setPlaying(false); state = defaults(); progress = 0;
-  $('preset').value = 'edge'; $('feedback').textContent = ''; $('initial-feedback').textContent = ''; recalculate();
+  $('preset').value = 'edge'; $('feedback').textContent = ''; recalculate();
 });
 $('reset-polygon').addEventListener('click', () => {
-  if (!validInitial(vertices0, state.initial)) {
-    $('feedback').textContent = 'Der Anfangspunkt liegt außerhalb des ursprünglichen Vierecks. Verschiebe zuerst x₀ oder setze alles zurück.';
-    return;
-  }
-  state.vertices = structuredClone(vertices0); $('feedback').textContent = ''; recalculate();
+  setPlaying(false); state.vertices = structuredClone(vertices0); $('feedback').textContent = ''; recalculate();
 });
 
 function worldPosition(event) {
   const p = new DOMPoint(event.clientX, event.clientY).matrixTransform($('plot').getScreenCTM().inverse());
   return [(p.x - 42) / unit - bounds, bounds - (p.y - 24) / unit];
 }
-function modify(kind, index, delta, before, originalTarget, originalInitial) {
-  if (kind === 'initial') {
-    const desired = add(originalInitial, delta).map(v => Math.max(-3.6, Math.min(3.6, v)));
-    state.initial = safeInitialMove(state.vertices, originalInitial, desired);
-    $('initial-feedback').textContent = Math.hypot(...sub(desired, state.initial)) > 1e-4 ? 'x₀ bleibt mit etwas Abstand im Inneren.' : '';
-    return;
-  }
+function modify(kind, index, delta, before, originalTarget) {
   if (kind === 'target') {
     state.z = add(originalTarget, delta).map(v => Math.max(-3.6, Math.min(3.6, v)));
     return;
@@ -208,20 +186,20 @@ function modify(kind, index, delta, before, originalTarget, originalInitial) {
     const distance = delta[0] * a[0] + delta[1] * a[1];
     for (const i of [index, (index + 1) % 4]) desired[i] = add(before[i], scale(a, distance)).map(clamp);
   } else desired[index] = add(before[index], delta).map(clamp);
-  state.vertices = safePolygonMove(before, desired, state.initial);
+  state.vertices = safePolygonMove(before, desired);
   const limited = state.vertices.some((p, i) => Math.hypot(...sub(p, desired[i])) > 1e-4);
-  $('feedback').textContent = limited ? 'Die Grenze ist erreicht: Das Viereck bleibt konvex und x₀ strikt im Inneren. Der Anfangspunkt bleibt unverändert.' : '';
+  $('feedback').textContent = limited ? 'Die Grenze ist erreicht: Das Viereck bleibt konvex.' : '';
 }
 $('plot').addEventListener('pointerdown', event => {
   const handle = event.target.closest('.handle');
   if (!handle) return;
   event.preventDefault(); setPlaying(false); handle.focus({ preventScroll: true });
-  drag = { kind: handle.dataset.kind, index: Number(handle.dataset.index), start: worldPosition(event), vertices: structuredClone(state.vertices), target: [...state.z], initial: [...state.initial], id: event.pointerId, handle };
+  drag = { kind: handle.dataset.kind, index: Number(handle.dataset.index), start: worldPosition(event), vertices: structuredClone(state.vertices), target: [...state.z], id: event.pointerId, handle };
   handle.setPointerCapture(event.pointerId);
 });
 $('plot').addEventListener('pointermove', event => {
   if (!drag || drag.id !== event.pointerId) return;
-  modify(drag.kind, drag.index, sub(worldPosition(event), drag.start), drag.vertices, drag.target, drag.initial); schedule();
+  modify(drag.kind, drag.index, sub(worldPosition(event), drag.start), drag.vertices, drag.target); schedule();
 });
 function endDrag() { drag = null; }
 $('plot').addEventListener('pointerup', endDrag);
@@ -232,7 +210,7 @@ $('plot').addEventListener('keydown', event => {
   const directions = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
   if (!handle || !directions[event.key]) return;
   event.preventDefault(); setPlaying(false);
-  modify(handle.dataset.kind, Number(handle.dataset.index), scale(directions[event.key], event.shiftKey ? 0.02 : 0.12), state.vertices, state.z, state.initial);
+  modify(handle.dataset.kind, Number(handle.dataset.index), scale(directions[event.key], event.shiftKey ? 0.02 : 0.12), state.vertices, state.z);
   recalculate();
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) setPlaying(false); });

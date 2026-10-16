@@ -1,16 +1,16 @@
-import { dot, sub, add, scale, multiply, objective, constraints, slacks, validPolygon } from './math.mjs';
+import { dot, sub, add, scale, multiply, objective, constraints, slacks, centroid, validPolygon } from './math.mjs';
 
-// Phi(x, mu; x0) = f(x) - mu * sum log s_i(x) + mu^2/2 * |x - x0|^2.
-// Three scales: for large mu the proximal term keeps the solution at x0, for medium mu the
-// log barrier pushes it away from the edges, for small mu the objective leads it to the optimum.
-// Values, gradients and Hessians are scaled by 1/max(1, mu^2) so that one tolerance fits all mu.
-export function barrierDerivatives(x, x0, q, z, limits, mu) {
+// Phi(x, mu) = f(x) - mu * sum log s_i(x): the classical log-barrier problem. Its minimiser
+// x*(mu) traces the central path from the analytic centre (mu -> infinity) to the optimum
+// (mu -> 0). Values, gradients and Hessians are scaled by 1/max(1, mu) so that one Newton
+// tolerance fits all mu.
+export function barrierDerivatives(x, q, z, limits, mu) {
   const s = slacks(x, limits);
   if (s.some(v => !(v > 0))) return null;
-  const weight = 1 / Math.max(1, mu * mu);
-  const e = sub(x, z), qe = multiply(q, e), d = sub(x, x0);
-  let value = 0.5 * dot(e, qe) + 0.5 * mu * mu * dot(d, d);
-  const g = add(qe, scale(d, mu * mu)), h = [q[0] + mu * mu, q[1], q[2] + mu * mu];
+  const weight = 1 / Math.max(1, mu);
+  const e = sub(x, z), qe = multiply(q, e);
+  let value = 0.5 * dot(e, qe);
+  const g = [qe[0], qe[1]], h = [...q];
   limits.forEach(({ a }, i) => {
     value -= mu * Math.log(s[i]);
     const first = mu / s[i], second = first / s[i];
@@ -26,12 +26,13 @@ function newtonStep(h, g) {
   return [-(h[2] * g[0] - h[1] * g[1]) / determinant, -(h[0] * g[1] - h[1] * g[0]) / determinant];
 }
 
-// Damped Newton method; every iterate stays strictly inside the polygon.
-export function barrierOptimum(limits, q, z, x0, mu, guess = x0) {
+// Centering by a damped Newton method from any strictly feasible guess; every iterate stays
+// strictly inside the polygon. The result does not depend on the guess: the minimiser is unique.
+export function barrierOptimum(limits, q, z, mu, guess) {
   if (!(mu > 0) || !Number.isFinite(mu)) throw new Error('Ungültiger Barriereparameter.');
   let x = [...guess];
   for (let iteration = 0; iteration < 100; iteration++) {
-    const current = barrierDerivatives(x, x0, q, z, limits, mu);
+    const current = barrierDerivatives(x, q, z, limits, mu);
     if (!current) throw new Error('Der Startwert muss strikt zulässig sein.');
     const step = newtonStep(current.h, current.g), descent = dot(current.g, step);
     if (Math.max(Math.abs(current.g[0]), Math.abs(current.g[1])) < 1e-10 || -descent < 1e-20) return x;
@@ -43,7 +44,7 @@ export function barrierOptimum(limits, q, z, x0, mu, guess = x0) {
     let accepted = false;
     for (let backtrack = 0; backtrack < 60; backtrack++) {
       const trial = add(x, scale(step, alpha));
-      const next = barrierDerivatives(trial, x0, q, z, limits, mu);
+      const next = barrierDerivatives(trial, q, z, limits, mu);
       if (next && next.value <= current.value + 1e-4 * alpha * descent + 1e-14 * (1 + Math.abs(current.value))) {
         x = trial; accepted = true; break;
       }
@@ -53,6 +54,9 @@ export function barrierOptimum(limits, q, z, x0, mu, guess = x0) {
   }
   throw new Error('Das Barriereproblem ist noch nicht genau genug gelöst.');
 }
+
+// The analytic centre minimises the barrier B alone: f = 0 (q = 0) and mu = 1.
+export const analyticCentre = (limits, guess) => barrierOptimum(limits, [0, 0, 0], [0, 0], 1, guess);
 
 // Exact optimum of the quadratic program: z if feasible, otherwise the best of the four
 // vertices and of the minima of f along the four edges.
@@ -67,27 +71,24 @@ export function constrainedOptimum(vertices, q, z) {
   return candidates.reduce((best, x) => objective(x, q, z) < objective(best, q, z) ? x : best);
 }
 
-function validate(vertices, q, z, x0) {
+function validate(vertices, q, z) {
   if (!validPolygon(vertices)) throw new Error('Das Viereck muss strikt konvex bleiben.');
-  if (!Array.isArray(x0) || x0.length !== 2 || !x0.every(Number.isFinite)
-      || slacks(x0, constraints(vertices)).some(v => v <= 0)) {
-    throw new Error('Der Anfangspunkt muss strikt im Inneren liegen.');
-  }
   if (q.length !== 3 || !q.every(Number.isFinite) || !(q[0] > 0 && q[0] * q[2] > q[1] ** 2)
       || z.length !== 2 || !z.every(Number.isFinite)) throw new Error('Ungültige Modellparameter.');
 }
 
-// The central path for mu from 10^3 down to 10^-3, fifty values per decade.
-export function centralPath(vertices, q, z, x0, { count = 301 } = {}) {
-  validate(vertices, q, z, x0);
+// The central path for mu from 10^3 down to 10^-3, fifty values per decade. The first
+// centering starts in the analytic centre, every further one in the previous optimum.
+export function centralPath(vertices, q, z, { count = 301 } = {}) {
+  validate(vertices, q, z);
   if (!Number.isInteger(count) || count < 2) throw new Error('Mindestens zwei Werte für μ sind erforderlich.');
-  const limits = constraints(vertices);
-  let guess = [...x0];
+  const limits = constraints(vertices), centre = analyticCentre(limits, centroid(vertices));
+  let guess = centre;
   const points = Array.from({ length: count }, (_, i) => {
     const mu = 10 ** (3 - 6 * i / (count - 1));
-    const x = barrierOptimum(limits, q, z, x0, mu, guess);
+    const x = barrierOptimum(limits, q, z, mu, guess);
     guess = x;
     return { x, mu };
   });
-  return { points, limits, optimum: constrainedOptimum(vertices, q, z) };
+  return { points, limits, centre, optimum: constrainedOptimum(vertices, q, z) };
 }

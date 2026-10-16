@@ -9,12 +9,12 @@
 </head>
 <body>
 <main id="experiment">
-  <div class="experiment-heading"><span>ZENTRALPFAD / PARAMETER x₀</span><span id="live-state">Wird berechnet …</span></div>
+  <div class="experiment-heading"><span>ZENTRALPFAD / LOGARITHMISCHE BARRIERE</span><span id="live-state">Wird berechnet …</span></div>
   <div class="experiment-layout">
     <section class="drawing" aria-label="Zentralpfad und zulässiger Bereich">
       <svg id="plot" viewBox="0 0 680 680" role="group" aria-labelledby="plot-title plot-description">
-        <title id="plot-title">Zentralpfad vom Anfangspunkt x₀ zum Optimum</title>
-        <desc id="plot-description">Die orangefarbene Kurve ist der Zentralpfad: die Optima des Barriereproblems Φ(x, μ; x₀) von μ = 10³ bis zum gewählten μ. Sie beginnt im Anfangspunkt x₀, wächst mit fallendem μ und endet im Optimum x* des beschränkten Problems. Der orangefarbene Punkt x*(μ) ist das Optimum des Barriereproblems für das gewählte μ. Wird x₀ verändert, wird der Pfad bei unverändertem μ neu berechnet. Beim Verschieben der Grenzen bleibt x₀ fest. Ecken, Kantenmitten, Ziel und Anfangspunkt können gezogen oder mit Pfeiltasten verschoben werden.</desc>
+        <title id="plot-title">Zentralpfad vom analytischen Zentrum zum Optimum</title>
+        <desc id="plot-description">Die orangefarbene Kurve ist der Zentralpfad: die Optima des Barriereproblems Φ(x, μ) = f(x) − μ Σ log sᵢ(x) von μ = 10³ bis zum gewählten μ. Sie beginnt im analytischen Zentrum des Vierecks, wächst mit fallendem μ und endet im Optimum x* des beschränkten Problems. Der orangefarbene Punkt x*(μ) ist das Optimum des Barriereproblems für das gewählte μ. Werden Grenzen oder Ziel verändert, wird der Pfad bei unverändertem μ neu berechnet. Ecken, Kantenmitten und Ziel können gezogen oder mit Pfeiltasten verschoben werden.</desc>
         <defs>
           <clipPath id="plot-clip"><rect x="42" y="24" width="602" height="602" rx="2"/></clipPath>
           <clipPath id="feasible-clip"><polygon id="clip-polygon"/></clipPath>
@@ -27,15 +27,12 @@
           <g clip-path="url(#feasible-clip)"><g id="contours-inside" class="contours inside"></g></g>
           <g id="edges"></g>
           <path id="central-path"/>
+          <g id="centre-marker"><circle r="6.5"/><text x="12" y="19">x<tspan class="sub" dy="4">a</tspan></text></g>
           <g id="optimum-marker"><rect x="-5.5" y="-5.5" width="11" height="11" transform="rotate(45)"/></g>
           <circle id="glow" r="24" fill="url(#point-glow)"/>
           <g id="current-marker"><circle class="point-outline" r="8"/><circle r="4.5"/><text id="current-label" x="13" y="-13">x*(μ)</text></g>
         </g>
         <g id="handles"></g>
-        <g id="initial-handle" class="handle initial" role="button" tabindex="0" aria-label="Anfangspunkt x₀ verschieben" data-kind="initial">
-          <circle class="hit-area" r="20"/><rect class="initial-square" x="-8" y="-8" width="16" height="16" rx="2"/>
-          <text id="initial-label" x="-14" y="-14" text-anchor="end">x₀</text>
-        </g>
         <g id="target-handle" class="handle target" role="button" tabindex="0" aria-label="Zielpunkt z verschieben" data-kind="target">
           <circle class="hit-area" r="20"/><circle class="target-ring" r="10"/>
           <path d="M-6,0 H6 M0,-6 V6"/><text x="15" y="-12">z</text>
@@ -44,15 +41,15 @@
       </svg>
       <div class="legend" aria-label="Legende">
         <span><i class="key area"></i>Zulässiger Bereich</span><span><i class="key contour"></i>Höhenlinien von f</span>
-        <span><i class="key path"></i>Zentralpfad von x₀ bis zum aktuellen μ</span><span><i class="key point"></i>Optimum x*(μ) des Barriereproblems</span>
-        <span><i class="key optimum"></i>Optimum x*</span><span><i class="key initial"></i>Anfangspunkt x₀</span>
+        <span><i class="key path"></i>Zentralpfad von x<sub>a</sub> bis zum aktuellen μ</span><span><i class="key point"></i>Optimum x*(μ) des Barriereproblems</span>
+        <span><i class="key centre"></i>Analytisches Zentrum x<sub>a</sub></span><span><i class="key optimum"></i>Optimum x*</span>
       </div>
     </section>
     <section class="playback" aria-label="Animation des Barriereparameters">
       <div class="playback-top"><div class="playback-buttons"><button id="play" type="button" aria-pressed="false">▶ Abspielen</button><button id="rewind" type="button" title="Zurück zu μ = 10³">↤ Anfang</button></div><label for="speed">Tempo <select id="speed"><option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label></div>
       <label class="range-label" for="progress">Fortschritt entlang des Zentralpfads <output id="mu-value">—</output></label>
       <input id="progress" type="range" min="0" max="1000" step="1" value="0" aria-describedby="progress-help">
-      <div class="scale-labels" id="progress-help"><span>μ = 10³ · Start in x₀</span><span>μ = 10⁻³ · Optimum</span></div>
+      <div class="scale-labels" id="progress-help"><span>μ = 10³ · analytisches Zentrum</span><span>μ = 10⁻³ · Optimum</span></div>
     </section>
     <div class="readouts" aria-label="Aktuelle Lösung">
       <div><span>Position x*(μ)</span><output id="position-value">—</output></div>
@@ -75,23 +72,15 @@
         <label class="range-label" for="angle">Drehung θ <output id="angle-value">−25°</output></label>
         <input id="angle" type="range" min="-90" max="90" step="1" value="-25">
       </fieldset>
-      <fieldset><legend>02 / Anfangspunkt x₀</legend>
-        <div class="initial-inputs">
-          <label for="initial-x">x₀,₁<input id="initial-x" type="number" min="-3.6" max="3.6" step="0.001" value="-1" aria-describedby="initial-help initial-feedback"></label>
-          <label for="initial-y">x₀,₂<input id="initial-y" type="number" min="-3.6" max="3.6" step="0.001" value="-0.8" aria-describedby="initial-help initial-feedback"></label>
-        </div>
-        <p id="initial-help" class="hint">Der Zentralpfad beginnt in x₀. Eine Änderung von x₀ berechnet ihn neu; μ bleibt erhalten. Beim Verschieben der Grenzen bleibt x₀ fest.</p>
-        <p id="initial-feedback" class="hint" role="status" aria-live="polite"></p>
-      </fieldset>
-      <fieldset><legend>03 / Grenzen</legend>
-        <p class="hint">Ecken oder Kantenmitten ziehen. Das Viereck bleibt konvex und hält mindestens 0,05 Abstand zu x₀.</p>
+      <fieldset><legend>02 / Grenzen</legend>
+        <p class="hint">Ecken oder Kantenmitten ziehen. Das Viereck bleibt konvex; das analytische Zentrum und der Pfad folgen den Grenzen.</p>
         <p class="hint keyboard-hint">Mit Tab auswählen, mit Pfeiltasten verschieben. Shift für kleine Schritte.</p>
         <button id="reset-polygon" type="button">Viereck zurücksetzen</button>
       </fieldset>
       <button id="reset" class="reset-all" type="button">Alles zurücksetzen ↺</button>
     </section>
   </div>
-  <p class="experiment-note">Zentralpfad: x*(μ; x₀) = argmin f(x) − μ Σᵢ log sᵢ(x) + (μ²/2)‖x − x₀‖². Für großes μ hält der Proximalterm die Lösung bei x₀, für mittleres μ drückt die Barriere sie von den Kanten weg, für kleines μ führt die Zielfunktion sie ins Optimum x*. Für 301 Werte von μ zwischen 10³ und 10⁻³ wird das Problem exakt gelöst; zwischen ihnen wird nicht interpoliert. Der Regler läuft gleichmäßig entlang des Pfads, μ ändert sich dabei ungleichmäßig.</p>
+  <p class="experiment-note">Zentralpfad: x*(μ) = argmin f(x) − μ Σᵢ log sᵢ(x). Für μ → ∞ liegt die Lösung im analytischen Zentrum x<sub>a</sub>, in dem sich die Abstoßung aller Kanten aufhebt; für μ → 0 im Optimum x*. Für 301 Werte von μ zwischen 10³ und 10⁻³ wird das Barriereproblem exakt gelöst; zwischen ihnen wird nicht interpoliert. Der Regler läuft gleichmäßig entlang des Pfads, μ ändert sich dabei ungleichmäßig.</p>
   <p id="feedback" role="status" aria-live="polite"></p>
   <noscript>Für die Animation ist JavaScript erforderlich. Die mathematische Erklärung steht im Beitrag unterhalb der Abbildung.</noscript>
 </main>

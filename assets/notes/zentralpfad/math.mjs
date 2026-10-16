@@ -32,25 +32,6 @@ export const slacks = (x, limits) => limits.map(({ a, b }) => b - dot(a, x));
 export const objective = (x, q, z) => 0.5 * dot(sub(x, z), multiply(q, sub(x, z)));
 export const centroid = vertices => scale(vertices.reduce(add, [0, 0]), 1 / vertices.length);
 
-// A small clearance makes the fixed initial point practical to drag and keeps log(s) finite.
-export const initialClearance = 0.05;
-export const validInitial = (vertices, x) => x.length === 2 && x.every(Number.isFinite)
-  && slacks(x, constraints(vertices)).every(s => s >= initialClearance);
-
-export function safeInitialMove(vertices, before, desired) {
-  if (!validInitial(vertices, before)) throw new Error('Der Initialpunkt ist nicht zulässig.');
-  if (desired.length !== 2 || !desired.every(Number.isFinite)) throw new Error('Die Koordinaten müssen endlich sein.');
-  if (validInitial(vertices, desired)) return [...desired];
-  const limits = constraints(vertices), delta = sub(desired, before);
-  const distances = slacks(before, limits);
-  let fraction = 1;
-  limits.forEach(({ a }, i) => {
-    const decrease = dot(a, delta);
-    if (decrease > 0) fraction = Math.min(fraction, (distances[i] - initialClearance) / decrease);
-  });
-  return add(before, scale(delta, Math.max(0, fraction) * 0.999999));
-}
-
 // Share of the total length of a polyline reached at each node; uniform if the polyline has no length.
 export function pathFractions(nodes) {
   let total = 0;
@@ -65,15 +46,14 @@ export function indexAt(fractions, progress) {
 }
 
 // Restrict a drag to convex, non-degenerate quadrilaterals instead of changing vertex order.
-export function safePolygonMove(before, desired, fixedInitial = null) {
-  const valid = vertices => validPolygon(vertices) && (!fixedInitial || validInitial(vertices, fixedInitial));
-  if (!valid(before)) throw new Error('Das Ausgangsviereck oder der Initialpunkt ist nicht zulässig.');
-  if (valid(desired)) return desired;
+export function safePolygonMove(before, desired) {
+  if (!validPolygon(before)) throw new Error('Das Ausgangsviereck ist nicht zulässig.');
+  if (validPolygon(desired)) return desired;
   let low = 0, high = 1;
   for (let i = 0; i < 25; i++) {
     const t = (low + high) / 2;
     const trial = before.map((p, j) => add(p, scale(sub(desired[j], p), t)));
-    if (valid(trial)) low = t; else high = t;
+    if (validPolygon(trial)) low = t; else high = t;
   }
   return before.map((p, j) => add(p, scale(sub(desired[j], p), low)));
 }
