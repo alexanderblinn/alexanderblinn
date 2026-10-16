@@ -167,7 +167,7 @@ public/img/projects/msci/           Diagramme, Bilder und Downloads
 | `content/about.md` | Profiltext. |
 | `templates/home.html` | Startseite. |
 | `templates/base.html` | Gemeinsames Seitenlayout. |
-| `site.json` | Name, Domain, Beschreibung und GitHub-Link. |
+| `site.json` | Name, Domain, Beschreibung, GitHub-Link und Buy-me-a-coffee-Link (`support`). |
 | `assets/site/` | Gemeinsames CSS und Favicon. |
 | `assets/projects/<Slug>/` | CSS und JavaScript eines Projekts. |
 | `assets/notes/<Slug>/` | CSS und JavaScript einer Notiz. |
@@ -185,5 +185,7 @@ public/img/projects/msci/           Diagramme, Bilder und Downloads
 [.github/workflows/pages.yml](../.github/workflows/pages.yml) baut und veröffentlicht `dist/` bei einem Push auf `main`. Ein manueller Start ist unter **Actions → Publish website → Run workflow** möglich.
 
 GitHub Pages verwendet unter **Settings → Pages → Build and deployment → Source** die Einstellung **GitHub Actions**. Die eigene Domain wird unter **Custom domain** eingerichtet; die DNS-Einträge müssen auf GitHub Pages zeigen. Der Build übernimmt die `CNAME`-Datei für `alexanderblinn.com`.
+
+Unter jedem Beitrag in `notes/` und `projects/` steht eine Fußzeile mit dem Link zur Übersicht und dem Buy-me-a-coffee-Knopf. `scripts/build.py` erzeugt sie einmal zentral aus dem Eintrag `support` in `site.json`; fehlt der Eintrag, entfällt der Knopf. Das Logo liegt in `assets/site/buymeacoffee.svg`.
 
 Alte Diagramm-URLs stehen als Weiterleitungen in `site.json` unter `redirects`. Der Build erzeugt dafür kleine HTML-Seiten ausschließlich in `dist/`; die eigentlichen Diagramme bleiben nur einmal unter ihrem neuen Pfad liegen. Nach Änderungen an `scripts/build.py` den lokalen Vorschau-Server neu starten.

@@ -261,7 +261,13 @@ def build(root=ROOT):
         body += (f'<p class="meta">{meta}</p>' if meta else '') + tags_html(item['tags']) + '</header>'
         body += '<div class="article-body">' + item['body'] + '</div></article>'
         if section in SECTIONS:
-            body += f'<p class="backlink"><a href="/{section}/">← All {section_title}</a></p>'
+            body += f'<div class="article-footer"><p class="backlink"><a href="/{section}/">← All {section_title}</a></p>'
+            if config.get('support'):
+                body += ('<p class="support">Gefällt dir der Beitrag? '
+                         f'<a class="support-link" href="{escape(config["support"], quote=True)}" target="_blank" rel="noopener noreferrer" '
+                         'title="Unterstütze mich auf Buy Me a Coffee" aria-label="Unterstütze mich auf Buy Me a Coffee">'
+                         '<img src="/assets/site/buymeacoffee.svg" alt="" width="18" height="18"><span>Buy me a coffee</span></a></p>')
+            body += '</div>'
         page(item['url'], item['title'], body, section, item.get('description'), wide=item.get('layout') == 'wide')
     page('/404.html', 'Seite nicht gefunden', '<p class="eyebrow">404 / Seite nicht gefunden</p><h1>Hier ist noch nichts.</h1><p>Vielleicht wurde der Beitrag verschoben. Über <a href="/">Start</a> oder <a href="/notes/">Notes</a> geht es weiter.</p>')
 

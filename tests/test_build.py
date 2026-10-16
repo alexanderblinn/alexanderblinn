@@ -168,6 +168,20 @@ $$
         self.assertEqual(parser.math_count, 0)
         self.assertIn("$$\nx^2\n$$", "".join(parser.code_text))
 
+    def test_notes_and_projects_end_with_support_link(self):
+        self.contribution("notes", "support-note")
+        self.contribution("projects", "support-project")
+        self.build()
+        support = json.loads((self.root / "site.json").read_text(encoding="utf-8"))["support"]
+        for page in ("notes/support-note.html", "projects/support-project.html"):
+            with self.subTest(page=page):
+                html = (self.dist / page).read_text(encoding="utf-8")
+                self.assertIn(f'class="support-link" href="{support}"', html)
+                self.assertLess(html.index("article-body"), html.index("support-link"))
+        for page in ("index.html", "about.html", "notes/index.html", "projects/index.html"):
+            with self.subTest(page=page):
+                self.assertNotIn("support-link", (self.dist / page).read_text(encoding="utf-8"))
+
     def test_all_local_page_asset_and_feed_links_exist(self):
         self.build()
         origin = json.loads((self.root / "site.json").read_text(encoding="utf-8"))["url"]
