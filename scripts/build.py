@@ -29,10 +29,52 @@ SECTIONS = {
 }
 
 
+# Inline formulas $...$ as in Pandoc: no space just inside either dollar and no digit right
+# after the closing one, so "5 $ bis 10 $" stays text; \$ is a literal dollar. Code spans
+# are left alone. Running as a preprocessor also reaches raw HTML such as figure captions.
+# An opening bracket before and punctuation after a formula stay on the same line with it.
+INLINE_MATH = re.compile(r"(\(?)(?<![\\$])\$(?=[^\s$])((?:\\.|[^\\$])+?)(?<=\S)\$(?![$\d])([.,;:!?)\]]*)")
+CODE_SPAN = re.compile(r"(`+).+?(?<!`)\1(?!`)")
+LIST_ITEM = re.compile(r" {0,3}(?:[*+-]|\d+[.)])\s")
+
+# latex2mathml writes TeX's spacing rules only partly into MathML, and Chromium (MathML Core)
+# ignores mathvariant="bold". Restored here: a thin space between a function name such as
+# log and its argument or a preceding factor, ∞ as an ordinary symbol instead of an operator
+# (no gap in "μ → ∞" or "+∞"), "/" without operator spacing, bold as Unicode bold letters.
+THIN_SPACE = '<mspace width="0.1667em"/>'
+FUNCTION_NAME = r"<mi>(?:cos|det|exp|ln|log|sin|tan)</mi>"
+BOLD = {**{str(d): chr(0x1D7CE + d) for d in range(10)},
+        **{chr(65 + i): chr(0x1D400 + i) for i in range(26)},
+        **{chr(97 + i): chr(0x1D41A + i) for i in range(26)}}
+
+
+def mathml(latex, display="inline"):
+    html = convert(latex, display=display)
+    html = re.sub(rf"(</m(?:i|n|sub|sup)>)({FUNCTION_NAME})", rf"\1{THIN_SPACE}\2", html)
+    html = re.sub(rf"({FUNCTION_NAME})(?=<m(?:i|n|sub|sup|subsup|sqrt|frac|row)\b)", rf"\1{THIN_SPACE}", html)
+    html = html.replace("<mo>&#x0221E;</mo>", "<mi>&#x0221E;</mi>")
+    html = html.replace("<mo>&#x0002F;</mo>", '<mo lspace="0" rspace="0">&#x0002F;</mo>')
+    return re.sub(r'<(mi|mn) mathvariant="bold">([0-9A-Za-z])</\1>', lambda m: f"<{m[1]}>{BOLD[m[2]]}</{m[1]}>", html)
+
+
 class MathPreprocessor(Preprocessor):
+    def inline(self, line):
+        def stash(match):
+            opening, formula, punctuation = match.groups()
+            return self.md.htmlStash.store(f'<span class="math-inline">{opening}{mathml(formula)}{punctuation}</span>')
+
+        parts, start = [], 0
+        for code in CODE_SPAN.finditer(line):
+            parts += [INLINE_MATH.sub(stash, line[start:code.start()]), code[0]]
+            start = code.end()
+        return "".join(parts) + INLINE_MATH.sub(stash, line[start:])
+
     def run(self, lines):
         result, formula = [], None
         fence = None
+        # An indented code block starts after a blank line, except inside a list, where the
+        # same indentation continues the list item.
+        blank, in_list, indented_code = True, False, False
         for line in lines:
             marker = re.match(r"^\s{0,3}(`{3,}|~{3,})", line)
             if marker and formula is None:
@@ -48,13 +90,23 @@ class MathPreprocessor(Preprocessor):
                 if formula is None:
                     formula = []
                 else:
-                    html = '<div class="math-block">' + convert("\n".join(formula), display="block") + '</div>'
+                    html = '<div class="math-block">' + mathml("\n".join(formula), display="block") + '</div>'
                     result.extend(["", self.md.htmlStash.store(html), ""])
                     formula = None
             elif formula is not None:
                 formula.append(line)
-            else:
+            elif not line.strip():
+                blank = True
                 result.append(line)
+            else:
+                indented = re.match(r"(?: {4}|\t)", line) is not None
+                if LIST_ITEM.match(line):
+                    in_list = True
+                elif not indented and blank:
+                    in_list = False
+                indented_code = indented and not in_list and (blank or indented_code)
+                blank = False
+                result.append(line if indented_code else self.inline(line))
         if formula is not None:
             raise ValueError("Nicht abgeschlossener $$-Formelblock")
         return result
@@ -62,6 +114,7 @@ class MathPreprocessor(Preprocessor):
 
 class MathExtension(Extension):
     def extendMarkdown(self, md):
+        md.ESCAPED_CHARS.append("$")
         md.preprocessors.register(MathPreprocessor(md), "journal_math", 27)
 
 

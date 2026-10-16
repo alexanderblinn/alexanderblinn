@@ -19,10 +19,11 @@ const text = (x, y, content, attributes = '') => `<text x="${n(x)}" y="${n(y)}" 
 const line = (x1, y1, x2, y2, attributes) => `<line x1="${n(x1)}" y1="${n(y1)}" x2="${n(x2)}" y2="${n(y2)}" ${attributes}/>`;
 const polyline = (points, attributes) => `<polyline points="${points.map(p => `${n(p[0])},${n(p[1])}`).join(' ')}" fill="none" ${attributes}/>`;
 const subscriptA = 'x<tspan dy="4" font-size="10">a</tspan>';
+const subscriptRef = 'x<tspan dy="4" font-size="10">ref</tspan>';
 
 // Default problem of the demo and the Newton start used in the note's code example.
 const vertices = [[-2.6, -1.9], [2.1, -1.7], [2.6, 2.1], [-1.8, 2.4]];
-const q = matrix(1, 3, -25), z = [2.8, 1.2], x0 = [-1, -0.8];
+const q = matrix(1, 3, -25), xRef = [2.8, 1.2], x0 = [-1, -0.8];
 const limits = constraints(vertices);
 
 // Damped Newton iterates of one centering, for the figure of the barrier method.
@@ -30,7 +31,7 @@ function newtonIterates(mu, start) {
   const iterates = [start];
   let x = start;
   for (let iteration = 0; iteration < 60; iteration++) {
-    const current = barrierDerivatives(x, q, z, limits, mu);
+    const current = barrierDerivatives(x, q, xRef, limits, mu);
     const det = current.h[0] * current.h[2] - current.h[1] * current.h[1];
     const step = [-(current.h[2] * current.g[0] - current.h[1] * current.g[1]) / det, -(current.h[0] * current.g[1] - current.h[1] * current.g[0]) / det];
     const descent = dot(current.g, step);
@@ -38,7 +39,7 @@ function newtonIterates(mu, start) {
     let alpha = 1;
     limits.forEach(({ a }, i) => { const toward = dot(a, step); if (toward > 0) alpha = Math.min(alpha, 0.995 * current.s[i] / toward); });
     for (let backtrack = 0; backtrack < 60; backtrack++) {
-      const trial = add(x, scale(step, alpha)), next = barrierDerivatives(trial, q, z, limits, mu);
+      const trial = add(x, scale(step, alpha)), next = barrierDerivatives(trial, q, xRef, limits, mu);
       if (next && next.value <= current.value + 1e-4 * alpha * descent + 1e-14 * (1 + Math.abs(current.value))) { x = trial; break; }
       alpha *= 0.5;
     }
@@ -78,7 +79,7 @@ function barrierFigure() {
   body += line(legendX, ly - 4, legendX + 26, ly - 4, `stroke="${colour.ink}" stroke-width="1.6" stroke-dasharray="5 4"`);
   body += text(legendX + 34, ly, 'Indikator');
   body += text(legendX + 34, ly + 16, 'I(s)', `fill="${colour.muted}" font-size="12"`);
-  body += text(W - right, H - 8, 'Schlupf s = b − aᵀx', `text-anchor="end" fill="${colour.muted}"`);
+  body += text(W - right, H - 8, 'Schlupf s = bᵢ − aᵢᵀx', `text-anchor="end" fill="${colour.muted}"`);
   body += text(left, top - 8, '−μ log s', `fill="${colour.muted}"`);
   return svg(W, H, body);
 }
@@ -103,18 +104,18 @@ function methodFigure() {
   body += `<clipPath id="plot"><rect x="${left}" y="${top}" width="${n(W - left - right)}" height="${n((yMax - yMin) * unit)}"/></clipPath>`;
   body += `<g clip-path="url(#plot)">`;
   body += `<polygon points="${polygon}" fill="${colour.area}" fill-opacity="0.8" stroke="${colour.green}" stroke-width="1.8"/>`;
-  const [cx, cy] = point(z);
+  const [cx, cy] = point(xRef);
   for (const level of [0.15, 0.35, 0.7, 1.3, 2.4, 4.2, 7, 11, 17, 25, 38, 56]) {
     body += `<ellipse cx="${n(cx)}" cy="${n(cy)}" rx="${n(Math.sqrt(2 * level / 1) * unit)}" ry="${n(Math.sqrt(2 * level / 3) * unit)}" transform="rotate(25 ${n(cx)} ${n(cy)})" fill="none" stroke="${colour.contour}" stroke-width="1" opacity="0.3"/>`;
   }
-  const path = centralPath(vertices, q, z);
+  const path = centralPath(vertices, q, xRef);
   body += polyline([path.centre, ...path.points.map(p => p.x)].map(point), `stroke="${colour.orange}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"`);
   // Barrier method: Newton iterates of the first centering from x0, then centres for kappa = 10.
   const iterates = newtonIterates(100, x0);
   body += polyline(iterates.map(point), `stroke="${colour.grey}" stroke-width="1.6" stroke-dasharray="3 4"`);
   iterates.slice(1, -1).forEach(p => { const [ix, iy] = point(p); body += `<circle cx="${n(ix)}" cy="${n(iy)}" r="3" fill="${colour.grey}"/>`; });
   let guess = iterates.at(-1);
-  const centres = [100, 10, 1, 0.1, 0.01, 0.001].map(mu => { guess = barrierOptimum(limits, q, z, mu, guess); return { mu, x: guess }; });
+  const centres = [100, 10, 1, 0.1, 0.01, 0.001].map(mu => { guess = barrierOptimum(limits, q, xRef, mu, guess); return { mu, x: guess }; });
   centres.forEach(({ mu, x }, i) => {
     const [kx, ky] = point(x);
     body += `<circle cx="${n(kx)}" cy="${n(ky)}" r="5.5" fill="${colour.paper}" stroke="${colour.blue}" stroke-width="2"/>`;
@@ -132,7 +133,7 @@ function methodFigure() {
   body += text(ox, oy + 22, 'x*', `text-anchor="middle" font-weight="bold"`);
   body += `<circle cx="${n(cx)}" cy="${n(cy)}" r="9" fill="${colour.paper}" stroke="${colour.target}" stroke-width="1.7"/>`;
   body += `<path d="M${n(cx - 5)},${n(cy)} H${n(cx + 5)} M${n(cx)},${n(cy - 5)} V${n(cy + 5)}" stroke="${colour.target}" stroke-width="1.7"/>`;
-  body += text(cx + 14, cy - 10, 'z', `fill="${colour.target}" font-weight="bold"`);
+  body += text(cx + 14, cy - 10, subscriptRef, `fill="${colour.target}" font-weight="bold"`);
   body += '</g>';
   body += text(X(xMax), Y(yMin) + 36, 'x₁', `text-anchor="end" fill="${colour.muted}"`);
   body += text(left, top - 4, 'x₂', `fill="${colour.muted}"`);
@@ -144,7 +145,7 @@ function methodFigure() {
   body += `<rect x="${col2 + 8}" y="${ly + 16}" width="12" height="12" rx="2" fill="none" stroke="${colour.purple}" stroke-width="2"/>` + text(col2 + 36, ly + 27, 'Startpunkt x₀', `fill="${colour.muted}"`);
   body += `<circle cx="${left + 14}" cy="${ly + 49}" r="5" fill="${colour.blue}"/>` + text(left + 36, ly + 54, `analytisches Zentrum ${subscriptA}`, `fill="${colour.muted}"`);
   body += `<rect x="-4.5" y="-4.5" width="9" height="9" transform="translate(${col2 + 14} ${ly + 49}) rotate(45)" fill="${colour.ink}"/>` + text(col2 + 36, ly + 54, 'Optimum x*', `fill="${colour.muted}"`);
-  body += `<circle cx="${left + 14}" cy="${ly + 76}" r="6" fill="none" stroke="${colour.target}" stroke-width="1.7"/>` + text(left + 36, ly + 81, 'Ziel z', `fill="${colour.muted}"`);
+  body += `<circle cx="${left + 14}" cy="${ly + 76}" r="6" fill="none" stroke="${colour.target}" stroke-width="1.7"/>` + text(left + 36, ly + 81, `Ziel ${subscriptRef}`, `fill="${colour.muted}"`);
   return svg(W, H, body);
 }
 
@@ -164,12 +165,12 @@ function distancesFigure() {
     body += line(X(10 ** e), top, X(10 ** e), Y(10 ** vMin), `stroke="${e === 0 ? colour.line : colour.grid}" stroke-width="${e === 0 ? 1 : 0.75}"`);
     body += text(X(10 ** e), H - bottom + 18, `10${superscript(e)}`, `text-anchor="middle" fill="${colour.muted}" font-size="12"`);
   }
-  const path = centralPath(vertices, q, z);
-  const best = objective(path.optimum, q, z);
+  const path = centralPath(vertices, q, xRef);
+  const best = objective(path.optimum, q, xRef);
   const series = [
     [`‖x*(μ) − ${subscriptA}‖`, `stroke="${colour.orange}" stroke-width="2.4"`, p => Math.hypot(...sub(p.x, path.centre))],
     ['‖x*(μ) − x*‖', `stroke="${colour.ink}" stroke-width="2.4"`, p => Math.hypot(...sub(p.x, path.optimum))],
-    ['f(x*(μ)) − f(x*)', `stroke="${colour.blue}" stroke-width="2.4"`, p => objective(p.x, q, z) - best],
+    ['f(x*(μ)) − f(x*)', `stroke="${colour.blue}" stroke-width="2.4"`, p => objective(p.x, q, xRef) - best],
     ['Dualitätslücke mμ', `stroke="${colour.blue}" stroke-width="1.8" stroke-dasharray="6 4"`, p => 4 * p.mu]
   ];
   body += `<clipPath id="area"><rect x="${left}" y="${top}" width="${n(W - left - right)}" height="${n(H - top - bottom)}"/></clipPath><g clip-path="url(#area)">`;

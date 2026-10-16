@@ -76,7 +76,7 @@ function drawGeometry() {
     $(`vertex-${i}`).setAttribute('aria-label', `Ecke ${'ABCD'[i]}: ${p[0].toFixed(2)}, ${p[1].toFixed(2)}. Mit Pfeiltasten verschieben.`);
   });
   move('target-handle', state.z);
-  $('target-handle').setAttribute('aria-label', `Zielpunkt z: ${state.z[0].toFixed(2)}, ${state.z[1].toFixed(2)}. Mit Pfeiltasten verschieben.`);
+  $('target-handle').setAttribute('aria-label', `Zielpunkt x_ref: ${state.z[0].toFixed(2)}, ${state.z[1].toFixed(2)}. Mit Pfeiltasten verschieben.`);
   for (const id of ['contours-outside', 'contours-inside']) {
     const group = $(id); group.replaceChildren();
     const [cx, cy] = point(state.z);
@@ -96,7 +96,7 @@ function draw() {
   $('central-path').setAttribute('d', pathData([solution.centre, ...solution.points.slice(0, index + 1).map(p => p.x)]));
   move('current-marker', x);
   const [cx, cy] = point(x); $('glow').setAttribute('cx', cx); $('glow').setAttribute('cy', cy);
-  // The label moves to the left near the target so that it never covers the label of z.
+  // The label moves to the left near the target so that it never covers the label of x_ref.
   const textToLeft = x[0] > 2.5 || Math.hypot(...sub(x, state.z)) < 1.1;
   $('current-label').setAttribute('x', textToLeft ? -13 : 13);
   $('current-label').setAttribute('text-anchor', textToLeft ? 'end' : 'start');

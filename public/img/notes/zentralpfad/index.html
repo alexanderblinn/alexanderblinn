@@ -33,16 +33,16 @@
           <g id="current-marker"><circle class="point-outline" r="8"/><circle r="4.5"/><text id="current-label" x="13" y="-13">x*(μ)</text></g>
         </g>
         <g id="handles"></g>
-        <g id="target-handle" class="handle target" role="button" tabindex="0" aria-label="Zielpunkt z verschieben" data-kind="target">
+        <g id="target-handle" class="handle target" role="button" tabindex="0" aria-label="Zielpunkt x_ref verschieben" data-kind="target">
           <circle class="hit-area" r="20"/><circle class="target-ring" r="10"/>
-          <path d="M-6,0 H6 M0,-6 V6"/><text x="15" y="-12">z</text>
+          <path d="M-6,0 H6 M0,-6 V6"/><text x="15" y="-12">x<tspan class="sub" dy="4">ref</tspan></text>
         </g>
         <text x="644" y="661" class="axis-label" text-anchor="end">x₁</text><text x="8" y="16" class="axis-label">x₂</text>
       </svg>
       <div class="legend" aria-label="Legende">
         <span><i class="key area"></i>Zulässiger Bereich</span><span><i class="key contour"></i>Höhenlinien von f</span>
-        <span><i class="key path"></i>Zentralpfad von x<sub>a</sub> bis zum aktuellen μ</span><span><i class="key point"></i>Optimum x*(μ) des Barriereproblems</span>
-        <span><i class="key centre"></i>Analytisches Zentrum x<sub>a</sub></span><span><i class="key optimum"></i>Optimum x*</span>
+        <span><i class="key path"></i><span>Zentralpfad von x<sub>a</sub> bis zum aktuellen μ</span></span><span><i class="key point"></i>Optimum x*(μ) des Barriereproblems</span>
+        <span><i class="key centre"></i><span>Analytisches Zentrum x<sub>a</sub></span></span><span><i class="key optimum"></i>Optimum x*</span>
       </div>
     </section>
     <section class="playback" aria-label="Animation des Barriereparameters">
@@ -60,10 +60,10 @@
     <section class="controls" aria-label="Parameter des Optimierungsproblems">
       <div class="preset-row"><label for="preset">Zielposition</label><select id="preset"><option value="edge">Rechts außerhalb</option><option value="corner">Rechts oben außerhalb</option><option value="inside">Im ursprünglichen Viereck</option></select></div>
       <fieldset><legend>01 / Zielfunktion</legend>
-        <p class="formula">f(x) = ½ (x − z)ᵀ Q (x − z)</p>
-        <label class="range-label" for="target-x">Zielpunkt z₁ <output id="target-x-value">2.8</output></label>
+        <p class="formula">f(x) = ½ (x − x<sub>ref</sub>)ᵀ Q (x − x<sub>ref</sub>)</p>
+        <label class="range-label" for="target-x"><span>Zielpunkt x<sub>ref,1</sub></span> <output id="target-x-value">2.8</output></label>
         <input id="target-x" type="range" min="-3.6" max="3.6" step="0.02" value="2.8">
-        <label class="range-label" for="target-y">Zielpunkt z₂ <output id="target-y-value">1.2</output></label>
+        <label class="range-label" for="target-y"><span>Zielpunkt x<sub>ref,2</sub></span> <output id="target-y-value">1.2</output></label>
         <input id="target-y" type="range" min="-3.6" max="3.6" step="0.02" value="1.2">
         <label class="range-label" for="curvature-one">Krümmung q₁ <output id="curvature-one-value">1.0</output></label>
         <input id="curvature-one" type="range" min="0.4" max="6" step="0.1" value="1">
@@ -73,14 +73,11 @@
         <input id="angle" type="range" min="-90" max="90" step="1" value="-25">
       </fieldset>
       <fieldset><legend>02 / Grenzen</legend>
-        <p class="hint">Ecken oder Kantenmitten ziehen. Das Viereck bleibt konvex; das analytische Zentrum und der Pfad folgen den Grenzen.</p>
-        <p class="hint keyboard-hint">Mit Tab auswählen, mit Pfeiltasten verschieben. Shift für kleine Schritte.</p>
         <button id="reset-polygon" type="button">Viereck zurücksetzen</button>
       </fieldset>
       <button id="reset" class="reset-all" type="button">Alles zurücksetzen ↺</button>
     </section>
   </div>
-  <p class="experiment-note">Zentralpfad: x*(μ) = argmin f(x) − μ Σᵢ log sᵢ(x). Für μ → ∞ liegt die Lösung im analytischen Zentrum x<sub>a</sub>, in dem sich die Abstoßung aller Kanten aufhebt; für μ → 0 im Optimum x*. Für 301 Werte von μ zwischen 10³ und 10⁻³ wird das Barriereproblem exakt gelöst; zwischen ihnen wird nicht interpoliert. Der Regler läuft gleichmäßig entlang des Pfads, μ ändert sich dabei ungleichmäßig.</p>
   <p id="feedback" role="status" aria-live="polite"></p>
   <noscript>Für die Animation ist JavaScript erforderlich. Die mathematische Erklärung steht im Beitrag unterhalb der Abbildung.</noscript>
 </main>

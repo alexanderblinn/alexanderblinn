@@ -168,6 +168,31 @@ $$
         self.assertEqual(parser.math_count, 0)
         self.assertIn("$$\nx^2\n$$", "".join(parser.code_text))
 
+    def test_inline_math_renders_in_text_and_raw_html_but_not_in_code(self):
+        self.contribution("notes", "inline-math-regression", body=r"""
+Für $\mu\to\infty$ gilt $x^\star(\mu)\to x_\mathrm{a}$, und $a*b$ bleibt *kursiv* frei.
+
+<p class="figure-description"><span>Ziel $x_\mathrm{ref}$</span></p>
+
+1. Punkt mit $s_i(x)$
+
+    Fortsetzung mit $\lambda_i$
+
+Kosten 5 $ bis 10 $, ein \$-Zeichen und `code $x$`.
+
+    eingerückter $code$
+""")
+        self.build()
+        html = (self.dist / "notes/inline-math-regression.html").read_text(encoding="utf-8")
+        parser = PageParser()
+        parser.feed(html)
+        self.assertEqual(parser.math_count, 6)
+        self.assertFalse(parser.math_in_code)
+        self.assertIn("<em>kursiv</em>", html)
+        self.assertIn("Kosten 5 $ bis 10 $, ein $-Zeichen", html)
+        self.assertIn("code $x$", "".join(parser.code_text))
+        self.assertIn("eingerückter $code$", "".join(parser.code_text))
+
     def test_notes_and_projects_end_with_support_link(self):
         self.contribution("notes", "support-note")
         self.contribution("projects", "support-project")

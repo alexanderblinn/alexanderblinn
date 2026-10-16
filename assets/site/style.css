@@ -19,6 +19,10 @@ body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monosp
 .static-figure { display: table; max-width: 100%; margin: 16px 0 36px; }
 .static-figure img { display: block; max-width: 100%; height: auto; }
 .static-figure figcaption { display: table-caption; caption-side: bottom; font-size: 13px; color: var(--muted); padding-top: 8px; }
+/* .full-width: a vector graphic scaled to the width of the text column. */
+.static-figure.full-width { display: block; }
+.static-figure.full-width img { width: 100%; }
+.static-figure.full-width figcaption { display: block; }
 .figure-index { columns: 2; font-size: 14px; margin: 24px 0 35px; }
 .figure-index li { break-inside: avoid; }
 .interactive-figure { margin: 16px 0 42px; }
@@ -27,7 +31,7 @@ body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monosp
 .interactive-figure.figure-bands iframe { height: 820px; }
 .interactive-figure.figure-nuclear iframe { height: 920px; }
 .interactive-figure.figure-location-map iframe { height: 900px; }
-.interactive-figure.figure-central-path iframe { height: 1100px; }
+.interactive-figure.figure-central-path iframe { height: 940px; }
 .interactive-figure figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 20px; font-size: 12px; margin-top: 8px; color: var(--muted); }
 .interactive-figure figcaption a { white-space: nowrap; }
 .interactive-figure figcaption span { flex-basis: 100%; font-size: 14px; color: var(--ink); }
@@ -100,6 +104,15 @@ pre { padding: 16px; background: #efede7; border: 1px solid #e1ddd4; overflow-x:
 pre code { padding: 0; font-size: inherit; }
 .math-block { overflow-x: auto; padding: 18px 0; margin: 12px 0; }
 math { font-size: 1.12em; }
+.math-inline { white-space: nowrap; }
+/* MathML Core (Chromium) ignores columnalign and columnspacing; align*, cases and array set
+   them per cell. In align* (columnspacing "0em 2em ...") each right-aligned cell meets the
+   left-aligned cell after it without a gap, and pairs of columns are 2em apart. */
+mtd[columnalign="left"] { text-align: left; }
+mtd[columnalign="right"] { text-align: right; }
+mtable[columnspacing^="0em"] > mtr > mtd:nth-child(odd) { padding-right: 0; }
+mtable[columnspacing^="0em"] > mtr > mtd:nth-child(even) { padding-left: 0; }
+mtable[columnspacing^="0em"] > mtr > mtd:nth-child(odd):not(:first-child) { padding-left: 2em; }
 /* CSS-only language tabs: each radio is immediately followed by its own label and
    panel, so plain adjacent-sibling selectors show the checked one. No JS needed. */
 .code-tabs { display: flex; flex-wrap: wrap; align-items: center; margin: 18px 0; }

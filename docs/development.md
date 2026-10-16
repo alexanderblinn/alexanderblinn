@@ -52,17 +52,21 @@ Hier beginnt der Beitrag.
 
 ## Bilder und Formeln
 
-Bilder liegen beim jeweiligen Beitrag unter `public/img/<Bereich>/<Slug>/`, beispielsweise `public/img/projects/mein-projekt/`. Formeln zwischen eigenen `$$`-Zeilen werden beim Build in MathML umgewandelt.
+Bilder liegen beim jeweiligen Beitrag unter `public/img/<Bereich>/<Slug>/`, beispielsweise `public/img/projects/mein-projekt/`. Formeln zwischen eigenen `$$`-Zeilen und Formeln im Text zwischen einfachen `$` werden beim Build in MathML umgewandelt, auch in eingebettetem HTML wie Bildunterschriften. Im Text darf direkt hinter dem öffnenden und vor dem schließenden `$` kein Leerzeichen stehen; `\$` ergibt ein Dollarzeichen. In Code bleiben `$` unverändert. Mehrzeilige Formeln setzt man mit `\begin{align*} … \end{align*}`.
 
 ```markdown
 ![Versuchsaufbau](/img/projects/mein-projekt/versuchsaufbau.jpg)
 
 [Verwandtes Projekt](/projects/msci.html)
 
+Für $\mu\to\infty$ strebt $x^\star(\mu)$ gegen $x_\mathrm{a}$.
+
 $$
 x_{k+1}=Ax_k+Bu_k
 $$
 ```
+
+Statische Abbildungen (`<figure class="static-figure">`) werden in ihrer `width` gezeigt und nur verkleinert. Mit `class="static-figure full-width"` füllt die Grafik die Textspalte; das eignet sich für SVG-Diagramme.
 
 Markdown unterstützt Tabellen, Codeblöcke und HTML. Eingebettetes HTML wird unverändert übernommen.
 
