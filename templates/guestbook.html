@@ -1,0 +1,36 @@
+<section class="guestbook" aria-labelledby="guestbook-title">
+  <p class="eyebrow">alexanderblinn.com / gästebuch</p>
+  <div class="gb-marquee" aria-hidden="true"><span>★ Willkommen in meinem Gästebuch ★ Schön, dass du vorbeischaust ★ Hinterlass einen Gruß, eine Frage oder eine Anmerkung ★ Danke für deinen Besuch ★</span></div>
+  <h1 id="guestbook-title" class="gb-title"><span class="gb-star" aria-hidden="true">✶</span> <span class="gb-title-text">Gästebuch</span> <span class="gb-star" aria-hidden="true">✶</span></h1>
+  <p>Schön, dass du da bist! Hier ist Platz für Grüße, Fragen und Anmerkungen zu den Notizen und Projekten. Jeder Eintrag wird von Hand freigeschaltet und erscheint deshalb nicht sofort.</p>
+  <p class="gb-counter" aria-label="$count Einträge bisher"><span class="gb-counter-label">Einträge bisher</span> <span class="gb-digits" aria-hidden="true">$digits</span></p>
+
+  <h2 id="eintragen">Eintragen <span class="gb-hand" aria-hidden="true">☜</span></h2>
+  $construction
+  <form class="gb-form" action="$form_action" method="post" accept-charset="utf-8">
+    <fieldset$form_disabled>
+      <legend class="gb-legend">Dein Eintrag</legend>
+      <label for="gb-name">Name <span class="gb-required" title="Pflichtfeld">*</span></label>
+      <input id="gb-name" name="name" required maxlength="60" autocomplete="nickname">
+      <label for="gb-location">Wohnort</label>
+      <input id="gb-location" name="location" maxlength="60">
+      <label for="gb-homepage">Homepage</label>
+      <input id="gb-homepage" name="homepage" type="url" maxlength="200" placeholder="https://">
+      <label for="gb-message">Nachricht <span class="gb-required" title="Pflichtfeld">*</span></label>
+      <textarea id="gb-message" name="message" required maxlength="1500" rows="6"></textarea>
+      <div class="gb-smileys" role="group" aria-label="Smiley einfügen">
+        <button type="button" data-smiley=":-)">:-)</button><button type="button" data-smiley=";-)">;-)</button><button type="button" data-smiley=":-D">:-D</button><button type="button" data-smiley=":-P">:-P</button><button type="button" data-smiley="&lt;3">&lt;3</button><button type="button" data-smiley="\o/">\o/</button>
+      </div>
+      <input class="gb-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="hidden" name="_subject" value="Neuer Gästebucheintrag">
+      <p class="gb-privacy">Beim Absenden gehen Name, Wohnort, Homepage und Nachricht über den Formulardienst Formspree an mich. Veröffentlicht wird ein Eintrag erst, nachdem ich ihn gelesen habe; auf Wunsch lösche ich ihn wieder.</p>
+      <div class="gb-buttons"><button type="submit">Eintragen</button><button type="reset">Löschen</button></div>
+      <p class="gb-status" role="status" aria-live="polite"></p>
+    </fieldset>
+  </form>
+
+  <h2 id="eintraege">Einträge</h2>
+  $entries
+
+  <p class="gb-badges"><span>HANDGEMACHT</span><span>KEIN TRACKING</span><span>BEST VIEWED WITH ANY BROWSER</span></p>
+</section>

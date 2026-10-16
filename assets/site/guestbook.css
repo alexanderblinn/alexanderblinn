@@ -1,0 +1,83 @@
+/* Guestbook in the style of a late-1990s homepage: marquee, rainbow title, spinning stars,
+   odometer, blinking "NEU!", bevelled buttons. Colours come from the site's accent palette.
+   Everything moving stops for visitors who prefer reduced motion. */
+.guestbook { --gold: #c99a2e; --night: #1d1d1b; --amber: #f2c14e; }
+.guestbook h2 { border-bottom: 1px dotted var(--line); padding-bottom: 7px; margin-top: 38px; }
+
+.gb-marquee { overflow: hidden; white-space: nowrap; background: var(--night); color: var(--amber); border: 3px inset #d8d5cc; padding: 5px 0; font-size: 13px; letter-spacing: .08em; margin-bottom: 24px; }
+.gb-marquee span { display: inline-block; padding-left: 100%; animation: gb-marquee 24s linear infinite; }
+@keyframes gb-marquee { to { transform: translateX(-100%); } }
+
+.gb-title { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: clamp(34px, 7vw, 46px); letter-spacing: 0; text-align: center; margin: 0 0 22px; }
+.gb-title-text { background: linear-gradient(90deg, #b95a28, var(--gold), #426f6b, #173fbe, #685d94, #8a5979, #b95a28); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gb-rainbow 6s linear infinite; text-shadow: none; }
+@keyframes gb-rainbow { to { background-position: 200% 0; } }
+.gb-star { display: inline-block; color: var(--gold); font-style: normal; animation: gb-spin 3.5s linear infinite; }
+.gb-star:last-child { animation-direction: reverse; }
+@keyframes gb-spin { to { transform: rotate(360deg); } }
+
+.gb-counter { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 13px; color: var(--muted); margin: 26px 0 8px; }
+.gb-digits { display: inline-flex; gap: 3px; padding: 4px; background: var(--night); border: 3px ridge #c9c6be; }
+.gb-digit { display: inline-block; width: 1.15em; height: 1.5em; overflow: hidden; background: linear-gradient(#3a3a36, #111 48%, #2a2a27 52%, #3a3a36); color: #fafaf2; font-size: 18px; font-weight: 700; text-align: center; }
+.gb-strip { display: flex; flex-direction: column; transform: translateY(calc(var(--d) * -1.5em)); animation: gb-roll 1.8s cubic-bezier(.2, .8, .2, 1) calc(var(--i) * .25s) both; }
+.gb-strip span { height: 1.5em; line-height: 1.5em; }
+@keyframes gb-roll { from { transform: translateY(0); } }
+
+.gb-hand { display: inline-block; font-weight: 400; animation: gb-nudge 1.2s ease-in-out infinite; }
+@keyframes gb-nudge { 50% { transform: translateX(-7px); } }
+
+.gb-construction { padding: 10px; margin: 0 0 18px; background: repeating-linear-gradient(-45deg, var(--amber) 0 14.14px, var(--night) 14.14px 28.28px); animation: gb-tape 1.4s linear infinite; }
+.gb-construction p { margin: 0; padding: 12px 16px; background: var(--paper); font-size: 14px; }
+.gb-construction strong { animation: gb-blink 1.2s steps(2, start) infinite; }
+@keyframes gb-tape { to { background-position: 40px 0; } }
+
+.gb-form fieldset { display: grid; grid-template-columns: 9em minmax(0, 1fr); gap: 10px 14px; align-items: baseline; margin: 0; padding: 18px 20px 14px; border: 3px double var(--line); background: #fffdf7; box-shadow: 5px 5px 0 #e6e3db; }
+.gb-form fieldset[disabled] { opacity: .55; }
+.gb-legend { padding: 0 8px; font-size: 13px; color: var(--muted); }
+.gb-form label { font-size: 14px; }
+.gb-required { color: #b95a28; }
+.gb-form input, .gb-form textarea { font: inherit; font-size: 14px; color: var(--ink); background: #fffef9; border: 2px inset #d8d5cc; padding: 6px 8px; min-width: 0; }
+.gb-form textarea { resize: vertical; }
+.gb-smileys, .gb-privacy, .gb-buttons, .gb-status { grid-column: 2; margin: 0; }
+.gb-smileys { display: flex; flex-wrap: wrap; gap: 6px; }
+.gb-privacy { font-size: 12px; color: var(--muted); }
+.gb-buttons { display: flex; gap: 12px; }
+.gb-form button { font: inherit; font-size: 13px; color: var(--ink); background: #efede7; border: 2px outset #e1ddd4; padding: 5px 14px; cursor: pointer; }
+.gb-form button[type="submit"] { font-weight: 700; }
+.gb-smileys button { padding: 2px 8px; font-size: 12px; }
+.gb-form button:active { border-style: inset; }
+.gb-form fieldset[disabled] button { cursor: not-allowed; }
+.gb-status { font-size: 13px; color: var(--link); }
+.gb-status:empty { display: none; }
+.gb-gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; }
+
+.gb-entries { display: grid; gap: 44px; }
+.gb-entry { position: relative; border: 3px double var(--line); background: #fffdf7; padding: 12px 18px 4px; box-shadow: 5px 5px 0 #e6e3db; }
+.gb-entry + .gb-entry::before { content: "·:*¨¨*:·.·:*¨¨*:·.·:*¨¨*:·"; position: absolute; left: 0; right: 0; top: -36px; text-align: center; color: var(--gold); letter-spacing: .1em; }
+.gb-entry-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 13px; color: var(--muted); border-bottom: 1px dashed var(--line); padding-bottom: 7px; }
+.gb-number { color: var(--link); font-weight: 700; }
+.gb-name { color: var(--ink); font-size: 15px; }
+.gb-entry-head time { margin-left: auto; }
+.gb-new { display: none; color: #fff; background: #b95a28; font-size: 11px; font-weight: 700; padding: 0 5px; animation: gb-blink 1s steps(2, start) infinite; }
+.gb-entry.is-new .gb-new { display: inline-block; }
+@keyframes gb-blink { to { visibility: hidden; } }
+.gb-entry p { margin: 10px 0; }
+.gb-homepage { font-size: 13px; }
+.gb-reply { margin: 0 0 10px; padding: 2px 14px; border-left: 3px solid var(--gold); background: #f5f1e6; font-size: 14px; }
+.gb-reply-label { font-size: 12px; color: var(--muted); }
+.gb-empty { text-align: center; padding: 22px; border: 3px double var(--line); background: #fffdf7; }
+.gb-empty .gb-hand { animation-name: gb-bob; }
+@keyframes gb-bob { 50% { transform: translateY(-5px); } }
+
+.gb-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 42px 0 0; }
+.gb-badges span { display: inline-flex; align-items: center; justify-content: center; min-width: 88px; height: 31px; padding: 0 8px; font: 700 9px/1 Verdana, Geneva, sans-serif; letter-spacing: .04em; color: var(--amber); background: linear-gradient(var(--night), #3a3a36); border: 2px outset #8d8a82; }
+
+@media (max-width: 560px) {
+  .gb-form fieldset { grid-template-columns: 1fr; padding: 14px; gap: 6px; }
+  .gb-smileys, .gb-privacy, .gb-buttons, .gb-status { grid-column: 1; }
+  .gb-form input, .gb-form textarea { margin-bottom: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .guestbook *, .guestbook *::before { animation: none !important; }
+  .gb-marquee { text-align: center; }
+  .gb-marquee span { padding-left: 0; white-space: normal; }
+}

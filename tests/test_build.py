@@ -266,6 +266,50 @@ Kosten 5 $ bis 10 $, ein \$-Zeichen und `code $x$`.
                 self.assertNotEqual(result.returncode, 0)
                 self.assertEqual((self.dist / 'index.html').read_bytes(), home)
 
+    def test_guestbook_escapes_entries_and_lists_newest_first(self):
+        (self.root / 'content/guestbook.yml').write_text('''
+- name: "Anna"
+  date: 2026-03-02
+  homepage: "https://example.org/?a=1&b=2"
+  message: "Erster Absatz\\n\\nZweiter <b>Absatz</b>"
+  reply: "Danke!"
+- name: "<script>alert(1)</script>"
+  date: 2026-10-14
+  message: 'Gruß \\o/'
+''', encoding='utf-8')
+        self.build()
+        html = (self.dist / 'gaestebuch.html').read_text(encoding='utf-8')
+        self.assertNotIn('<script>alert', html)
+        self.assertIn('&lt;script&gt;alert(1)&lt;/script&gt;', html)
+        self.assertIn('<p>Zweiter &lt;b&gt;Absatz&lt;/b&gt;</p>', html)
+        self.assertIn('href="https://example.org/?a=1&amp;b=2" rel="nofollow ugc noopener noreferrer"', html)
+        self.assertLess(html.index('id="eintrag-2"'), html.index('id="eintrag-1"'))
+        self.assertIn('aria-label="2 Einträge bisher"', html)
+        self.assertIn('<fieldset disabled>', html)
+        self.assertIn('href="/gaestebuch.html"', (self.dist / 'index.html').read_text(encoding='utf-8'))
+
+    def test_guestbook_form_is_enabled_only_with_a_form_address(self):
+        config_path = self.root / 'site.json'
+        config = json.loads(config_path.read_text(encoding='utf-8'))
+        config['guestbook_form'] = 'https://formspree.io/f/test'
+        config_path.write_text(json.dumps(config), encoding='utf-8')
+        self.build()
+        html = (self.dist / 'gaestebuch.html').read_text(encoding='utf-8')
+        self.assertIn('action="https://formspree.io/f/test"', html)
+        self.assertIn('<fieldset>', html)
+        self.assertNotIn('gb-construction', html)
+
+    def test_invalid_guestbook_entries_fail_the_build(self):
+        for entry in ['- {name: "A", date: 2026-10-14, message: "x", homepage: "javascript:alert(1)"}',
+                      '- {name: "A", date: 2026-10-14}',
+                      '- {name: "A", date: "gestern", message: "x"}',
+                      '- {name: "A", date: 2026-10-14, message: "x", email: "a@example.org"}']:
+            with self.subTest(entry=entry):
+                (self.root / 'content/guestbook.yml').write_text(entry, encoding='utf-8')
+                result = subprocess.run([sys.executable, str(self.root / 'scripts/build.py')],
+                                        cwd=self.root, capture_output=True, timeout=30)
+                self.assertNotEqual(result.returncode, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

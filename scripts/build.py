@@ -262,6 +262,62 @@ def entries_html(entries, projects=False):
     return f'<ul class="{classes}">' + '\n'.join(rows) + '</ul>'
 
 
+# Guestbook entries are approved by hand and kept in content/guestbook.yml. Visitors' text is
+# escaped, never rendered as Markdown or HTML.
+GUESTBOOK_FIELDS = {"name", "date", "location", "homepage", "message", "reply"}
+
+
+def read_guestbook(path):
+    entries = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else []
+    if not isinstance(entries, list):
+        raise ValueError(f"{path}: Liste von Einträgen erwartet")
+    for number, entry in enumerate(entries, 1):
+        where = f"{path}: Eintrag {number}"
+        if not isinstance(entry, dict) or set(entry) - GUESTBOOK_FIELDS:
+            raise ValueError(f"{where}: erlaubt sind nur {', '.join(sorted(GUESTBOOK_FIELDS))}")
+        if isinstance(entry.get("date"), str):
+            entry["date"] = dt.date.fromisoformat(entry["date"])
+        if not isinstance(entry.get("date"), dt.date) or isinstance(entry["date"], dt.datetime):
+            raise ValueError(f"{where}: date muss YYYY-MM-DD sein")
+        for key in ("name", "message", "location", "homepage", "reply"):
+            required = key in ("name", "message")
+            if (required or key in entry) and not (isinstance(entry.get(key), str) and entry[key].strip()):
+                raise ValueError(f"{where}: {key} muss ein nichtleerer Text sein")
+        if "homepage" in entry and not re.fullmatch(r"https?://[^\s\"'<>]+", entry["homepage"]):
+            raise ValueError(f"{where}: homepage muss mit http:// oder https:// beginnen")
+    return sorted(entries, key=lambda entry: entry["date"])
+
+
+def paragraphs_html(text):
+    return ''.join('<p>' + '<br>'.join(escape(line) for line in block.splitlines()) + '</p>'
+                   for block in re.split(r"\n\s*\n", text.strip()))
+
+
+def guestbook_html(entries, form_action, template):
+    items = []
+    for number, entry in reversed(list(enumerate(entries, 1))):
+        date = entry["date"]
+        location = f' <span>aus {escape(entry["location"])}</span>' if entry.get("location") else ''
+        homepage = (f'<p class="gb-homepage"><a href="{escape(entry["homepage"], quote=True)}" rel="nofollow ugc noopener noreferrer" '
+                    'target="_blank">⌂ Homepage</a></p>') if entry.get("homepage") else ''
+        reply = (f'<div class="gb-reply"><p class="gb-reply-label">Antwort vom Webmaster:</p>{paragraphs_html(entry["reply"])}</div>'
+                 if entry.get("reply") else '')
+        items.append(f'<article class="gb-entry" id="eintrag-{number}" data-date="{date.isoformat()}">'
+                     f'<div class="gb-entry-head"><span class="gb-number">#{number}</span> <strong class="gb-name">{escape(entry["name"])}</strong>'
+                     f'{location}<span class="gb-new">NEU!</span><time datetime="{date.isoformat()}">{date.strftime("%d.%m.%Y")}</time></div>'
+                     f'{paragraphs_html(entry["message"])}{homepage}{reply}</article>')
+    listing = (f'<div class="gb-entries">{"".join(items)}</div>' if items else
+               '<p class="gb-empty">Noch keine Einträge – trag dich als Erste oder Erster ein! <span class="gb-hand" aria-hidden="true">☝</span></p>')
+    digits = ''.join(f'<span class="gb-digit" style="--d: {d}; --i: {i}"><span class="gb-strip">'
+                     + ''.join(f'<span>{n}</span>' for n in range(10)) + '</span></span>'
+                     for i, d in enumerate(str(len(entries)).zfill(4)))
+    construction = '' if form_action else (
+        '<div class="gb-construction"><p><strong>Baustelle!</strong> Das Formular wird gerade angeschlossen. '
+        'Bitte bald wiederkommen.</p></div>')
+    return template.substitute(count=len(entries), digits=digits, entries=listing, construction=construction,
+                               form_action=escape(form_action, quote=True), form_disabled='' if form_action else ' disabled')
+
+
 def build(root=ROOT):
     root = Path(root).resolve()
     config = json.loads((root / "site.json").read_text(encoding="utf-8"))
@@ -280,11 +336,16 @@ def build(root=ROOT):
     if about is None:
         raise ValueError("Die About-Seite darf kein Entwurf sein")
     articles.sort(key=lambda a: (a["date"] or dt.date.min, a["slug"]), reverse=True)
+    guestbook = read_guestbook(root / "content/guestbook.yml")
+    form_action = config.get("guestbook_form", "")
+    if not isinstance(form_action, str) or form_action and not re.fullmatch(r"https://[^\s\"'<>]+", form_action):
+        raise ValueError("guestbook_form muss leer oder eine https://-Adresse sein")
     # Rendering and metadata validation happen before touching an existing build.
     pages = {}
 
     def page(url, title, body, active="", description=None, extra_head="", wide=False):
-        links = [("/", "Start", "start"), *[(f"/{key}/", value[0], key) for key, value in SECTIONS.items()], ("/about.html", "About", "about")]
+        links = [("/", "Start", "start"), *[(f"/{key}/", value[0], key) for key, value in SECTIONS.items()], ("/about.html", "About", "about"),
+                 ("/gaestebuch.html", "Gästebuch", "guestbook")]
         nav = ' '.join(f'<a href="{href}"' + (' aria-current="page"' if key == active else '') + f'>{label}</a>' for href, label, key in links)
         pages[url] = template.substitute(title=escape(f"{title} — {config['name']}" if title else config['name']),
             description=escape(description or config['description'], quote=True), canonical=escape(config['url'].rstrip('/') + url, quote=True),
@@ -322,6 +383,10 @@ def build(root=ROOT):
                          '<img src="/assets/site/buymeacoffee.svg" alt="" width="18" height="18"><span>Buy me a coffee</span></a></p>')
             body += '</div>'
         page(item['url'], item['title'], body, section, item.get('description'), wide=item.get('layout') == 'wide')
+    page('/gaestebuch.html', 'Gästebuch',
+         guestbook_html(guestbook, form_action, Template((root / 'templates/guestbook.html').read_text(encoding='utf-8'))),
+         'guestbook', 'Gästebuch: Grüße, Fragen und Anmerkungen zu den Notizen und Projekten.',
+         '<link rel="stylesheet" href="/assets/site/guestbook.css">\n  <script type="module" src="/assets/site/guestbook.js"></script>')
     page('/404.html', 'Seite nicht gefunden', '<p class="eyebrow">404 / Seite nicht gefunden</p><h1>Hier ist noch nichts.</h1><p>Vielleicht wurde der Beitrag verschoben. Über <a href="/">Start</a> oder <a href="/notes/">Notes</a> geht es weiter.</p>')
 
     # Keep old diagram bookmarks working without keeping copies in public/.

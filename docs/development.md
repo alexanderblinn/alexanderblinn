@@ -148,6 +148,28 @@ Der Beitrag liegt in `content/notes/frozen-lake.md` und behandelt `examples/disc
 
 Alle Abbildungen folgen zwei Breiten (`NORMAL` = 512 px, `WIDE` = 790 px, die Textspalte); die `width`/`height`-Attribute im Beitrag entsprechen der natürlichen Größe, das CSS skaliert nur herunter, und die Bildunterschrift ist genauso breit wie das Bild (`display: table`). Die fünf Trainingsläufe über je 100 000 Episoden werden im Temp-Verzeichnis zwischengespeichert; zum Neutrainieren die Datei `frozen_lake_note_cache.npz` dort löschen. Vor dem Zeichnen gibt das Skript die Zahlen der Vergleichstabelle des Beitrags aus: die exakte Erfolgswahrscheinlichkeit jeder gierigen Politik (Politikbewertung mit dem bekannten Übergangsmodell, mit und ohne 100-Schritt-Grenze), v(s₀) und die Zustände, in denen der gierige Pfeil von q* abweicht.
 
+## Gästebuch
+
+Das Gästebuch unter `/gaestebuch.html` ist moderiert: Besucher schicken ihren Eintrag über ein Formular an einen Formulardienst, der ihn per E-Mail weiterleitet. Freigegebene Einträge werden von Hand in `content/guestbook.yml` eingetragen und erscheinen nach dem nächsten Build. Seite und Layout liegen in `templates/guestbook.html`, `assets/site/guestbook.css` und `assets/site/guestbook.js`.
+
+**Formular anschließen.** Bei [Formspree](https://formspree.io) ein Formular anlegen und dessen Adresse (`https://formspree.io/f/…`) in `site.json` als `guestbook_form` eintragen. Solange der Eintrag leer ist, zeigt die Seite ein Baustellenschild und das Formular ist gesperrt. Das Formular sendet die Felder `name`, `location`, `homepage` und `message`, dazu das Honeypot-Feld `_gotcha` gegen Spam-Bots. Mit JavaScript bleibt der Besucher auf der Seite und sieht eine Bestätigung; lehnt der Dienst die Übermittlung im Hintergrund ab (zum Beispiel, weil er ein Captcha zeigen will) oder ist JavaScript aus, wird das Formular normal abgeschickt und der Dienst zeigt seine eigene Bestätigungsseite.
+
+**Eintrag freischalten.** Die Daten aus der E-Mail in `content/guestbook.yml` übernehmen, älteste Einträge zuerst:
+
+```yaml
+- name: "Anna"
+  date: 2026-10-16
+  location: "Trier"                 # optional
+  homepage: "https://example.org"   # optional, nur http:// oder https://
+  message: |
+    Schöne Seite!
+
+    Ein zweiter Absatz.
+  reply: "Danke, Anna!"             # optional, erscheint als „Antwort vom Webmaster“
+```
+
+Pflicht sind `name`, `date` und `message`. Der Text wird HTML-sicher übernommen, nicht als Markdown; Leerzeilen trennen Absätze. Texte mit Backslash (etwa `\o/`) in einfache Anführungszeichen oder einen `|`-Block setzen, denn in doppelten Anführungszeichen ist `\` in YAML ein Escape-Zeichen. Ein fehlerhafter Eintrag bricht den Build ab; die Fehlermeldung nennt seine Nummer. Das blinkende „NEU!“ erscheint 30 Tage lang nach dem Datum eines Eintrags; alle Animationen ruhen, wenn das Betriebssystem reduzierte Bewegung verlangt.
+
 ## Verzeichnisübersicht
 
 Für jeden Beitrag gilt dieselbe Zuordnung über Bereich (`projects` oder `notes`) und Slug. Zusätzliche Ordner werden nur angelegt, wenn sie gebraucht werden; eine reine Textnotiz benötigt ausschließlich ihre Markdown-Datei.
@@ -169,9 +191,11 @@ public/img/projects/msci/           Diagramme, Bilder und Downloads
 | `content/notes/` | Notizen und Erklärungen. |
 | `content/projects/` | Projekte und praktische Aufbauten. |
 | `content/about.md` | Profiltext. |
+| `content/guestbook.yml` | Freigeschaltete Gästebucheinträge. |
 | `templates/home.html` | Startseite. |
+| `templates/guestbook.html` | Gästebuch. |
 | `templates/base.html` | Gemeinsames Seitenlayout. |
-| `site.json` | Name, Domain, Beschreibung, GitHub-Link und Buy-me-a-coffee-Link (`support`). |
+| `site.json` | Name, Domain, Beschreibung, GitHub-Link, Buy-me-a-coffee-Link (`support`) und Formularadresse des Gästebuchs (`guestbook_form`). |
 | `assets/site/` | Gemeinsames CSS und Favicon. |
 | `assets/projects/<Slug>/` | CSS und JavaScript eines Projekts. |
 | `assets/notes/<Slug>/` | CSS und JavaScript einer Notiz. |
