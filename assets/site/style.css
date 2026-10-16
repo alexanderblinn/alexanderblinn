@@ -19,10 +19,11 @@ body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monosp
 .static-figure { display: table; max-width: 100%; margin: 16px 0 36px; }
 .static-figure img { display: block; max-width: 100%; height: auto; }
 .static-figure figcaption { display: table-caption; caption-side: bottom; font-size: 13px; color: var(--muted); padding-top: 8px; }
-/* .full-width: a vector graphic scaled to the width of the text column. */
-.static-figure.full-width { display: block; }
+/* .full-width: a vector graphic scaled to the width of the text column, with more room around
+   it so that a figure does not run into the text or the next figure. */
+.static-figure.full-width { display: block; margin: 32px 0 44px; }
 .static-figure.full-width img { width: 100%; }
-.static-figure.full-width figcaption { display: block; }
+.static-figure.full-width figcaption { display: block; padding-top: 12px; }
 .figure-index { columns: 2; font-size: 14px; margin: 24px 0 35px; }
 .figure-index li { break-inside: avoid; }
 .interactive-figure { margin: 16px 0 42px; }
