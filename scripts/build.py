@@ -16,6 +16,10 @@ import markdown
 from markdown.extensions import Extension
 from markdown.preprocessors import Preprocessor
 from latex2mathml.converter import convert
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_by_name
+from pygments.util import ClassNotFound
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -110,9 +114,23 @@ class CodeTabsPreprocessor(Preprocessor):
             parts.append(
                 f'<input type="radio" class="code-tab-input" name="{name}" id="{input_id}"{checked}>'
                 f'<label class="code-tab-label" for="{input_id}">{escape(label)}</label>'
-                f'<pre class="code-tab-panel"><code class="language-{escape(language)}">{escape(code)}</code></pre>'
+                f'<pre class="code-tab-panel"><code class="language-{escape(language)}">{highlight_code(language, code)}</code></pre>'
             )
         return '<div class="code-tabs" role="group" aria-label="Programmiersprache wählen">' + "".join(parts) + "</div>"
+
+
+# Highlighted at build time (Pygments), not in the browser: the result is plain HTML with
+# token <span> classes, styled in assets/site/style.css. Falls back to plain escaped text
+# for a language Pygments does not know, so a typo in the fence never breaks the build.
+_HIGHLIGHT_FORMATTER = HtmlFormatter(nowrap=True)
+
+
+def highlight_code(language, code):
+    try:
+        lexer = get_lexer_by_name(language)
+    except ClassNotFound:
+        return escape(code)
+    return highlight(code, lexer, _HIGHLIGHT_FORMATTER)
 
 
 class CodeTabsExtension(Extension):

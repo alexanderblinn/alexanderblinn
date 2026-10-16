@@ -104,6 +104,13 @@ math { font-size: 1.12em; }
 .code-tab-input:checked + .code-tab-label { color: var(--ink); font-weight: 700; }
 .code-tab-panel { order: 1; flex-basis: 100%; display: none; margin: 0; }
 .code-tab-input:checked + .code-tab-label + .code-tab-panel { display: block; }
+/* Highlighted at build time by Pygments; only the token classes the Python and MATLAB
+   examples actually use, colored with the accent palette already used in this note. */
+.code-tab-panel .c, .code-tab-panel .c1 { color: var(--muted); font-style: italic; }
+.code-tab-panel .k, .code-tab-panel .kn, .code-tab-panel .kc, .code-tab-panel .ow { color: var(--link); font-weight: 700; }
+.code-tab-panel .s, .code-tab-panel .s1, .code-tab-panel .sd { color: #b95a28; }
+.code-tab-panel .mi, .code-tab-panel .mf { color: #426f6b; }
+.code-tab-panel .nf { color: #685d94; font-weight: 700; }
 .backlink { margin-top: 38px; padding-top: 15px; border-top: 1px solid var(--line); font-size: 13px; }
 .site-footer { border-top: 1px solid var(--ink); margin-top: 48px; padding-top: 16px; font-size: 12px; }
 .site-footer p { margin: 0 0 5px; }

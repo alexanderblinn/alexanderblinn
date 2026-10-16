@@ -1,3 +1,4 @@
 Markdown==3.11
 PyYAML==6.0.3
 latex2mathml==3.81.1
+Pygments==2.21.0

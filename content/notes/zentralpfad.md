@@ -229,6 +229,12 @@ $$
 
 und wird so verkürzt, dass alle Iterierten strikt im Inneren bleiben. Weil der Pfad glatt ist, liegt die vorherige Lösung nahe an der nächsten; das Newton-Verfahren konvergiert von dort quadratisch. Darauf beruht die Theorie der Pfadverfolgung: Für selbstkonkordante Barrieren, zu denen die logarithmische Barriere gehört, zeigen Nesterov und Nemirovskii, dass bei einem Faktor κ nahe eins eine beschränkte Zahl von Newton-Schritten je Etappe genügt und die Gesamtzahl der Schritte nur wie √m · log(1/ε) wächst. In der Praxis wählt man κ zwischen 10 und 100 und nimmt dafür einige Newton-Schritte mehr je Etappe in Kauf.
 
+Primal-duale Verfahren behandeln x, λ und s gemeinsam: Sie machen Newton-Schritte direkt auf dem gestörten KKT-System mit λᵢ sᵢ = μ und verkleinern μ in jedem Schritt. Sie sind heute die Arbeitspferde für lineare, quadratische und konische Programme. Der Unterschied zu Aktive-Mengen-Verfahren ist anschaulich: Diese wandern am Rand von 𝒳 entlang und probieren aktive Kanten aus; Innere-Punkte-Verfahren bleiben im Inneren und nähern sich dem Rand nur dort, wo Kanten im Optimum aktiv sind. Die Zahl ihrer Iterationen wächst dabei nur langsam mit der Problemgröße.
+
+Der Anfangspunkt x₀ dieser Notiz ist die kontinuierliche Fassung eines Warmstarts: Für μ → ∞ ist die Lösung x₀ selbst, wie die erste Iterierte des Verfahrens; für kleines μ ist der Proximalterm verschwunden, und es bleibt der klassische Pfad. In der modellprädiktiven Regelung liefert jeder Zeitschritt einen neuen Anfangspunkt nahe der alten Lösung; der Pfad von dort zum neuen Optimum ist kurz, und wenige Zentrierungen genügen.
+
+### Umsetzung in Python und MATLAB
+
 Die folgende Umsetzung zeigt genau diesen Algorithmus: eine Zentrierung mit gedämpftem Newton-Schritt und Rückwärtssuche (backtracking line search mit Armijo-Bedingung, wie bei Boyd und Vandenberghe, Kapitel 9) und die äußere Schleife über fallende μ. Viereck, Ziel und Anfangspunkt stimmen mit der Voreinstellung der Animation oben überein, sodass sich `path` direkt mit der gezeichneten Kurve vergleichen lässt.
 
 ```python tab="Python"
@@ -348,10 +354,6 @@ end
 ```
 
 `path` enthält damit denselben Zentralpfad wie die Animation oben: `path[0]` (Python) bzw. `path(1,:)` (MATLAB) ist x₀, `path[-1]` bzw. `path(end,:)` liegt nahe am Optimum x\*. Geprüft gegen eine unabhängige Lösung mit SciPy weicht jeder Pfadpunkt um höchstens 1,4·10⁻⁷ ab.
-
-Primal-duale Verfahren behandeln x, λ und s gemeinsam: Sie machen Newton-Schritte direkt auf dem gestörten KKT-System mit λᵢ sᵢ = μ und verkleinern μ in jedem Schritt. Sie sind heute die Arbeitspferde für lineare, quadratische und konische Programme. Der Unterschied zu Aktive-Mengen-Verfahren ist anschaulich: Diese wandern am Rand von 𝒳 entlang und probieren aktive Kanten aus; Innere-Punkte-Verfahren bleiben im Inneren und nähern sich dem Rand nur dort, wo Kanten im Optimum aktiv sind. Die Zahl ihrer Iterationen wächst dabei nur langsam mit der Problemgröße.
-
-Der Anfangspunkt x₀ dieser Notiz ist die kontinuierliche Fassung eines Warmstarts: Für μ → ∞ ist die Lösung x₀ selbst, wie die erste Iterierte des Verfahrens; für kleines μ ist der Proximalterm verschwunden, und es bleibt der klassische Pfad. In der modellprädiktiven Regelung liefert jeder Zeitschritt einen neuen Anfangspunkt nahe der alten Lösung; der Pfad von dort zum neuen Optimum ist kurz, und wenige Zentrierungen genügen.
 
 ## Berechnung und Anzeige
 
