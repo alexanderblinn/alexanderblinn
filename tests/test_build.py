@@ -266,23 +266,39 @@ Kosten 5 $ bis 10 $, ein \$-Zeichen und `code $x$`.
                 self.assertNotEqual(result.returncode, 0)
                 self.assertEqual((self.dist / 'index.html').read_bytes(), home)
 
+    def test_page_specific_styles_and_scripts_are_linked_and_checked(self):
+        self.build()
+        about = (self.dist / 'about.html').read_text(encoding='utf-8')
+        self.assertIn('<link rel="stylesheet" href="/assets/site/contact.css">', about)
+        self.assertIn('<script type="module" src="/assets/site/contact.js"></script>', about)
+        self.assertNotIn('alexander.blinn@outlook.de', about)
+        for value in ('"https://example.org/evil.js"', '/assets/x.js" onload="alert(1)', 'contact.css'):
+            with self.subTest(value=value):
+                (self.root / 'content/notes/bad-head.md').write_text(
+                    f'---\ntitle: "bad-head"\nscripts: [{value}]\n---\n\nText\n', encoding='utf-8')
+                result = subprocess.run([sys.executable, str(self.root / 'scripts/build.py')],
+                                        cwd=self.root, capture_output=True, timeout=30)
+                self.assertNotEqual(result.returncode, 0)
+
     def test_guestbook_escapes_entries_and_lists_newest_first(self):
         (self.root / 'content/guestbook.yml').write_text('''
 - name: "Anna"
   date: 2026-03-02
-  homepage: "https://example.org/?a=1&b=2"
   message: "Erster Absatz\\n\\nZweiter <b>Absatz</b>"
   reply: "Danke!"
 - name: "<script>alert(1)</script>"
   date: 2026-10-14
   message: 'Gruß \\o/'
 ''', encoding='utf-8')
+        config_path = self.root / 'site.json'
+        config = json.loads(config_path.read_text(encoding='utf-8'))
+        config['guestbook_form'] = ''
+        config_path.write_text(json.dumps(config), encoding='utf-8')
         self.build()
         html = (self.dist / 'gaestebuch.html').read_text(encoding='utf-8')
         self.assertNotIn('<script>alert', html)
         self.assertIn('&lt;script&gt;alert(1)&lt;/script&gt;', html)
         self.assertIn('<p>Zweiter &lt;b&gt;Absatz&lt;/b&gt;</p>', html)
-        self.assertIn('href="https://example.org/?a=1&amp;b=2" rel="nofollow ugc noopener noreferrer"', html)
         self.assertLess(html.index('id="eintrag-2"'), html.index('id="eintrag-1"'))
         self.assertIn('aria-label="2 Einträge bisher"', html)
         self.assertIn('<fieldset disabled>', html)
@@ -300,7 +316,7 @@ Kosten 5 $ bis 10 $, ein \$-Zeichen und `code $x$`.
         self.assertNotIn('gb-construction', html)
 
     def test_invalid_guestbook_entries_fail_the_build(self):
-        for entry in ['- {name: "A", date: 2026-10-14, message: "x", homepage: "javascript:alert(1)"}',
+        for entry in ['- {name: "A", date: 2026-10-14, message: "x", location: "Trier"}',
                       '- {name: "A", date: 2026-10-14}',
                       '- {name: "A", date: "gestern", message: "x"}',
                       '- {name: "A", date: 2026-10-14, message: "x", email: "a@example.org"}']:

@@ -1,6 +1,7 @@
-/* Guestbook in the style of a late-1990s homepage: marquee, rainbow title, spinning stars,
-   odometer, blinking "NEU!", bevelled buttons. Colours come from the site's accent palette.
-   Everything moving stops for visitors who prefer reduced motion. */
+/* Guestbook in the style of a late-1990s homepage: marquee, WordArt title with two pixel
+   dancers, odometer, blinking "NEU!", bevelled buttons, glitter trailing the mouse. Colours
+   come from the site's accent palette. Everything moving stops for visitors who prefer
+   reduced motion. */
 .guestbook { --gold: #c99a2e; --night: #1d1d1b; --amber: #f2c14e; }
 .guestbook h2 { border-bottom: 1px dotted var(--line); padding-bottom: 7px; margin-top: 38px; }
 
@@ -8,12 +9,31 @@
 .gb-marquee span { display: inline-block; padding-left: 100%; animation: gb-marquee 24s linear infinite; }
 @keyframes gb-marquee { to { transform: translateX(-100%); } }
 
-.gb-title { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: clamp(34px, 7vw, 46px); letter-spacing: 0; text-align: center; margin: 0 0 22px; }
-.gb-title-text { background: linear-gradient(90deg, #b95a28, var(--gold), #426f6b, #173fbe, #685d94, #8a5979, #b95a28); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gb-rainbow 6s linear infinite; text-shadow: none; }
-@keyframes gb-rainbow { to { background-position: 200% 0; } }
-.gb-star { display: inline-block; color: var(--gold); font-style: normal; animation: gb-spin 3.5s linear infinite; }
-.gb-star:last-child { animation-direction: reverse; }
-@keyframes gb-spin { to { transform: rotate(360deg); } }
+.gb-title { display: flex; align-items: flex-end; justify-content: center; gap: clamp(10px, 3vw, 26px); margin: 12px 0 26px; }
+.gb-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.gb-sprites { position: absolute; }
+
+/* WordArt: every letter in its own colour with a 3D extrusion, rolling as a wave. */
+.gb-wordart { display: inline-flex; font: italic 700 clamp(36px, 8vw, 54px)/1.1 Georgia, "Times New Roman", serif; letter-spacing: .01em; }
+.gb-wordart span { display: inline-block; text-shadow: 1px 1px 0 #3a332b, 2px 2px 0 #3a332b, 3px 3px 0 #3a332b, 4px 4px 0 #3a332b, 5px 6px 6px rgba(0, 0, 0, .22); animation: gb-wave 1.6s ease-in-out calc(var(--i) * -.14s) infinite; }
+.gb-wordart span:nth-child(6n + 1) { color: #b95a28; }
+.gb-wordart span:nth-child(6n + 2) { color: var(--gold); }
+.gb-wordart span:nth-child(6n + 3) { color: #426f6b; }
+.gb-wordart span:nth-child(6n + 4) { color: #173fbe; }
+.gb-wordart span:nth-child(6n + 5) { color: #685d94; }
+.gb-wordart span:nth-child(6n + 6) { color: #8a5979; }
+@keyframes gb-wave { 50% { transform: translateY(-.16em); } }
+
+/* Pixel dancers: a sprite strip of four frames (A, B, A, C) moved in jumps, plus a hop. */
+.gb-dancer { --px: 4px; display: inline-block; width: calc(11 * var(--px)); height: calc(14 * var(--px)); overflow: hidden; color: #b95a28; flex-shrink: 0; animation: gb-hop .4s steps(1, end) infinite; }
+.gb-dancer svg { display: block; width: calc(44 * var(--px)); height: 100%; animation: gb-dance .8s steps(4) infinite; }
+.gb-dancer-right { color: #173fbe; }
+.gb-dancer-right, .gb-dancer-right svg { animation-delay: -.2s; }
+@keyframes gb-dance { to { transform: translateX(-100%); } }
+@keyframes gb-hop { 50% { transform: translateY(calc(-1 * var(--px))); } }
+
+.gb-glitter { position: fixed; z-index: 10; pointer-events: none; font-size: 15px; line-height: 1; transform: translate(-50%, -50%); animation: gb-glitter .9s ease-out forwards; }
+@keyframes gb-glitter { to { opacity: 0; transform: translate(-50%, 18px) scale(.4) rotate(120deg); } }
 
 .gb-counter { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 13px; color: var(--muted); margin: 26px 0 8px; }
 .gb-digits { display: inline-flex; gap: 3px; padding: 4px; background: var(--night); border: 3px ridge #c9c6be; }
@@ -61,7 +81,6 @@
 .gb-entry.is-new .gb-new { display: inline-block; }
 @keyframes gb-blink { to { visibility: hidden; } }
 .gb-entry p { margin: 10px 0; }
-.gb-homepage { font-size: 13px; }
 .gb-reply { margin: 0 0 10px; padding: 2px 14px; border-left: 3px solid var(--gold); background: #f5f1e6; font-size: 14px; }
 .gb-reply-label { font-size: 12px; color: var(--muted); }
 .gb-empty { text-align: center; padding: 22px; border: 3px double var(--line); background: #fffdf7; }
@@ -72,6 +91,7 @@
 .gb-badges span { display: inline-flex; align-items: center; justify-content: center; min-width: 88px; height: 31px; padding: 0 8px; font: 700 9px/1 Verdana, Geneva, sans-serif; letter-spacing: .04em; color: var(--amber); background: linear-gradient(var(--night), #3a3a36); border: 2px outset #8d8a82; }
 
 @media (max-width: 560px) {
+  .gb-dancer { --px: 3px; }
   .gb-form fieldset { grid-template-columns: 1fr; padding: 14px; gap: 6px; }
   .gb-smileys, .gb-privacy, .gb-buttons, .gb-status { grid-column: 1; }
   .gb-form input, .gb-form textarea { margin-bottom: 6px; }

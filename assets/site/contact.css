@@ -1,0 +1,58 @@
+/* Contact form on the About page as an airmail postcard: message on the left, stamp with a
+   step response, postmark and address lines on the right. A sent card flies off and a new
+   one slides in; reduced motion skips both. */
+.contact { margin: 24px 0 18px; }
+.postcard { --airmail: repeating-linear-gradient(-45deg, #b95a28 0 12px, #faf9f6 12px 18px, #173fbe 18px 30px, #faf9f6 30px 36px);
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); padding: 8px; background: var(--airmail);
+  box-shadow: 0 12px 26px rgba(37, 37, 37, .16); transform: rotate(-1deg); transition: transform .3s ease; }
+.postcard:focus-within { transform: rotate(0) translateY(-2px); }
+.postcard[hidden] { display: none; }
+.postcard-message, .postcard-address { background: #fffdf6; padding: 18px 20px 16px; }
+.postcard-message { display: flex; flex-direction: column; gap: 6px; }
+.postcard-address { position: relative; display: flex; flex-direction: column; border-left: 1px solid #d8d5cc; padding-top: 112px; }
+.postcard label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.postcard textarea, .postcard input { font: inherit; font-size: 15px; color: var(--ink); background: transparent; border: 0; border-radius: 0; padding: 2px 2px 3px; min-width: 0; }
+.postcard textarea { flex: 1; min-height: 13.2em; resize: vertical; line-height: 1.65em;
+  background: repeating-linear-gradient(transparent 0 calc(1.65em - 1px), #cfd7e6 calc(1.65em - 1px) 1.65em) local; }
+.postcard input { border-bottom: 1px dotted var(--ink); margin-bottom: 14px; }
+.postcard textarea:focus, .postcard input:focus { outline: 2px solid var(--link); outline-offset: 2px; }
+.postcard-to { margin: 0 0 16px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.postcard-to strong { color: var(--ink); font-size: 15px; }
+
+/* Perforated edge: holes centred on the border every 8px, the inner content box stays solid. */
+.postcard-stamp { position: absolute; top: 14px; right: 16px; width: 64px; height: 80px; padding: 5px; background: #fff;
+  -webkit-mask: radial-gradient(circle, #0000 2.6px, #000 3px) -4px -4px / 8px 8px, linear-gradient(#000 0 0) content-box;
+  mask: radial-gradient(circle, #0000 2.6px, #000 3px) -4px -4px / 8px 8px, linear-gradient(#000 0 0) content-box;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .4)); transform: rotate(3deg); font-family: "Courier New", Courier, monospace; }
+.postcard-postmark { position: absolute; top: 26px; right: 44px; width: 150px; height: 72px; transform: rotate(-9deg); opacity: .62;
+  fill: none; stroke: #2f3e66; stroke-width: 1.3; font-family: "Courier New", Courier, monospace; }
+.postcard-postmark text { fill: #2f3e66; stroke: none; font-weight: 700; }
+.postcard-airmail { margin: auto 0 0; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #173fbe; }
+
+.contact-gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; }
+.contact-note { font-size: 12px; color: var(--muted); margin: 22px 0 10px; }
+.contact-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; }
+.contact-actions button { font: inherit; font-size: 14px; font-weight: 700; color: var(--paper); background: var(--link); border: 0; padding: 9px 18px; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); }
+.contact-actions button:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+.contact-actions button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.contact-actions [hidden] { display: none; }
+.contact.is-done .contact-send, .contact.is-done .contact-note { display: none; }
+.contact-status { font-size: 14px; color: var(--link); margin: 12px 0 0; }
+.contact-status:empty { display: none; }
+
+.postcard.is-sent { animation: pc-send 1.1s cubic-bezier(.55, -.25, .75, .9) forwards; pointer-events: none; }
+@keyframes pc-send {
+  25% { transform: rotate(-3deg) translateY(10px); }
+  100% { transform: translate(55%, -75vh) rotate(16deg) scale(.35); opacity: 0; }
+}
+.postcard.is-new { animation: pc-new .6s ease-out; }
+@keyframes pc-new { from { transform: translateX(-30%) rotate(-6deg); opacity: 0; } }
+
+@media (max-width: 640px) {
+  .postcard { grid-template-columns: 1fr; transform: none; }
+  .postcard-address { border-left: 0; border-top: 1px dashed #d8d5cc; }
+  .postcard textarea { min-height: 9.9em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .postcard, .postcard:focus-within { transform: none; transition: none; }
+}

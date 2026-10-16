@@ -236,9 +236,16 @@ def read_content(path, root=ROOT):
     tags = data.get("tags", [])
     if not isinstance(tags, list) or not all(isinstance(tag, str) for tag in tags):
         raise ValueError(f"{path}: tags muss eine Liste von Texten sein")
+    # Optional page-specific files, e.g. the contact postcard on the About page.
+    head = []
+    for key, tag in (("styles", '<link rel="stylesheet" href="{}">'), ("scripts", '<script type="module" src="{}"></script>')):
+        files = data.get(key, [])
+        if not isinstance(files, list) or not all(isinstance(f, str) and re.fullmatch(r"/assets/[\w/.-]+\.(?:css|js|mjs)", f) for f in files):
+            raise ValueError(f"{path}: {key} muss eine Liste von Dateien unter /assets/ sein")
+        head += [tag.format(f) for f in files]
     return {**data, "date": date, "tags": tags, "section": section, "slug": slug,
             "url": f"/{section}/{slug}.html" if section != "about" else "/about.html",
-            "body": render_markdown(match[2]), "source": path}
+            "body": render_markdown(match[2]), "source": path, "head": "\n  ".join(head)}
 
 
 def tags_html(tags):
@@ -264,7 +271,7 @@ def entries_html(entries, projects=False):
 
 # Guestbook entries are approved by hand and kept in content/guestbook.yml. Visitors' text is
 # escaped, never rendered as Markdown or HTML.
-GUESTBOOK_FIELDS = {"name", "date", "location", "homepage", "message", "reply"}
+GUESTBOOK_FIELDS = {"name", "date", "message", "reply"}
 
 
 def read_guestbook(path):
@@ -279,12 +286,9 @@ def read_guestbook(path):
             entry["date"] = dt.date.fromisoformat(entry["date"])
         if not isinstance(entry.get("date"), dt.date) or isinstance(entry["date"], dt.datetime):
             raise ValueError(f"{where}: date muss YYYY-MM-DD sein")
-        for key in ("name", "message", "location", "homepage", "reply"):
-            required = key in ("name", "message")
-            if (required or key in entry) and not (isinstance(entry.get(key), str) and entry[key].strip()):
+        for key in ("name", "message", "reply"):
+            if (key != "reply" or key in entry) and not (isinstance(entry.get(key), str) and entry[key].strip()):
                 raise ValueError(f"{where}: {key} muss ein nichtleerer Text sein")
-        if "homepage" in entry and not re.fullmatch(r"https?://[^\s\"'<>]+", entry["homepage"]):
-            raise ValueError(f"{where}: homepage muss mit http:// oder https:// beginnen")
     return sorted(entries, key=lambda entry: entry["date"])
 
 
@@ -297,15 +301,12 @@ def guestbook_html(entries, form_action, template):
     items = []
     for number, entry in reversed(list(enumerate(entries, 1))):
         date = entry["date"]
-        location = f' <span>aus {escape(entry["location"])}</span>' if entry.get("location") else ''
-        homepage = (f'<p class="gb-homepage"><a href="{escape(entry["homepage"], quote=True)}" rel="nofollow ugc noopener noreferrer" '
-                    'target="_blank">⌂ Homepage</a></p>') if entry.get("homepage") else ''
-        reply = (f'<div class="gb-reply"><p class="gb-reply-label">Antwort vom Webmaster:</p>{paragraphs_html(entry["reply"])}</div>'
+        reply =(f'<div class="gb-reply"><p class="gb-reply-label">Antwort vom Webmaster:</p>{paragraphs_html(entry["reply"])}</div>'
                  if entry.get("reply") else '')
         items.append(f'<article class="gb-entry" id="eintrag-{number}" data-date="{date.isoformat()}">'
                      f'<div class="gb-entry-head"><span class="gb-number">#{number}</span> <strong class="gb-name">{escape(entry["name"])}</strong>'
-                     f'{location}<span class="gb-new">NEU!</span><time datetime="{date.isoformat()}">{date.strftime("%d.%m.%Y")}</time></div>'
-                     f'{paragraphs_html(entry["message"])}{homepage}{reply}</article>')
+                     f'<span class="gb-new">NEU!</span><time datetime="{date.isoformat()}">{date.strftime("%d.%m.%Y")}</time></div>'
+                     f'{paragraphs_html(entry["message"])}{reply}</article>')
     listing = (f'<div class="gb-entries">{"".join(items)}</div>' if items else
                '<p class="gb-empty">Noch keine Einträge – trag dich als Erste oder Erster ein! <span class="gb-hand" aria-hidden="true">☝</span></p>')
     digits = ''.join(f'<span class="gb-digit" style="--d: {d}; --i: {i}"><span class="gb-strip">'
@@ -382,7 +383,7 @@ def build(root=ROOT):
                          'title="Unterstütze mich auf Buy Me a Coffee" aria-label="Unterstütze mich auf Buy Me a Coffee">'
                          '<img src="/assets/site/buymeacoffee.svg" alt="" width="18" height="18"><span>Buy me a coffee</span></a></p>')
             body += '</div>'
-        page(item['url'], item['title'], body, section, item.get('description'), wide=item.get('layout') == 'wide')
+        page(item['url'], item['title'], body, section, item.get('description'), item['head'], wide=item.get('layout') == 'wide')
     page('/gaestebuch.html', 'Gästebuch',
          guestbook_html(guestbook, form_action, Template((root / 'templates/guestbook.html').read_text(encoding='utf-8'))),
          'guestbook', 'Gästebuch: Grüße, Fragen und Anmerkungen zu den Notizen und Projekten.',

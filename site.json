@@ -4,7 +4,7 @@
   "description": "Notizen und Projekte zu Regelung, Optimierung und Energiesystemen.",
   "github": "https://github.com/alexanderblinn",
   "support": "https://buymeacoffee.com/alexander.blinn",
-  "guestbook_form": "",
+  "guestbook_form": "https://formspree.io/f/mzedywkb",
   "language": "de",
   "redirects": {
     "/demos/zentralpfad.html": "/img/notes/zentralpfad/index.html",

@@ -1,12 +1,10 @@
 # Freigeschaltete Gästebucheinträge, älteste zuerst. Neue Einträge kommen über das Formular
 # (Formulardienst aus site.json, "guestbook_form") per E-Mail an und werden von Hand hier
-# eingetragen. Pflichtfelder: name, date, message; optional: location, homepage, reply.
+# eingetragen. Pflichtfelder: name, date, message; optional: reply (Antwort vom Webmaster).
 # Der Text wird beim Build unverändert, aber HTML-sicher übernommen (kein Markdown).
 #
 # - name: "Anna"
 #   date: 2026-10-16
-#   location: "Trier"
-#   homepage: "https://example.org"
 #   message: |
 #     Schöne Seite! Der Zentralpfad zum Ausprobieren hat mir sehr geholfen.
 #   reply: "Danke, Anna!"

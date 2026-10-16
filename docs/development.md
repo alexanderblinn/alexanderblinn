@@ -49,6 +49,7 @@ Hier beginnt der Beitrag.
 | `kind: build` | Praktischen Aufbau unter Projects kennzeichnen. |
 | `status` | Projektstatus. |
 | `layout: wide` | Interaktive Diagramme (`.interactive-figure`) brechen symmetrisch bis 1080 px aus der Textspalte aus; Text, Code, Tabellen und Linien behalten die Spaltenbreite aller Seiten. |
+| `styles`, `scripts` | Zusätzliche CSS- und JavaScript-Dateien unter `/assets/` nur für diese Seite, z. B. `styles: [/assets/site/contact.css]`. |
 
 ## Bilder und Formeln
 
@@ -152,15 +153,13 @@ Alle Abbildungen folgen zwei Breiten (`NORMAL` = 512 px, `WIDE` = 790 px, die Te
 
 Das Gästebuch unter `/gaestebuch.html` ist moderiert: Besucher schicken ihren Eintrag über ein Formular an einen Formulardienst, der ihn per E-Mail weiterleitet. Freigegebene Einträge werden von Hand in `content/guestbook.yml` eingetragen und erscheinen nach dem nächsten Build. Seite und Layout liegen in `templates/guestbook.html`, `assets/site/guestbook.css` und `assets/site/guestbook.js`.
 
-**Formular anschließen.** Bei [Formspree](https://formspree.io) ein Formular anlegen und dessen Adresse (`https://formspree.io/f/…`) in `site.json` als `guestbook_form` eintragen. Solange der Eintrag leer ist, zeigt die Seite ein Baustellenschild und das Formular ist gesperrt. Das Formular sendet die Felder `name`, `location`, `homepage` und `message`, dazu das Honeypot-Feld `_gotcha` gegen Spam-Bots. Mit JavaScript bleibt der Besucher auf der Seite und sieht eine Bestätigung; lehnt der Dienst die Übermittlung im Hintergrund ab (zum Beispiel, weil er ein Captcha zeigen will) oder ist JavaScript aus, wird das Formular normal abgeschickt und der Dienst zeigt seine eigene Bestätigungsseite.
+**Formular anschließen.** Bei [Formspree](https://formspree.io) ein Formular anlegen und dessen Adresse (`https://formspree.io/f/…`) in `site.json` als `guestbook_form` eintragen. Solange der Eintrag leer ist, zeigt die Seite ein Baustellenschild und das Formular ist gesperrt. Das Formular fragt nur `name` und `message` ab, keine E-Mail-Adresse; dazu kommt das Honeypot-Feld `_gotcha` gegen Spam-Bots. Mit JavaScript bleibt der Besucher auf der Seite und sieht eine Bestätigung; lehnt der Dienst die Übermittlung im Hintergrund ab (zum Beispiel, weil er ein Captcha zeigen will) oder ist JavaScript aus, wird das Formular normal abgeschickt und der Dienst zeigt seine eigene Bestätigungsseite.
 
 **Eintrag freischalten.** Die Daten aus der E-Mail in `content/guestbook.yml` übernehmen, älteste Einträge zuerst:
 
 ```yaml
 - name: "Anna"
   date: 2026-10-16
-  location: "Trier"                 # optional
-  homepage: "https://example.org"   # optional, nur http:// oder https://
   message: |
     Schöne Seite!
 
@@ -169,6 +168,10 @@ Das Gästebuch unter `/gaestebuch.html` ist moderiert: Besucher schicken ihren E
 ```
 
 Pflicht sind `name`, `date` und `message`. Der Text wird HTML-sicher übernommen, nicht als Markdown; Leerzeilen trennen Absätze. Texte mit Backslash (etwa `\o/`) in einfache Anführungszeichen oder einen `|`-Block setzen, denn in doppelten Anführungszeichen ist `\` in YAML ein Escape-Zeichen. Ein fehlerhafter Eintrag bricht den Build ab; die Fehlermeldung nennt seine Nummer. Das blinkende „NEU!“ erscheint 30 Tage lang nach dem Datum eines Eintrags; alle Animationen ruhen, wenn das Betriebssystem reduzierte Bewegung verlangt.
+
+## Kontaktformular
+
+Die About-Seite enthält unter „Kontakt“ ein Formular im Stil einer Luftpost-Postkarte (HTML direkt in `content/about.md`, Aussehen und Verhalten in `assets/site/contact.css` und `assets/site/contact.js`, eingebunden über `styles`/`scripts` im Kopf der Seite). Es schickt Nachricht, Name und E-Mail-Adresse an dieselbe Formspree-Adresse wie das Gästebuch, mit dem Betreff „Kontakt über alexanderblinn.com“; das Feld `email` setzt Formspree als Antwortadresse. Für ein eigenes Formspree-Formular die Adresse im `action`-Attribut in `content/about.md` ändern. Darunter steht die E-Mail-Adresse als `mailto:`-Link. Sie wird erst im Browser aus `data-user` und `data-domain` zusammengesetzt, damit Adresssammler sie nicht im HTML finden; ohne JavaScript erscheint sie als „alexander.blinn (at) outlook.de“.
 
 ## Verzeichnisübersicht
 
