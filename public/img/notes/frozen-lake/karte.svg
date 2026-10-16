@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="302.4pt" height="302.4pt" viewBox="0 0 302.4 302.4" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="384pt" height="384pt" viewBox="0 0 384 384" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-16T09:39:57.937701</dc:date>
+    <dc:date>2026-10-16T10:57:28.735449</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -21,213 +21,213 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 302.4 
-L 302.4 302.4 
-L 302.4 0 
+   <path d="M 0 384 
+L 384 384 
+L 384 0 
 L 0 0 
 z
 " style="fill: #faf9f6"/>
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 3.3 77.25 
-L 77.25 77.25 
-L 77.25 3.3 
+    <path d="M 3.3 97.65 
+L 97.65 97.65 
+L 97.65 3.3 
 L 3.3 3.3 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
-    <path d="M 77.25 77.25 
-L 151.2 77.25 
-L 151.2 3.3 
-L 77.25 3.3 
+    <path d="M 97.65 97.65 
+L 192 97.65 
+L 192 3.3 
+L 97.65 3.3 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
-    <path d="M 151.2 77.25 
-L 225.15 77.25 
-L 225.15 3.3 
-L 151.2 3.3 
+    <path d="M 192 97.65 
+L 286.35 97.65 
+L 286.35 3.3 
+L 192 3.3 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
-    <path d="M 225.15 77.25 
-L 299.1 77.25 
-L 299.1 3.3 
-L 225.15 3.3 
+    <path d="M 286.35 97.65 
+L 380.7 97.65 
+L 380.7 3.3 
+L 286.35 3.3 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
-    <path d="M 3.3 151.2 
-L 77.25 151.2 
-L 77.25 77.25 
-L 3.3 77.25 
+    <path d="M 3.3 192 
+L 97.65 192 
+L 97.65 97.65 
+L 3.3 97.65 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
-    <path d="M 77.25 151.2 
-L 151.2 151.2 
-L 151.2 77.25 
-L 77.25 77.25 
+    <path d="M 97.65 192 
+L 192 192 
+L 192 97.65 
+L 97.65 97.65 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #d9d5cb; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #d9d5cb; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_8">
-    <path d="M 151.2 151.2 
-L 225.15 151.2 
-L 225.15 77.25 
-L 151.2 77.25 
+    <path d="M 192 192 
+L 286.35 192 
+L 286.35 97.65 
+L 192 97.65 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_9">
-    <path d="M 225.15 151.2 
-L 299.1 151.2 
-L 299.1 77.25 
-L 225.15 77.25 
+    <path d="M 286.35 192 
+L 380.7 192 
+L 380.7 97.65 
+L 286.35 97.65 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #d9d5cb; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #d9d5cb; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_10">
-    <path d="M 3.3 225.15 
-L 77.25 225.15 
-L 77.25 151.2 
-L 3.3 151.2 
+    <path d="M 3.3 286.35 
+L 97.65 286.35 
+L 97.65 192 
+L 3.3 192 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_11">
-    <path d="M 77.25 225.15 
-L 151.2 225.15 
-L 151.2 151.2 
-L 77.25 151.2 
+    <path d="M 97.65 286.35 
+L 192 286.35 
+L 192 192 
+L 97.65 192 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_12">
-    <path d="M 151.2 225.15 
-L 225.15 225.15 
-L 225.15 151.2 
-L 151.2 151.2 
+    <path d="M 192 286.35 
+L 286.35 286.35 
+L 286.35 192 
+L 192 192 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_13">
-    <path d="M 225.15 225.15 
-L 299.1 225.15 
-L 299.1 151.2 
-L 225.15 151.2 
+    <path d="M 286.35 286.35 
+L 380.7 286.35 
+L 380.7 192 
+L 286.35 192 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #d9d5cb; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #d9d5cb; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_14">
-    <path d="M 3.3 299.1 
-L 77.25 299.1 
-L 77.25 225.15 
-L 3.3 225.15 
+    <path d="M 3.3 380.7 
+L 97.65 380.7 
+L 97.65 286.35 
+L 3.3 286.35 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #d9d5cb; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #d9d5cb; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_15">
-    <path d="M 77.25 299.1 
-L 151.2 299.1 
-L 151.2 225.15 
-L 77.25 225.15 
+    <path d="M 97.65 380.7 
+L 192 380.7 
+L 192 286.35 
+L 97.65 286.35 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_16">
-    <path d="M 151.2 299.1 
-L 225.15 299.1 
-L 225.15 225.15 
-L 151.2 225.15 
+    <path d="M 192 380.7 
+L 286.35 380.7 
+L 286.35 286.35 
+L 192 286.35 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #faf9f6; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="patch_17">
-    <path d="M 225.15 299.1 
-L 299.1 299.1 
-L 299.1 225.15 
-L 225.15 225.15 
+    <path d="M 286.35 380.7 
+L 380.7 380.7 
+L 380.7 286.35 
+L 286.35 286.35 
 z
-" clip-path="url(#pf9afc79987)" style="fill: #cfe0da; stroke: #c9c6be; stroke-linejoin: miter"/>
+" clip-path="url(#pdedcb24471)" style="fill: #cfe0da; stroke: #c9c6be; stroke-linejoin: miter"/>
    </g>
    <g id="text_1">
-    <text style="font-weight: 700; font-size: 12px; font-family: 'Courier New'; text-anchor: end; fill: #685d94" x="73.5525" y="68.82525" transform="rotate(-0 73.5525 68.82525)">S</text>
+    <text style="font-weight: 700; font-size: 12px; font-family: 'Courier New'; text-anchor: end; fill: #685d94" x="92.9325" y="87.59325" transform="rotate(-0 92.9325 87.59325)">S</text>
    </g>
    <g id="text_2">
-    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #65635d" x="114.225" y="117.61875" transform="rotate(-0 114.225 117.61875)">H</text>
+    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #65635d" x="144.825" y="148.21875" transform="rotate(-0 144.825 148.21875)">H</text>
    </g>
    <g id="text_3">
-    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #65635d" x="262.125" y="117.61875" transform="rotate(-0 262.125 117.61875)">H</text>
+    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #65635d" x="333.525" y="148.21875" transform="rotate(-0 333.525 148.21875)">H</text>
    </g>
    <g id="text_4">
-    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #65635d" x="262.125" y="191.56875" transform="rotate(-0 262.125 191.56875)">H</text>
+    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #65635d" x="333.525" y="242.56875" transform="rotate(-0 333.525 242.56875)">H</text>
    </g>
    <g id="text_5">
-    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #65635d" x="40.275" y="265.51875" transform="rotate(-0 40.275 265.51875)">H</text>
+    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #65635d" x="50.475" y="336.91875" transform="rotate(-0 50.475 336.91875)">H</text>
    </g>
    <g id="text_6">
-    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #426f6b" x="262.125" y="265.51875" transform="rotate(-0 262.125 265.51875)">G</text>
+    <text style="font-weight: 700; font-size: 16px; font-family: 'Courier New'; text-anchor: middle; fill: #426f6b" x="333.525" y="336.91875" transform="rotate(-0 333.525 336.91875)">G</text>
    </g>
    <g id="text_7">
-    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="9.216" y="15.344125" transform="rotate(-0 9.216 15.344125)">0</text>
+    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="10.848" y="16.976125" transform="rotate(-0 10.848 16.976125)">0</text>
    </g>
    <g id="text_8">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="114.225" y="43.033438" transform="rotate(-0 114.225 43.033438)">1</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="144.825" y="53.233437" transform="rotate(-0 144.825 53.233437)">1</text>
    </g>
    <g id="text_9">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="188.175" y="43.033438" transform="rotate(-0 188.175 43.033438)">2</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="239.175" y="53.233437" transform="rotate(-0 239.175 53.233437)">2</text>
    </g>
    <g id="text_10">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="262.125" y="43.033438" transform="rotate(-0 262.125 43.033438)">3</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="333.525" y="53.233437" transform="rotate(-0 333.525 53.233437)">3</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="40.275" y="116.983438" transform="rotate(-0 40.275 116.983438)">4</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="50.475" y="147.583437" transform="rotate(-0 50.475 147.583437)">4</text>
    </g>
    <g id="text_12">
-    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="83.166" y="89.294125" transform="rotate(-0 83.166 89.294125)">5</text>
+    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="105.198" y="111.326125" transform="rotate(-0 105.198 111.326125)">5</text>
    </g>
    <g id="text_13">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="188.175" y="116.983438" transform="rotate(-0 188.175 116.983438)">6</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="239.175" y="147.583437" transform="rotate(-0 239.175 147.583437)">6</text>
    </g>
    <g id="text_14">
-    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="231.066" y="89.294125" transform="rotate(-0 231.066 89.294125)">7</text>
+    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="293.898" y="111.326125" transform="rotate(-0 293.898 111.326125)">7</text>
    </g>
    <g id="text_15">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="40.275" y="190.933438" transform="rotate(-0 40.275 190.933438)">8</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="50.475" y="241.933437" transform="rotate(-0 50.475 241.933437)">8</text>
    </g>
    <g id="text_16">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="114.225" y="190.933438" transform="rotate(-0 114.225 190.933438)">9</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="144.825" y="241.933437" transform="rotate(-0 144.825 241.933437)">9</text>
    </g>
    <g id="text_17">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="188.175" y="190.933438" transform="rotate(-0 188.175 190.933438)">10</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="239.175" y="241.933437" transform="rotate(-0 239.175 241.933437)">10</text>
    </g>
    <g id="text_18">
-    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="231.066" y="163.244125" transform="rotate(-0 231.066 163.244125)">11</text>
+    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="293.898" y="205.676125" transform="rotate(-0 293.898 205.676125)">11</text>
    </g>
    <g id="text_19">
-    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="9.216" y="237.194125" transform="rotate(-0 9.216 237.194125)">12</text>
+    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="10.848" y="300.026125" transform="rotate(-0 10.848 300.026125)">12</text>
    </g>
    <g id="text_20">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="114.225" y="264.883438" transform="rotate(-0 114.225 264.883438)">13</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="144.825" y="336.283437" transform="rotate(-0 144.825 336.283437)">13</text>
    </g>
    <g id="text_21">
-    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="188.175" y="264.883438" transform="rotate(-0 188.175 264.883438)">14</text>
+    <text style="font-size: 13px; font-family: 'Courier New'; text-anchor: middle; fill: #252525" x="239.175" y="336.283437" transform="rotate(-0 239.175 336.283437)">14</text>
    </g>
    <g id="text_22">
-    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="231.066" y="237.194125" transform="rotate(-0 231.066 237.194125)">15</text>
+    <text style="font-size: 10px; font-family: 'Courier New'; text-anchor: start; fill: #65635d" x="293.898" y="300.026125" transform="rotate(-0 293.898 300.026125)">15</text>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="pf9afc79987">
-   <rect x="3.3" y="3.3" width="295.8" height="295.8"/>
+  <clipPath id="pdedcb24471">
+   <rect x="3.3" y="3.3" width="377.4" height="377.4"/>
   </clipPath>
  </defs>
 </svg>

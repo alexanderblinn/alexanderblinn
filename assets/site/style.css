@@ -13,11 +13,12 @@ body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monosp
 /* Wide layout: text, code, rules and tables keep the column of every other page; only the
    interactive figures break out symmetrically to both sides, up to 1080px. */
 .page-wide .interactive-figure { --breakout: max(100%, min(1080px, 100vw - 80px)); width: var(--breakout); margin-left: calc((100% - var(--breakout)) / 2); }
-.static-figure { margin: 16px 0 36px; }
-.static-figure img { display: block; width: 100%; max-width: 640px; height: auto; }
-.static-figure.wide img, .static-figure.wide figcaption { max-width: none; }
-.static-figure.natural img { width: auto; max-width: 100%; }
-.static-figure figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; max-width: 640px; }
+/* A figure is laid out as a table whose only cell is the image and whose caption sits below:
+   the caption is then exactly as wide as the picture. Images are shown at the size of their
+   width attribute and only ever scaled down. */
+.static-figure { display: table; max-width: 100%; margin: 16px 0 36px; }
+.static-figure img { display: block; max-width: 100%; height: auto; }
+.static-figure figcaption { display: table-caption; caption-side: bottom; font-size: 13px; color: var(--muted); padding-top: 8px; }
 .figure-index { columns: 2; font-size: 14px; margin: 24px 0 35px; }
 .figure-index li { break-inside: avoid; }
 .interactive-figure { margin: 16px 0 42px; }

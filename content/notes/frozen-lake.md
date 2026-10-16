@@ -12,8 +12,8 @@ Ein Wanderer soll über einen zugefrorenen See zu einer Fahne gelangen und dabei
 
 Diese Notiz geht die Datei `discrete_tabular.py` aus dem Projekt ReinforcementLearningExamples durch. Sie löst Gymnasiums `FrozenLake-v1` mit fünf tabellarischen Verfahren: Q-Learning, Double Q-Learning, SARSA, SARSA(λ) und Monte Carlo. Der Text erklärt die Mathematik dahinter, von der Bellman-Optimalitätsgleichung bis zu den Eligibility Traces, und stellt jeder Update-Regel direkt ihre Implementierung gegenüber. Die Animationen zeigen, was in der Tabelle passiert.
 
-<figure class="static-figure natural">
-  <img src="/img/notes/frozen-lake/gieriger-lauf.gif" alt="Animation des Frozen-Lake-Spielfelds: Die Figur folgt der gelernten gierigen Politik vom Start zur Fahne; im zweiten Lauf rutscht sie in ein Loch" width="512" height="566" loading="lazy">
+<figure class="static-figure">
+  <img src="/img/notes/frozen-lake/gieriger-lauf.gif" alt="Animation des Frozen-Lake-Spielfelds: Die Figur folgt der gelernten gierigen Politik vom Start zur Fahne; im zweiten Lauf rutscht sie in ein Loch" width="512" height="548" loading="lazy">
   <figcaption>Abbildung 1: Zwei Testläufe mit der gelernten Tabelle (Q-Learning, 100 000 Episoden, gierige Politik). Der erste erreicht die Fahne, der zweite rutscht trotz gleicher Politik in ein Loch: Die Umgebung ist stochastisch, die beste Politik gewinnt nur in etwa drei von vier Fällen.</figcaption>
 </figure>
 
@@ -22,7 +22,7 @@ Diese Notiz geht die Datei `discrete_tabular.py` aus dem Projekt ReinforcementLe
 Das Spielfeld ist ein Gitter mit 4 × 4 Feldern. Der Zustand s ∈ 𝒮 = {0, …, 15} ist die Nummer des Felds, zeilenweise von links oben gezählt. Vier Aktionen a ∈ 𝒜 = {0, 1, 2, 3} stehen für links, unten, rechts und oben. Das Startfeld S ist Zustand 0, das Ziel G Zustand 15; die vier Löcher H und das Ziel sind Endzustände, in denen die Episode endet.
 
 <figure class="static-figure">
-  <img src="/img/notes/frozen-lake/karte.svg" alt="Das 4 mal 4 Gitter von Frozen Lake mit den Zustandsnummern 0 bis 15, dem Start links oben, vier grau markierten Löchern und dem Ziel rechts unten" width="420" height="420" loading="lazy">
+  <img src="/img/notes/frozen-lake/karte.svg" alt="Das 4 mal 4 Gitter von Frozen Lake mit den Zustandsnummern 0 bis 15, dem Start links oben, vier grau markierten Löchern und dem Ziel rechts unten" width="512" height="512" loading="lazy">
   <figcaption>Abbildung 2: Die Karte von FrozenLake-v1 mit den Zustandsnummern. S ist der Start (Zustand 0), H sind Löcher, G ist das Ziel (Zustand 15).</figcaption>
 </figure>
 
@@ -140,12 +140,12 @@ def decay_schedule(
 ```
 
 <figure class="static-figure">
-  <img src="/img/notes/frozen-lake/schedules.svg" alt="Verlauf von Epsilon und Alpha über 100 000 Episoden: schneller Abfall von 1 am Anfang, flacher Verlauf bis 0,1 bei 90 Prozent der Episoden, danach konstant" width="640" height="320" loading="lazy">
+  <img src="/img/notes/frozen-lake/schedules.svg" alt="Verlauf von Epsilon und Alpha über 100 000 Episoden: schneller Abfall von 1 am Anfang, flacher Verlauf bis 0,1 bei 90 Prozent der Episoden, danach konstant" width="512" height="278" loading="lazy">
   <figcaption>Abbildung 3: Der gemeinsame Zeitplan für ε und α. Beide fallen in den ersten Episoden schnell, nähern sich dann langsam ihrem Minimum 0,1 und bleiben in den letzten zehn Prozent der Episoden konstant.</figcaption>
 </figure>
 
-<figure class="static-figure natural">
-  <img src="/img/notes/frozen-lake/erkundung.gif" alt="Animation einer frühen Episode mit Epsilon gleich 1: Die Figur wählt in jedem Schritt eine zufällige Aktion und fällt schließlich in ein Loch" width="512" height="566" loading="lazy">
+<figure class="static-figure">
+  <img src="/img/notes/frozen-lake/erkundung.gif" alt="Animation einer frühen Episode mit Epsilon gleich 1: Die Figur wählt in jedem Schritt eine zufällige Aktion und fällt schließlich in ein Loch" width="512" height="548" loading="lazy">
   <figcaption>Abbildung 4: Eine Episode ganz am Anfang des Trainings mit ε = 1. Jede Aktion ist zufällig, die meisten Episoden enden in einem Loch, und die Tabelle lernt in dieser Phase vor allem, welche Felder gefährlich sind.</figcaption>
 </figure>
 
@@ -161,8 +161,8 @@ $$
 
 Das ist ein gleitender Mittelwert über verrauschte Stichproben des Erwartungswerts in der Bellman-Gleichung, eine stochastische Approximation. Die Verfahren unterscheiden sich allein darin, wie der Zielwert gebildet wird: aus einem Schritt und der eigenen Schätzung des Nachfolgers (Temporal-Difference-Lernen), aus mehreren Schritten mit Gewichten (SARSA(λ)) oder aus der vollständigen Episode (Monte Carlo). Abbildung 5 zeigt, wie sich die Tabelle beim Q-Learning über 100 000 Episoden füllt: zuerst die Felder neben dem Ziel, dann rückwärts entlang der sicheren Wege.
 
-<figure class="static-figure natural">
-  <img src="/img/notes/frozen-lake/q-tabelle.gif" alt="Animation der Q-Tabelle während des Q-Learnings: Jedes Feld ist in vier Dreiecke für die vier Aktionen geteilt, deren Färbung mit dem Wert wächst; Pfeile zeigen die gierige Aktion; die Werte breiten sich vom Ziel aus rückwärts aus" width="520" height="560" loading="lazy">
+<figure class="static-figure">
+  <img src="/img/notes/frozen-lake/q-tabelle.gif" alt="Animation der Q-Tabelle während des Q-Learnings: Jedes Feld ist in vier Dreiecke für die vier Aktionen geteilt, deren Färbung mit dem Wert wächst; Pfeile zeigen die gierige Aktion; die Werte breiten sich vom Ziel aus rückwärts aus" width="512" height="576" loading="lazy">
   <figcaption>Abbildung 5: Die Tabelle Q während des Q-Learnings. Jedes Feld ist in vier Dreiecke geteilt, eines je Aktion; die Farbe zeigt Q(s, a), der Pfeil die gierige Aktion, die Zahl den Wert max<sub>a</sub> Q(s, a). Die Werte wachsen vom Ziel aus rückwärts, weil jeder Zielwert die Schätzung des Nachfolgers enthält.</figcaption>
 </figure>
 
@@ -455,8 +455,8 @@ def train_sarsa_lambda(
     return Q, episodic_reward
 ```
 
-<figure class="static-figure wide">
-  <img src="/img/notes/frozen-lake/spuren.gif" alt="Animation einer SARSA-Lambda-Episode mit zwei Tafeln: links die Q-Tabelle mit gierigen Pfeilen und der Figur, rechts die Eligibility Traces, die entlang des gelaufenen Wegs blau leuchten und Schritt für Schritt verblassen" width="730" height="410" loading="lazy">
+<figure class="static-figure">
+  <img src="/img/notes/frozen-lake/spuren.gif" alt="Animation einer SARSA-Lambda-Episode mit zwei Tafeln: links die Q-Tabelle mit gierigen Pfeilen und der Figur, rechts die Eligibility Traces, die entlang des gelaufenen Wegs blau leuchten und Schritt für Schritt verblassen" width="790" height="444" loading="lazy">
   <figcaption>Abbildung 6: Eine Episode mit SARSA(λ). Links die Tabelle Q, rechts die Spuren e(s, a): Das zuletzt besuchte Paar hat die Spur 1, ältere Paare verblassen mit γλ = 0,891 je Schritt. Jeder TD-Fehler δ wirkt auf alle Paare mit Spur, nicht nur auf das aktuelle.</figcaption>
 </figure>
 
@@ -535,8 +535,8 @@ def train_mc(
 
 Abbildung 7 zerlegt einen einzelnen Q-Learning-Schritt. Links steht der Wanderer im Feld s und hat die Aktion a gewählt; die zugehörige Zelle der Tabelle ist umrandet. Rechts ist dieselbe Tabelle als Wertetafel mit 16 Zeilen und 4 Spalten zu sehen. Nach dem Schritt sind der Folgezustand s′, die Belohnung r, der Zielwert r + γ max Q(s′, ·), der Fehler δ und der neue Eintrag angegeben. Bei einer Belohnung von null wächst der Eintrag nur, wenn der Nachfolger schon einen Wert hat: Information fließt rückwärts vom Ziel zum Start.
 
-<figure class="static-figure wide">
-  <img src="/img/notes/frozen-lake/update-schritt.gif" alt="Animation eines Q-Learning-Schritts mit zwei Tafeln: links das Gitter mit der Figur und der umrandeten aktuellen Zelle, rechts die Tabelle mit 16 Zeilen und 4 Spalten; über der Tabelle stehen Zielwert, Fehler und neuer Eintrag" width="730" height="430" loading="lazy">
+<figure class="static-figure">
+  <img src="/img/notes/frozen-lake/update-schritt.gif" alt="Animation eines Q-Learning-Schritts mit zwei Tafeln: links das Gitter mit der Figur und der umrandeten aktuellen Zelle, rechts die Tabelle mit 16 Zeilen und 4 Spalten; über der Tabelle stehen Zielwert, Fehler und neuer Eintrag" width="790" height="465" loading="lazy">
   <figcaption>Abbildung 7: Eine Episode Q-Learning Schritt für Schritt. Vor jedem Schritt sind Zustand und Aktion markiert, nach dem Schritt der Folgezustand, Zielwert, Fehler δ und das Update des Eintrags Q(s, a).</figcaption>
 </figure>
 
@@ -545,14 +545,14 @@ Abbildung 7 zerlegt einen einzelnen Q-Learning-Schritt. Links steht der Wanderer
 Alle fünf Verfahren laufen mit denselben Zeitplänen über 100 000 Episoden. Abbildung 8 zeigt die gleitende Erfolgsquote während des Trainings, also den Anteil der Episoden, die das Ziel erreichen. Sie steigt, während ε fällt, und bleibt mit 0,1 bis 0,4 weit unter der Erfolgsquote der gierigen Politik: Die Politik erkundet bis zum Ende zu 10 Prozent, und auf dem rutschigen Eis genügt ein zufälliger Schritt neben einem Loch, um die Episode zu verlieren.
 
 <figure class="static-figure">
-  <img src="/img/notes/frozen-lake/lernkurven.svg" alt="Fünf Lernkurven über 100 000 Episoden: gleitende Erfolgsquote von Q-Learning, Double Q-Learning, SARSA, SARSA-Lambda und Monte Carlo, steigend auf etwa 0,1 bis 0,4" width="720" height="380" loading="lazy">
+  <img src="/img/notes/frozen-lake/lernkurven.svg" alt="Fünf Lernkurven über 100 000 Episoden: gleitende Erfolgsquote von Q-Learning, Double Q-Learning, SARSA, SARSA-Lambda und Monte Carlo, steigend auf etwa 0,1 bis 0,4" width="790" height="384" loading="lazy">
   <figcaption>Abbildung 8: Erfolgsquote während des Trainings, gleitend gemittelt über 2000 Episoden. Die Kurven enthalten die Erkundungsschritte der ε-greedy-Politik.</figcaption>
 </figure>
 
 Abbildung 9 stellt die gelernten Tabellen der Wertiteration gegenüber, die q\* aus dem bekannten Modell berechnet. Die gierigen Pfeile stimmen weitgehend überein; die Werte selbst weichen ab, weil die Verfahren die Werte ihrer eigenen, teils erkundenden Politik schätzen und α nicht gegen null geht.
 
 <figure class="static-figure">
-  <img src="/img/notes/frozen-lake/politiken.svg" alt="Sechs Gitter nebeneinander: die gelernten Tabellen der fünf Verfahren und q-Stern aus der Wertiteration, jeweils mit gefärbten Dreiecken, gierigen Pfeilen und Zustandswerten" width="960" height="690" loading="lazy">
+  <img src="/img/notes/frozen-lake/politiken.svg" alt="Sechs Gitter nebeneinander: die gelernten Tabellen der fünf Verfahren und q-Stern aus der Wertiteration, jeweils mit gefärbten Dreiecken, gierigen Pfeilen und Zustandswerten" width="790" height="568" loading="lazy">
   <figcaption>Abbildung 9: Die gelernten Tabellen der fünf Verfahren und q* aus der Wertiteration mit demselben γ = 0,99. Farben und Zahlen zeigen die Werte, Pfeile die gierige Aktion.</figcaption>
 </figure>
 

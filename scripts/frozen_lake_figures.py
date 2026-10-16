@@ -34,13 +34,16 @@ ORANGE, BLUE, GREEN, AREA, PURPLE, TARGET, CONTOUR, GREY = "#b95a28", "#173fbe",
 HOLE, GOAL = "#d9d5cb", "#cfe0da"
 plt.rcParams.update({"font.family": "Courier New", "font.size": 11, "figure.facecolor": PAPER, "axes.facecolor": PAPER,
                      "savefig.facecolor": PAPER, "svg.fonttype": "none", "axes.edgecolor": LINE, "text.color": INK,
-                     "axes.labelcolor": MUTED, "xtick.color": MUTED, "ytick.color": MUTED})
+                     "axes.labelcolor": MUTED, "xtick.color": MUTED, "ytick.color": MUTED, "figure.dpi": 100})
 QMAP = LinearSegmentedColormap.from_list("q", [PAPER, "#f1d6c2", ORANGE])
 TMAP = LinearSegmentedColormap.from_list("trace", [PAPER, "#c7cfe9", BLUE])
 
 ENV_NAME, SEED, GAMMA = "FrozenLake-v1", dt.SEED, dt.GAMMA
 DESC = ["SFFF", "FHFH", "FFFH", "HFFG"]
 ACTIONS = ["links", "unten", "rechts", "oben"]  # gymnasium: 0 left, 1 down, 2 right, 3 up
+# Display widths in the note: normal figures 512 px, wide figures 790 px (the text column).
+# Browsers render SVGs at 96 px per inch, the raster frames are drawn at 100 dpi.
+NORMAL, WIDE = 512, 790
 METHODS = [("single_q", "Q-Learning"), ("double_q", "Double Q-Learning"), ("sarsa", "SARSA"), ("sarsa_lambda", "SARSA(λ)"), ("mc", "Monte Carlo")]
 
 
@@ -101,26 +104,33 @@ def save_gif(path, frames, durations):
     print(f"wrote {path.name}: {len(images)} frames, {path.stat().st_size / 1024:.0f} kB")
 
 
-def caption_font(text, bold, max_width):
-    """Courier New, shrunk step by step until the line fits into the strip."""
+def caption_size(captions, width):
+    """One font size per GIF: the largest of 14 … 11 px at which every caption fits on one line."""
+    longest = max((" · ".join(text for text, _ in parts) for parts in captions), key=len)
     for size in (14, 13, 12, 11):
-        font = ImageFont.truetype("C:/Windows/Fonts/courbd.ttf" if bold else "C:/Windows/Fonts/cour.ttf", size)
-        if font.getlength(text) <= max_width:
+        if ImageFont.truetype("C:/Windows/Fonts/courbd.ttf", size).getlength(longest) <= width - 24:
             break
-    return font
+    return size
 
 
-def captioned(frame, lines, size=512):
-    """Pygame frame (256 px) doubled pixel for pixel, with a caption strip below."""
+def captioned(frame, parts, font_size, size=NORMAL):
+    """Pygame frame (256 px) doubled pixel for pixel, with a one-line caption below;
+    `parts` are (text, bold) segments separated by a middle dot."""
     image = Image.fromarray(frame).resize((size, size), Image.NEAREST)
-    line_height = 18
-    strip = 10 + line_height * len(lines) + 8
-    canvas = Image.new("RGB", (size, size + strip), PAPER)
+    canvas = Image.new("RGB", (size, size + 36), PAPER)
     canvas.paste(image, (0, 0))
     draw = ImageDraw.Draw(canvas)
     draw.line([(0, size), (size, size)], fill=LINE, width=1)
-    for k, (text, bold) in enumerate(lines):
-        draw.text((12, size + 10 + line_height * k), text, fill=INK if bold else MUTED, font=caption_font(text, bold, size - 24))
+    regular = ImageFont.truetype("C:/Windows/Fonts/cour.ttf", font_size)
+    bold = ImageFont.truetype("C:/Windows/Fonts/courbd.ttf", font_size)
+    x = 12
+    for k, (text, is_bold) in enumerate(parts):
+        if k:
+            draw.text((x, size + 10), " · ", fill=MUTED, font=regular)
+            x += regular.getlength(" · ")
+        font = bold if is_bold else regular
+        draw.text((x, size + 10), text, fill=INK if is_bold else MUTED, font=font)
+        x += font.getlength(text)
     return canvas
 
 
@@ -296,7 +306,7 @@ def train_all():
 
 
 def figure_map():
-    fig, ax = plt.subplots(figsize=(4.2, 4.2))
+    fig, ax = plt.subplots(figsize=(NORMAL / 96, NORMAL / 96))
     draw_grid(ax)
     for s in range(16):
         x0, y0 = cell_origin(s)
@@ -313,7 +323,7 @@ def figure_map():
 def figure_schedules():
     n = dt.NUM_EPISODES
     eps = dt.decay_schedule(dt.INIT_EPSILON, dt.MIN_EPSILON, dt.EPSILON_DECAY_RATIO, n)
-    fig, ax = plt.subplots(figsize=(6.4, 3.2))
+    fig, ax = plt.subplots(figsize=(NORMAL / 96, 2.9))
     ax.plot(np.arange(n) / 1000, eps, color=ORANGE, linewidth=2.2, label="ε (Erkundung) und α (Schrittweite)")
     ax.axvline(dt.EPSILON_DECAY_RATIO * n / 1000, color=LINE, linestyle="--", linewidth=1)
     ax.text(dt.EPSILON_DECAY_RATIO * n / 1000 + 1, 0.55, "90 % der Episoden", color=MUTED, fontsize=9)
@@ -326,7 +336,7 @@ def figure_schedules():
 
 def figure_learning_curves(results):
     window = 2000
-    fig, ax = plt.subplots(figsize=(7.2, 3.8))
+    fig, ax = plt.subplots(figsize=(WIDE / 96, 4.0))
     colours = {"single_q": ORANGE, "double_q": "#d9a066", "sarsa": BLUE, "sarsa_lambda": "#6f8ad6", "mc": GREEN}
     for key, label in METHODS:
         rewards = results[f"rewards_{key}"].astype(float)
@@ -340,7 +350,7 @@ def figure_learning_curves(results):
 
 
 def figure_policies(results, q_star):
-    fig, axes = plt.subplots(2, 3, figsize=(9.6, 6.9))
+    fig, axes = plt.subplots(2, 3, figsize=(WIDE / 96, 5.92))
     panels = [(f"Q_{key}", label) for key, label in METHODS] + [("q_star", "q* (Wertiteration)")]
     for ax, (key, label) in zip(axes.flat, panels):
         Q = q_star if key == "q_star" else results[key]
@@ -357,10 +367,11 @@ def gif_q_table():
     frames, durations = [], []
     for episode in [*marks, dt.NUM_EPISODES]:
         Q, epsilon, alpha = snapshots[episode]
-        fig, ax = plt.subplots(figsize=(5.2, 5.6))
+        fig, ax = plt.subplots(figsize=(NORMAL / 100, 5.76))
         draw_grid(ax, Q, vmax=1.0)
         ax.set_title(f"Q-Learning · Episode {episode:>6d}\nε = {german(epsilon)}   α = {german(alpha)}", fontsize=12, color=INK, loc="left")
-        fig.tight_layout(pad=0.5)
+        # Fixed layout: the grid fills the width, the two title lines keep their room in every frame.
+        fig.subplots_adjust(left=0, right=1, top=0.9, bottom=0.01)
         frames.append(figure_to_array(fig)); plt.close(fig)
         durations.append(2500 if episode in (0, dt.NUM_EPISODES) else 450)
     save_gif(OUT / "q-tabelle.gif", frames, durations)
@@ -372,7 +383,7 @@ def gif_update_step():
     vmax = max(1e-3, max(float(np.max(step["after"])) for step in steps))
     for k, step in enumerate(steps, start=1):
         for phase in ("vor", "nach"):
-            fig, (left, right) = plt.subplots(1, 2, figsize=(7.3, 4.3), gridspec_kw={"width_ratios": [1, 1.2]})
+            fig, (left, right) = plt.subplots(1, 2, figsize=(WIDE / 100, 4.65), gridspec_kw={"width_ratios": [1, 1.2]})
             Q = step["before"] if phase == "vor" else step["after"]
             agent = step["state"] if phase == "vor" else step["next_state"]
             draw_grid(left, Q, agent=agent, highlight=(step["state"], step["action"]), vmax=vmax)
@@ -386,7 +397,7 @@ def gif_update_step():
                         right.text(a, s, german(float(Q[s, a])), ha="center", va="center", fontsize=7, color=INK if Q[s, a] < 0.6 * vmax else PAPER)
             s, a, r, s2 = step["state"], step["action"], step["reward"], step["next_state"]
             if phase == "vor":
-                text = f"in s = {s}: Aktion a = {ACTIONS[a]} ({a})\n\nQ(s, a) = {german(float(step['before'][s, a]), 3)}"
+                text = f"in s = {s}: Aktion a = {ACTIONS[a]} ({a})\n\n\nQ(s, a) = {german(float(step['before'][s, a]), 3)}"
             else:
                 ende = " (Ende der Episode)" if step["done"] else ""
                 text = (f"s' = {s2}, r = {german(r, 0)}{ende}\n"
@@ -394,7 +405,8 @@ def gif_update_step():
                         f"Fehler δ  = Ziel − Q(s, a) = {german(step['error'], 3)}\n"
                         f"Q(s, a) ← Q(s, a) + α·δ = {german(float(step['after'][s, a]), 3)}   (α = {german(alpha)})")
             right.set_title(text, fontsize=9, loc="left", color=INK, family="Courier New")
-            fig.tight_layout(pad=0.6)
+            # Fixed layout: both text blocks have four lines, and the axes never move between frames.
+            fig.subplots_adjust(left=0.02, right=0.985, top=0.80, bottom=0.075, wspace=0.26)
             frames.append(figure_to_array(fig)); plt.close(fig)
             durations.append(1100 if phase == "vor" else 2300)
     durations[-1] = 3500
@@ -405,7 +417,7 @@ def gif_traces():
     episode, epsilon, alpha, steps = sarsa_lambda_trace_record(warmup=3000, length_range=(8, 18))
     frames, durations = [], []
     for k, step in enumerate(steps, start=1):
-        fig, (left, right) = plt.subplots(1, 2, figsize=(7.3, 4.1))
+        fig, (left, right) = plt.subplots(1, 2, figsize=(WIDE / 100, 4.44))
         draw_grid(left, step["Q"], agent=step["next_state"], vmax=max(1e-3, float(np.max(step["Q"]))))
         left.set_title(f"SARSA(λ) · Episode {episode} · Schritt {k}\nQ(s, a) und gierige Aktionen", fontsize=10, loc="left", color=INK)
         draw_grid(right, None, traces=step["trace"], agent=step["next_state"], highlight=(step["state"], step["action"]), arrows=False, numbers=False, vmax=1.0)
@@ -419,20 +431,17 @@ def gif_traces():
 
 def gif_exploration():
     Q = np.zeros((16, 4), dtype=np.float32)
-    frames, durations = [], []
     for seed in range(SEED, SEED + 40):
         episode_frames, log = pygame_episode(Q, epsilon=1.0, seed=seed)
         if 5 <= len(log) <= 12:
             break
-    for k, frame in enumerate(episode_frames):
-        if k == 0:
-            lines = [("Episode 1 · ε = 1,00: jede Aktion zufällig", True), ("Start in s = 0", False)]
-        else:
-            s, a, r, s2 = log[k - 1]
-            outcome = "Ziel erreicht, r = 1" if r > 0 else ("ins Loch gerutscht, Episode zu Ende" if k == len(log) and DESC[s2 // 4][s2 % 4] == "H" else f"r = 0")
-            lines = [(f"Schritt {k}: Aktion {ACTIONS[a]} in s = {s} → s' = {s2}", True), (outcome, False)]
-        frames.append(captioned(frame, lines))
-        durations.append(1400 if k == 0 else (900 if k < len(episode_frames) - 1 else 3000))
+    captions = [[("Episode 1", True), ("ε = 1: jede Aktion zufällig", False), ("Start in s = 0", False)]]
+    for k, (s, a, r, s2) in enumerate(log, start=1):
+        outcome = "Ziel erreicht, r = 1" if r > 0 else ("ins Loch gerutscht" if k == len(log) and DESC[s2 // 4][s2 % 4] == "H" else "r = 0")
+        captions.append([(f"Schritt {k}", True), (f"{ACTIONS[a]}: s = {s} → s' = {s2}", True), (outcome, False)])
+    font_size = caption_size(captions, NORMAL)
+    frames = [captioned(frame, parts, font_size) for frame, parts in zip(episode_frames, captions)]
+    durations = [1400] + [900] * (len(frames) - 2) + [3000]
     save_gif(OUT / "erkundung.gif", frames, durations)
 
 
@@ -440,29 +449,24 @@ def gif_greedy(Q):
     chosen = {}
     for seed in range(SEED, SEED + 60):
         episode_frames, log = pygame_episode(Q, epsilon=0.0, seed=seed)
-        success = log[-1][2] > 0
-        key = "Erfolg" if success else "Loch"
+        key = "Erfolg" if log[-1][2] > 0 else "Loch"
         if key not in chosen and 6 <= len(log) <= 24:
             chosen[key] = (episode_frames, log)
         if len(chosen) == 2:
             break
-    frames, durations = [], []
-    for number, key in enumerate(["Erfolg", "Loch"], start=1):
-        if key not in chosen:
-            continue
+    captions, all_frames, durations = [], [], []
+    for number, key in enumerate([key for key in ("Erfolg", "Loch") if key in chosen], start=1):
         episode_frames, log = chosen[key]
-        for k, frame in enumerate(episode_frames):
-            if k == 0:
-                lines = [(f"Testlauf {number} · gierige Politik (ε = 0)", True), ("Start in s = 0", False)]
-            else:
-                s, a, r, s2 = log[k - 1]
-                intended = {0: s - 1, 1: s + 4, 2: s + 1, 3: s - 4}[a]
-                slipped = s2 != intended and s2 != s
-                last = k == len(log)
-                outcome = "Ziel erreicht, r = 1" if r > 0 else ("ins Loch gerutscht" if last else ("gerutscht" if slipped else "r = 0"))
-                lines = [(f"Schritt {k}: Aktion {ACTIONS[a]} in s = {s} → s' = {s2}", True), (outcome, False)]
-            frames.append(captioned(frame, lines))
-            durations.append(1400 if k == 0 else (800 if k < len(episode_frames) - 1 else 3000))
+        captions.append([(f"Testlauf {number}", True), ("gierige Politik, ε = 0", False), ("Start in s = 0", False)])
+        for k, (s, a, r, s2) in enumerate(log, start=1):
+            intended = {0: s - 1, 1: s + 4, 2: s + 1, 3: s - 4}[a]
+            slipped = s2 != intended and s2 != s
+            outcome = "Ziel erreicht, r = 1" if r > 0 else ("ins Loch gerutscht" if k == len(log) else ("gerutscht" if slipped else "r = 0"))
+            captions.append([(f"Schritt {k}", True), (f"{ACTIONS[a]}: s = {s} → s' = {s2}", True), (outcome, False)])
+        all_frames.extend(episode_frames)
+        durations.extend([1400] + [800] * (len(log) - 1) + [3000])
+    font_size = caption_size(captions, NORMAL)
+    frames = [captioned(frame, parts, font_size) for frame, parts in zip(all_frames, captions)]
     save_gif(OUT / "gieriger-lauf.gif", frames, durations)
 
 

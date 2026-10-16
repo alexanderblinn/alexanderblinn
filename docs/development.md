@@ -142,7 +142,7 @@ Der Beitrag liegt in `content/notes/frozen-lake.md` und behandelt `examples/disc
 <venv>/python scripts/frozen_lake_figures.py [Pfad/zu/ReinforcementLearningExamples/examples]
 ```
 
-Die fünf Trainingsläufe über je 100 000 Episoden werden im Temp-Verzeichnis zwischengespeichert; zum Neutrainieren die Datei `frozen_lake_note_cache.npz` dort löschen. Vor dem Zeichnen gibt das Skript die Zahlen der Vergleichstabelle des Beitrags aus: die exakte Erfolgswahrscheinlichkeit jeder gierigen Politik (Politikbewertung mit dem bekannten Übergangsmodell, mit und ohne 100-Schritt-Grenze), v(s₀) und die Zustände, in denen der gierige Pfeil von q* abweicht.
+Alle Abbildungen folgen zwei Breiten (`NORMAL` = 512 px, `WIDE` = 790 px, die Textspalte); die `width`/`height`-Attribute im Beitrag entsprechen der natürlichen Größe, das CSS skaliert nur herunter, und die Bildunterschrift ist genauso breit wie das Bild (`display: table`). Die fünf Trainingsläufe über je 100 000 Episoden werden im Temp-Verzeichnis zwischengespeichert; zum Neutrainieren die Datei `frozen_lake_note_cache.npz` dort löschen. Vor dem Zeichnen gibt das Skript die Zahlen der Vergleichstabelle des Beitrags aus: die exakte Erfolgswahrscheinlichkeit jeder gierigen Politik (Politikbewertung mit dem bekannten Übergangsmodell, mit und ohne 100-Schritt-Grenze), v(s₀) und die Zustände, in denen der gierige Pfeil von q* abweicht.
 
 ## Verzeichnisübersicht
 
