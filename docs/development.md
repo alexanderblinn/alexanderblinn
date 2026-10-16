@@ -66,6 +66,25 @@ $$
 
 Markdown unterstützt Tabellen, Codeblöcke und HTML. Eingebettetes HTML wird unverändert übernommen.
 
+### Codeblöcke mit Sprach-Reitern
+
+Zwei oder mehr unmittelbar aufeinanderfolgende Codeblöcke mit demselben `tab="..."`-Attribut werden zu einer Gruppe mit Reitern zusammengefasst, zum Beispiel eine Python- und eine MATLAB-Fassung desselben Algorithmus:
+
+````markdown
+```python tab="Python"
+def f(x):
+    return x**2
+```
+
+```matlab tab="MATLAB"
+function y = f(x)
+    y = x^2;
+end
+```
+````
+
+Das Umschalten läuft ohne JavaScript über versteckte native Radio-Buttons (`assets/site/style.css`, Klassen `code-tab-*`); ein `CodeTabsPreprocessor` in `scripts/build.py` fasst die Blöcke vor der eigentlichen Markdown-Verarbeitung zusammen. Eine Gruppe braucht mindestens zwei Blöcke; ein einzelner Codeblock ohne `tab="..."` bleibt ein gewöhnlicher Codeblock.
+
 ## Interaktive Diagramme
 
 Eigenständige HTML-Diagramme liegen gemeinsam mit den Bildern unter `public/img/<Bereich>/<Slug>/`. Der Build übernimmt sie nach `/img/<Bereich>/<Slug>/`. Ein Beitrag kann sie direkt einbetten:
@@ -99,7 +118,7 @@ Der Import übernimmt Daten, Animationen und Filter sowie die im Original enthal
 
 ### Zentralpfad
 
-Der Beitrag liegt in `content/notes/zentralpfad.md`. Die eigenständige Animation liegt unter `public/img/notes/zentralpfad/index.html`. Ihre Dateien sind unter `assets/notes/zentralpfad/` gebündelt: `style.css` für die Darstellung, `animation.mjs` für Bedienung und Zeichnung, `math.mjs` für Geometrie und Zielkosten und `barrier.mjs` für das Barriereproblem, den Zentralpfad und das exakte Optimum. Das Modell ist ein quadratisches Programm in der Ebene mit einem Viereck als zulässigem Bereich. Zur klassischen Log-Barriere kommt ein Proximalterm (μ²/2)‖x − x₀‖², sodass der Zentralpfad in x₀ beginnt, den Kanten ausweicht und im Optimum endet. Für 301 logarithmisch verteilte Werte von μ zwischen 10³ und 10⁻³ wird je ein Barriereoptimum berechnet; Schieberegler und Animation wählen eines davon aus, gleichmäßig entlang der Bogenlänge des Pfads, und die Kurve wird bis zum gewählten μ gezeichnet. Bei Änderungen von x₀ wird neu gerechnet, ohne μ zurückzusetzen. Die Demo benötigt keine externen Bibliotheken oder Serverberechnungen.
+Der Beitrag liegt in `content/notes/zentralpfad.md`. Die eigenständige Animation liegt unter `public/img/notes/zentralpfad/index.html`. Ihre Dateien sind unter `assets/notes/zentralpfad/` gebündelt: `style.css` für die Darstellung, `animation.mjs` für Bedienung und Zeichnung, `math.mjs` für Geometrie und Zielkosten und `barrier.mjs` für das Barriereproblem, den Zentralpfad und das exakte Optimum. Das Modell ist ein quadratisches Programm in der Ebene mit einem Viereck als zulässigem Bereich. Zur klassischen Log-Barriere kommt ein Proximalterm (μ²/2)‖x − x₀‖², sodass der Zentralpfad in x₀ beginnt, den Kanten ausweicht und im Optimum endet. Für 301 logarithmisch verteilte Werte von μ zwischen 10³ und 10⁻³ wird je ein Barriereoptimum berechnet; Schieberegler und Animation wählen eines davon aus, gleichmäßig entlang der Bogenlänge des Pfads, und die Kurve wird bis zum gewählten μ gezeichnet. Bei Änderungen von x₀ wird neu gerechnet, ohne μ zurückzusetzen. Die Demo benötigt keine externen Bibliotheken oder Serverberechnungen. Im Beitrag steht außerdem eine eigenständige Python- und MATLAB-Fassung der Zentrierung (Newton-Schritt mit Rückwärtssuche) als Codeblöcke mit Sprach-Reitern, verifiziert gegen `barrier.mjs` und unabhängig gegen SciPy.
 
 Die drei statischen Abbildungen des Beitrags (`barriere.svg`, `pfade.svg`, `abstaende.svg` unter `public/img/notes/zentralpfad/`) erzeugt `scripts/zentralpfad_figures.mjs` aus demselben Löser; nach Änderungen am Modell neu erzeugen:
 

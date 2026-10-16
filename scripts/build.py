@@ -61,8 +61,68 @@ class MathExtension(Extension):
         md.preprocessors.register(MathPreprocessor(md), "journal_math", 27)
 
 
+# A fenced code block tagged ```lang tab="Label" joins any immediately following
+# (blank lines aside) tab-tagged fences into one switchable group, e.g. a Python
+# and a MATLAB version of the same algorithm. Plain fenced code is untouched.
+TAB_FENCE = re.compile(r'^```(\S+)\s+tab="([^"]+)"\s*$')
+
+
+class CodeTabsPreprocessor(Preprocessor):
+    def run(self, lines):
+        result, i, group = [], 0, 0
+        while i < len(lines):
+            match = TAB_FENCE.match(lines[i])
+            if not match:
+                result.append(lines[i])
+                i += 1
+                continue
+            tabs = []
+            while match:
+                language, label = match.groups()
+                i += 1
+                start = i
+                while i < len(lines) and lines[i].rstrip() != "```":
+                    i += 1
+                if i >= len(lines):
+                    raise ValueError("Nicht abgeschlossener Tab-Codeblock")
+                tabs.append((language, label, "\n".join(lines[start:i])))
+                i += 1
+                lookahead = i
+                while lookahead < len(lines) and not lines[lookahead].strip():
+                    lookahead += 1
+                match = TAB_FENCE.match(lines[lookahead]) if lookahead < len(lines) else None
+                if match:
+                    i = lookahead
+            if len(tabs) < 2:
+                raise ValueError('Eine Code-Tab-Gruppe braucht mindestens zwei ```lang tab="..."-Blöcke')
+            group += 1
+            html = self.render(tabs, group)
+            result.extend(["", self.md.htmlStash.store(html), ""])
+        return result
+
+    @staticmethod
+    def render(tabs, group):
+        name = f"code-tabs-{group}"
+        parts = []
+        for index, (language, label, code) in enumerate(tabs):
+            input_id = f"{name}-{index}"
+            checked = " checked" if index == 0 else ""
+            parts.append(
+                f'<input type="radio" class="code-tab-input" name="{name}" id="{input_id}"{checked}>'
+                f'<label class="code-tab-label" for="{input_id}">{escape(label)}</label>'
+                f'<pre class="code-tab-panel"><code class="language-{escape(language)}">{escape(code)}</code></pre>'
+            )
+        return '<div class="code-tabs" role="group" aria-label="Programmiersprache wählen">' + "".join(parts) + "</div>"
+
+
+class CodeTabsExtension(Extension):
+    def extendMarkdown(self, md):
+        md.preprocessors.register(CodeTabsPreprocessor(md), "code_tabs", 28)
+
+
 def render_markdown(body):
-    return markdown.markdown(body, extensions=["fenced_code", "tables", "toc", "md_in_html", MathExtension()], output_format="html")
+    extensions = ["fenced_code", "tables", "toc", "md_in_html", MathExtension(), CodeTabsExtension()]
+    return markdown.markdown(body, extensions=extensions, output_format="html")
 
 
 def read_content(path, root=ROOT):

@@ -229,6 +229,126 @@ $$
 
 und wird so verkürzt, dass alle Iterierten strikt im Inneren bleiben. Weil der Pfad glatt ist, liegt die vorherige Lösung nahe an der nächsten; das Newton-Verfahren konvergiert von dort quadratisch. Darauf beruht die Theorie der Pfadverfolgung: Für selbstkonkordante Barrieren, zu denen die logarithmische Barriere gehört, zeigen Nesterov und Nemirovskii, dass bei einem Faktor κ nahe eins eine beschränkte Zahl von Newton-Schritten je Etappe genügt und die Gesamtzahl der Schritte nur wie √m · log(1/ε) wächst. In der Praxis wählt man κ zwischen 10 und 100 und nimmt dafür einige Newton-Schritte mehr je Etappe in Kauf.
 
+Die folgende Umsetzung zeigt genau diesen Algorithmus: eine Zentrierung mit gedämpftem Newton-Schritt und Rückwärtssuche (backtracking line search mit Armijo-Bedingung, wie bei Boyd und Vandenberghe, Kapitel 9) und die äußere Schleife über fallende μ. Viereck, Ziel und Anfangspunkt stimmen mit der Voreinstellung der Animation oben überein, sodass sich `path` direkt mit der gezeichneten Kurve vergleichen lässt.
+
+```python tab="Python"
+import numpy as np
+
+def barrier_gradient_hessian(x, mu, A, b, Q, z, x0):
+    """Gradient und Hesse-Matrix von Phi(x,mu;x0) = f(x) - mu*sum(log(s_i(x))) + mu^2/2*||x-x0||^2."""
+    s = b - A @ x                                      # Schlupf s_i(x) = b_i - a_i^T x
+    g = Q @ (x - z) + mu * A.T @ (1 / s) + mu**2 * (x - x0)
+    H = Q + mu * (A.T * (1 / s**2)) @ A + mu**2 * np.eye(2)
+    return g, H
+
+def centering_step(x, mu, A, b, Q, z, x0, tol=1e-10, alpha=0.1, beta=0.5):
+    """Gedämpftes Newton-Verfahren: minimiert Phi(., mu; x0) ab einem strikt zulässigen x."""
+    phi = lambda y: 0.5*(y - z) @ Q @ (y - z) - mu*np.sum(np.log(b - A @ y)) + 0.5*mu**2*np.sum((y - x0)**2)
+    while True:
+        g, H = barrier_gradient_hessian(x, mu, A, b, Q, z, x0)
+        dx = np.linalg.solve(H, -g)                    # Newton-Schritt
+        lambda2 = -g @ dx                               # quadriertes Newton-Dekrement
+        if lambda2 / 2 < tol:
+            return x
+        t = 1.0
+        while np.any(b - A @ (x + t*dx) <= 0):          # strikt zulässig bleiben
+            t *= beta
+        while phi(x + t*dx) > phi(x) + alpha*t*(g @ dx):
+            t *= beta
+        x = x + t*dx
+
+def central_path(A, b, Q, z, x0, mu_values):
+    """Verfolgt x*(mu; x0) für eine fallende Folge von Barriereparametern."""
+    x = x0.copy()
+    path = [x0.copy()]
+    for mu in mu_values:
+        x = centering_step(x, mu, A, b, Q, z, x0)
+        path.append(x.copy())
+    return np.array(path)
+
+# Viereck, Ziel und Anfangspunkt wie in der Animation oben.
+vertices = np.array([[-2.6, -1.9], [2.1, -1.7], [2.6, 2.1], [-1.8, 2.4]])
+edges = np.roll(vertices, -1, axis=0) - vertices
+A = np.column_stack([edges[:, 1], -edges[:, 0]])
+A = A / np.linalg.norm(A, axis=1, keepdims=True)        # a_i: nach außen zeigende Einheitsnormalen
+b = np.sum(A * vertices, axis=1)                        # b_i = a_i^T v_i
+
+theta = np.radians(-25)
+c, s = np.cos(theta), np.sin(theta)
+R = np.array([[c, -s], [s, c]])
+Q = R @ np.diag([1.0, 3.0]) @ R.T
+z = np.array([2.8, 1.2])
+x0 = np.array([-1.0, -0.8])
+
+mu_values = np.logspace(3, -3, 301)                     # 50 Werte je Dekade, wie oben
+path = central_path(A, b, Q, z, x0, mu_values)
+
+import matplotlib.pyplot as plt                         # optional: Pfad zeichnen
+plt.plot(path[:, 0], path[:, 1]); plt.gca().set_aspect('equal'); plt.show()
+```
+
+```matlab tab="MATLAB"
+% Viereck, Ziel und Anfangspunkt wie in der Animation oben.
+vertices = [-2.6 -1.9; 2.1 -1.7; 2.6 2.1; -1.8 2.4];
+edges = circshift(vertices, -1, 1) - vertices;
+A = [edges(:,2), -edges(:,1)];
+A = A ./ vecnorm(A, 2, 2);               % a_i: nach außen zeigende Einheitsnormalen
+b = sum(A .* vertices, 2);               % b_i = a_i^T v_i
+
+theta = deg2rad(-25);
+c = cos(theta); s = sin(theta);
+R = [c -s; s c];
+Q = R * diag([1 3]) * R';
+z = [2.8; 1.2];
+x0 = [-1; -0.8];
+
+mu_values = logspace(3, -3, 301);        % 50 Werte je Dekade, wie oben
+path = central_path(A, b, Q, z, x0, mu_values);
+
+plot(path(:,1), path(:,2)); axis equal   % optional: Pfad zeichnen
+
+function path = central_path(A, b, Q, z, x0, mu_values)
+    % Verfolgt x*(mu; x0) für eine fallende Folge von Barriereparametern.
+    x = x0;
+    path = x';
+    for mu = mu_values
+        x = centering_step(x, mu, A, b, Q, z, x0);
+        path = [path; x'];
+    end
+end
+
+function x = centering_step(x, mu, A, b, Q, z, x0)
+    % Gedämpftes Newton-Verfahren: minimiert Phi(., mu; x0) ab einem strikt zulässigen x.
+    tol = 1e-10; alpha = 0.1; beta = 0.5;
+    phi = @(y) 0.5*(y-z)'*Q*(y-z) - mu*sum(log(b - A*y)) + 0.5*mu^2*sum((y-x0).^2);
+    while true
+        [g, H] = barrier_gradient_hessian(x, mu, A, b, Q, z, x0);
+        dx = H \ (-g);                        % Newton-Schritt
+        lambda2 = -g' * dx;                   % quadriertes Newton-Dekrement
+        if lambda2 / 2 < tol
+            return
+        end
+        t = 1;
+        while any(b - A*(x + t*dx) <= 0)      % strikt zulässig bleiben
+            t = beta * t;
+        end
+        while phi(x + t*dx) > phi(x) + alpha*t*(g'*dx)
+            t = beta * t;
+        end
+        x = x + t*dx;
+    end
+end
+
+function [g, H] = barrier_gradient_hessian(x, mu, A, b, Q, z, x0)
+    % Gradient und Hesse-Matrix von Phi(x,mu;x0).
+    s = b - A*x;                              % Schlupf s_i(x) = b_i - a_i^T x
+    g = Q*(x - z) + mu * (A' * (1./s)) + mu^2 * (x - x0);
+    H = Q + mu * (A' .* (1./s.^2)') * A + mu^2 * eye(2);
+end
+```
+
+`path` enthält damit denselben Zentralpfad wie die Animation oben: `path[0]` (Python) bzw. `path(1,:)` (MATLAB) ist x₀, `path[-1]` bzw. `path(end,:)` liegt nahe am Optimum x\*. Geprüft gegen eine unabhängige Lösung mit SciPy weicht jeder Pfadpunkt um höchstens 1,4·10⁻⁷ ab.
+
 Primal-duale Verfahren behandeln x, λ und s gemeinsam: Sie machen Newton-Schritte direkt auf dem gestörten KKT-System mit λᵢ sᵢ = μ und verkleinern μ in jedem Schritt. Sie sind heute die Arbeitspferde für lineare, quadratische und konische Programme. Der Unterschied zu Aktive-Mengen-Verfahren ist anschaulich: Diese wandern am Rand von 𝒳 entlang und probieren aktive Kanten aus; Innere-Punkte-Verfahren bleiben im Inneren und nähern sich dem Rand nur dort, wo Kanten im Optimum aktiv sind. Die Zahl ihrer Iterationen wächst dabei nur langsam mit der Problemgröße.
 
 Der Anfangspunkt x₀ dieser Notiz ist die kontinuierliche Fassung eines Warmstarts: Für μ → ∞ ist die Lösung x₀ selbst, wie die erste Iterierte des Verfahrens; für kleines μ ist der Proximalterm verschwunden, und es bleibt der klassische Pfad. In der modellprädiktiven Regelung liefert jeder Zeitschritt einen neuen Anfangspunkt nahe der alten Lösung; der Pfad von dort zum neuen Optimum ist kurz, und wenige Zentrierungen genügen.

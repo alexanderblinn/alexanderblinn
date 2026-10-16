@@ -96,6 +96,14 @@ pre { padding: 16px; background: #efede7; border: 1px solid #e1ddd4; overflow-x:
 pre code { padding: 0; font-size: inherit; }
 .math-block { overflow-x: auto; padding: 18px 0; margin: 12px 0; }
 math { font-size: 1.12em; }
+/* CSS-only language tabs: each radio is immediately followed by its own label and
+   panel, so plain adjacent-sibling selectors show the checked one. No JS needed. */
+.code-tabs { display: flex; flex-wrap: wrap; align-items: center; margin: 18px 0; max-width: 76ch; }
+.code-tab-input { order: 0; accent-color: var(--link); cursor: pointer; margin: 0 6px 10px 0; }
+.code-tab-label { order: 0; margin: 0 18px 10px 0; font-size: 13px; color: var(--muted); cursor: pointer; }
+.code-tab-input:checked + .code-tab-label { color: var(--ink); font-weight: 700; }
+.code-tab-panel { order: 1; flex-basis: 100%; display: none; margin: 0; }
+.code-tab-input:checked + .code-tab-label + .code-tab-panel { display: block; }
 .backlink { margin-top: 38px; padding-top: 15px; border-top: 1px solid var(--line); font-size: 13px; }
 .site-footer { border-top: 1px solid var(--ink); margin-top: 48px; padding-top: 16px; font-size: 12px; }
 .site-footer p { margin: 0 0 5px; }
