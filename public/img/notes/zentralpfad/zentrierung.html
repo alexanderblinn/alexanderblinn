@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dem Pfad folgen</title>
+  <link rel="stylesheet" href="/assets/notes/zentralpfad/style.css">
+  <link rel="stylesheet" href="/assets/notes/zentralpfad/method.css">
+  <script type="module" src="/assets/notes/zentralpfad/method.mjs"></script>
+</head>
+<body>
+<main id="centering">
+  <div class="experiment-heading"><span>DEM PFAD FOLGEN, SCHRITT FÜR SCHRITT</span><span id="live-state">Wird berechnet …</span></div>
+  <form id="controls" class="centering-controls" onsubmit="return false">
+    <fieldset>
+      <legend>Verfahren</legend>
+      <label><input type="radio" name="mode" value="barrier" checked> Barrieremethode</label>
+      <label><input type="radio" name="mode" value="mehrotra"> Prädiktor-Korrektor (Mehrotra)</label>
+    </fieldset>
+    <label id="kappa-label">Reduktionsfaktor κ <select id="kappa"><option value="2">2</option><option value="10" selected>10</option><option value="100">100</option></select></label>
+  </form>
+  <div class="plot-wrap">
+    <svg id="plot" role="img" aria-label="Zentralpfad vom Start bis zum Optimum mit den Schritten des gewählten Verfahrens">
+      <defs>
+        <marker id="arrow-predictor" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#77746c"/></marker>
+        <marker id="arrow-corrector" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#173fbe"/></marker>
+        <clipPath id="lens-clip"><rect id="lens-clip-rect" width="0" height="0"/></clipPath>
+        <marker id="arrow-rejected" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b5b1a7"/></marker>
+      </defs>
+      <g id="layer"></g>
+    </svg>
+    <div class="legend" aria-label="Legende">
+      <span><i class="key path"></i>Zentralpfad</span>
+      <span data-mode="barrier"><i class="key centre"></i>Pfadpunkt x*(μ)</span>
+      <span data-mode="barrier"><i class="key newton"></i>Newton-Schritte</span>
+      <span data-mode="mehrotra"><i class="key predictor"></i>Prädiktor</span>
+      <span data-mode="mehrotra"><i class="key corrector"></i>Korrektor</span>
+      <span><i class="key current"></i>aktueller Punkt</span>
+      <span><i class="key optimum"></i>Optimum x*</span>
+    </div>
+  </div>
+  <section class="code-panel" aria-label="Pseudocode">
+    <header class="code-head">
+      <span class="code-tab"><span data-mode="barrier">Pseudocode · Barrieremethode</span><span data-mode="mehrotra">Pseudocode · Prädiktor-Korrektor</span></span>
+      <div class="code-buttons">
+        <button id="restart" type="button" title="Zurück zum Anfang" aria-label="Zurück zum Anfang">⇤</button>
+        <button id="back" type="button" title="Ein Schritt zurück" aria-label="Ein Schritt zurück">◀</button>
+        <button id="step" type="button" class="primary">Schritt ▶</button>
+        <button id="skip" type="button">Etappe ▶▶</button>
+        <button id="play" type="button" aria-pressed="false">⏵ Abspielen</button>
+      </div>
+    </header>
+    <ol class="code" data-mode="barrier" aria-label="Pseudocode der Barrieremethode">
+      <li><span class="src"><b>Eingabe:</b> Startpunkt x₀ ∈ int 𝒳, μ⁽⁰⁾ &gt; 0, κ &gt; 1, ε &gt; 0</span><span class="hint"></span></li>
+      <li><span class="src">x ← x₀,  μ ← μ⁽⁰⁾</span><span class="hint"></span></li>
+      <li><span class="src"><b>wiederhole</b></span><span class="cm">Etappe</span><span class="hint"></span></li>
+      <li class="l1"><span class="src"><b>wiederhole</b></span><span class="cm">Zentrierung</span><span class="hint"></span></li>
+      <li class="l2"><span class="src">g ← ∇Φ(x, μ),  H ← ∇²Φ(x, μ)</span><span class="hint"></span></li>
+      <li class="l2"><span class="src">Δx ← −H⁻¹g</span><span class="cm">Newton-Schritt</span><span class="hint"></span></li>
+      <li class="l2"><span class="src"><b>falls</b> −½ gᵀΔx ≤ δ: <b>beende</b> die Zentrierung</span><span class="cm">x = x*(μ)</span><span class="hint"></span></li>
+      <li class="l2"><span class="src">t ← 1</span><span class="hint"></span></li>
+      <li class="l2"><span class="src"><b>solange</b> Φ(x + tΔx, μ) &gt; Φ(x, μ) + αt gᵀΔx: t ← βt</span><span class="cm">Rückwärtssuche</span><span class="hint"></span></li>
+      <li class="l2"><span class="src">x ← x + tΔx</span><span class="hint"></span></li>
+      <li class="l1"><span class="src"><b>falls</b> mμ &lt; ε: <b>gib</b> x <b>zurück</b></span><span class="cm">Lücke klein genug</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">μ ← μ/κ</span><span class="hint"></span></li>
+    </ol>
+    <ol class="code" data-mode="mehrotra" aria-label="Pseudocode des Prädiktor-Korrektor-Verfahrens">
+      <li><span class="src"><b>Eingabe:</b> x, s &gt; 0, λ &gt; 0 mit Ax + s = b, ε &gt; 0</span><span class="hint"></span></li>
+      <li><span class="src"><b>solange</b> sᵀλ ≥ ε:</span><span class="cm">Iteration</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">μ ← sᵀλ/m</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">Δ<sub>aff</sub> ← Newton-Schritt auf die KKT-Bedingungen mit sᵢλᵢ = 0</span><span class="cm">Prädiktor</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">α<sub>aff</sub> ← größtes α ≤ 1, für das s, λ ≥ 0 bleiben</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">μ<sub>aff</sub> ← (s + α<sub>aff</sub>Δs<sub>aff</sub>)ᵀ(λ + α<sub>aff</sub>Δλ<sub>aff</sub>)/m</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">σ ← (μ<sub>aff</sub>/μ)³</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">Δ ← Newton-Schritt mit sᵢλᵢ = σμ − Δs<sub>aff,i</sub>Δλ<sub>aff,i</sub></span><span class="cm">Korrektor</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">α ← min(1, 0.99 · größtes zulässiges α)</span><span class="hint"></span></li>
+      <li class="l1"><span class="src">(x, s, λ) ← (x, s, λ) + αΔ</span><span class="hint"></span></li>
+      <li><span class="src"><b>gib</b> x <b>zurück</b></span><span class="hint"></span></li>
+    </ol>
+    <footer id="readouts" class="code-foot" aria-label="Aktueller Stand"></footer>
+  </section>
+  <p id="status" role="status" aria-live="polite"></p>
+  <noscript>Für diese Ansicht ist JavaScript erforderlich.</noscript>
+</main>
+</body>
+</html>

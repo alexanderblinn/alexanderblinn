@@ -1,0 +1,36 @@
+:root { color-scheme: light; --paper: #faf9f6; --ink: #252525; --muted: #65635d; --line: #d8d5cc; --blue: #173fbe; --orange: #b95a28; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 "Courier New", Courier, monospace; }
+body { padding: 6px 0; }
+#experiment { display: flow-root; max-width: 1180px; margin: auto; }
+.experiment-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px 20px; padding: 14px 0; border-block: 1px solid var(--line); font-size: 11px; letter-spacing: .07em; }
+#live-state { color: var(--blue); }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 28px; align-items: start; padding: 20px 0 12px; }
+#board { width: 100%; max-width: 440px; display: block; user-select: none; }
+#board text { font-family: "Courier New", Courier, monospace; pointer-events: none; }
+.cell rect.field { stroke: var(--paper); stroke-width: 3; }
+.cell.editable { cursor: pointer; outline: none; }
+.cell.editable:hover rect.field, .cell.editable:focus-visible rect.field { stroke: var(--blue); stroke-width: 3; }
+.cell .arrow { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.cell .probability { font-size: 17px; fill: var(--ink); text-anchor: middle; font-variant-numeric: tabular-nums; }
+.cell .index { font-size: 11px; fill: var(--muted); }
+.cell .letter { font-size: 26px; font-weight: bold; fill: var(--muted); text-anchor: middle; }
+.cell .deviation { fill: none; stroke: var(--orange); stroke-width: 3; stroke-dasharray: 7 5; }
+.panel { display: flex; flex-direction: column; gap: 8px; }
+.panel label { font-size: 12px; color: var(--muted); }
+select { font: inherit; font-size: 13px; border: 1px solid #bebbb3; padding: 8px 10px; border-radius: 2px; background: var(--paper); color: var(--ink); cursor: pointer; min-height: 38px; width: 100%; }
+select:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.readouts { display: grid; gap: 14px; margin: 14px 0 6px; padding: 14px 0; border-block: 1px dotted var(--line); }
+.readouts span { display: block; color: var(--muted); font-size: 11px; margin-bottom: 3px; }
+.readouts sub { font-size: .8em; line-height: 0; }
+.readouts output { font-size: 20px; font-variant-numeric: tabular-nums; }
+.legend { display: grid; gap: 8px; font-size: 11px; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 8px; }
+.key { display: inline-block; flex-shrink: 0; width: 22px; height: 14px; }
+.key.scale { background: linear-gradient(90deg, #faf9f6, #f1d6c2, #dd9a72); border: 1px solid var(--line); }
+.key.deviation { border: 2px dashed var(--orange); }
+@media (max-width: 640px) {
+  .layout { grid-template-columns: 1fr; gap: 14px; }
+  #board { max-width: none; }
+  .readouts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

@@ -155,3 +155,68 @@ test('moving a boundary changes the path; invalid inputs are rejected', () => {
   assert.throws(() => barrierOptimum(constraints(box), matrix(1, 1, 0), [2, 0], 0, [0, 0]));
   assert.throws(() => barrierOptimum(constraints(box), matrix(1, 1, 0), [2, 0], 1, [2, 2]));
 });
+
+test('the step-by-step barrier method matches the step counts in the note and stays on the path', async () => {
+  const { barrierMethod, EXAMPLE } = await import('../assets/notes/zentralpfad/method.mjs');
+  const { readFileSync } = await import('node:fs');
+  const counts = [2, 10, 100].map(kappa => { const run = barrierMethod(EXAMPLE, { kappa }); return [run.stages, run.total]; });
+  assert.deepEqual(counts, [[30, 75], [10, 49], [6, 33]]);
+  const note = readFileSync(new URL('../content/notes/zentralpfad.md', import.meta.url), 'utf8');
+  assert.ok(note.includes('$\\kappa=2$ 30 Etappen und 75 Newton-Schritte, mit $\\kappa=100$ nur 6 Etappen und 33 Schritte'));
+  // The code of the note runs the same method with the same parameters.
+  assert.ok(note.includes('MU0, KAPPA, EPS = 100.0, 10.0, 1e-6') && note.includes('MU0 = 100; KAPPA = 10; EPS = 1e-6;'));
+  const run = barrierMethod(EXAMPLE, { kappa: 10 });
+  assert.equal(run.events[0].type, 'init');
+  assert.equal(run.events.at(-1).type, 'check');
+  assert.ok(run.events.at(-1).stop && run.events.at(-1).gap < 1e-6);
+  // Every centre is the barrier optimum of its mu, independent of the Newton start (the stopping
+  // rule of the note's code, Newton decrement <= 1e-10, fixes the position to about 1e-5).
+  const limits = constraints(EXAMPLE.vertices);
+  for (const e of run.events.filter(e => e.type === 'centred')) {
+    const reference = barrierOptimum(limits, EXAMPLE.q, EXAMPLE.z, e.mu, centroid(EXAMPLE.vertices));
+    assert.ok(distance(e.x, reference) < 1e-5, `mu = ${e.mu}`);
+  }
+  // Every iterate is strictly feasible.
+  assert.ok(run.events.every(e => slacks(e.x, limits).every(s => s > 0)));
+});
+
+test('figure 4: centering stages of the barrier method and the predictor-corrector method', async () => {
+  const { barrierTrace, barrierStages, predictorCorrector, EXAMPLE } = await import('../assets/notes/zentralpfad/method.mjs');
+  const limits = constraints(EXAMPLE.vertices);
+  // The trace starts with the centering in x*(100) itself; every stage ends with a small Newton
+  // decrement and the gap m mu, and only the last one stops.
+  const trace = barrierTrace(EXAMPLE, { kappa: 10 });
+  assert.equal(trace.length, 10);
+  assert.ok(trace.every(s => s.decrement <= 1e-10 && s.gap === 4 * s.mu));
+  assert.ok(trace.at(-1).stop && trace.slice(0, -1).every(s => !s.stop));
+  for (const s of trace) {
+    for (const e of s.steps) {
+      assert.ok(e.decrement > 1e-10 && e.t > 0 && e.t <= 1);
+      close(distance(e.from, e.x), e.t * distance(e.from, e.full), 1e-12);
+    }
+  }
+  // The figure itself stops at a gap of 1e-2: five stages after the start, five Mehrotra iterations.
+  assert.equal(barrierTrace(EXAMPLE, { kappa: 10, epsilon: 1e-2 }).length, 6);
+  assert.equal(predictorCorrector(EXAMPLE, { epsilon: 1e-2 }).iterations.length, 5);
+  // The backtracking shortens at least one step whose full length would leave the polygon.
+  assert.ok(trace.some(s => s.steps.some(e => e.t < 1 && slacks(e.full, limits).some(v => v <= 0))));
+  const stages = barrierStages(EXAMPLE, { kappa: 10 });
+  assert.deepEqual(stages.map(s => s.steps.length), [3, 5, 5, 6, 6, 7, 5, 4, 4]);
+  stages.forEach((stage, k) => {
+    close(stage.muFrom / stage.mu, 10, 1e-9);
+    if (k) assert.deepEqual(stage.from, stages[k - 1].centre);
+    assert.deepEqual(stage.centre, stage.steps.at(-1).x);
+    assert.ok(distance(stage.centre, stage.target) < 1e-5);
+  });
+  const { iterations } = predictorCorrector(EXAMPLE);
+  assert.equal(iterations.length, 7);
+  assert.ok(4 * iterations.at(-1).muNew < 1e-6);
+  for (const it of iterations) {
+    assert.ok(it.muNew < it.mu / 5);
+    assert.ok(it.sigma > 0 && it.sigma < 1 && it.alpha > 0 && it.alpha <= 1);
+    assert.ok(slacks(it.x, limits).every(s => s > 0) && slacks(it.predictor, limits).every(s => s >= -1e-12));
+    // The corrector ends near the path, not on it: within a tenth of its step.
+    assert.ok(it.nearest.distance > 0 && it.nearest.distance < .1 * distance(it.x, it.from));
+    assert.ok(it.pathMu > it.muNew);
+  }
+});

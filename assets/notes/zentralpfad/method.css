@@ -1,0 +1,104 @@
+/* Following the central path step by step: plot and pseudocode; builds on style.css of the animation. */
+#centering { max-width: 1180px; margin: auto; }
+.centering-controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px 24px; padding: 12px 0; font-size: 12px; }
+.centering-controls fieldset { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; border: 0; }
+.centering-controls legend { float: left; margin-right: 12px; padding: 0; color: var(--muted); }
+.centering-controls label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.centering-controls input { accent-color: var(--blue); margin: 0; }
+.centering-controls select { margin-left: 4px; }
+#centering [hidden] { display: none !important; }
+
+/* The plot is drawn in pixels at its displayed size, so labels keep their size. */
+.plot-wrap { position: relative; }
+#centering #plot { display: block; width: 100%; background: #fdfcfa; border: 1px solid var(--line); border-radius: 6px 6px 0 0; overflow: hidden; }
+#centering #plot text { font: 13px "Courier New", Courier, monospace; fill: var(--ink); paint-order: stroke; stroke: #fdfcfa; stroke-width: 3px; }
+#centering #plot text.end { text-anchor: end; }
+#centering #plot text.small { font-size: 11px; fill: var(--muted); }
+#centering #plot .predictor-text { fill: #77746c; }
+#centering #plot .corrector-text { fill: var(--blue); }
+.feasible { fill: #e5eeeb; fill-opacity: .55; stroke: #426f6b; stroke-width: 1.8; }
+.path { fill: none; stroke: var(--orange); stroke-width: 3; stroke-linecap: round; opacity: .28; }
+.path-done { fill: none; stroke: var(--orange); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; opacity: .9; }
+.centre { fill: var(--paper); stroke: var(--blue); stroke-width: 2; }
+.centre.filled, .centre.reached { fill: var(--blue); }
+.ripple { fill: none; stroke: var(--blue); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: ripple .9s ease-out forwards; }
+.newton { fill: none; stroke: #77746c; stroke-width: 1.6; stroke-dasharray: 4 4; }
+.newton.old { stroke: #b5b1a7; stroke-width: 1.2; }
+line.rejected { stroke: #b5b1a7; stroke-width: 1.4; stroke-dasharray: 2 3; }
+.rejected-mark { stroke: #b5b1a7; stroke-width: 1.6; }
+.trail { fill: none; stroke: var(--blue); stroke-width: 1.2; opacity: .45; }
+.trail-point { fill: var(--blue); opacity: .7; }
+.iterate { fill: #77746c; }
+.current { fill: var(--orange); }
+.current-ring { fill: rgba(185, 90, 40, .12); stroke: var(--orange); stroke-width: 1.5; }
+.optimum { fill: var(--ink); stroke: var(--paper); stroke-width: 1.5; }
+line.predictor { stroke: #77746c; stroke-width: 1.8; stroke-dasharray: 6 4; }
+.predictor-mark { stroke: #77746c; stroke-width: 2; }
+line.corrector { stroke: var(--blue); stroke-width: 2.2; }
+.fresh { animation: appear .3s ease-out both; }
+/* The lens: an enlarged copy of a step too small for the plot. */
+.lens-back { fill: #fdfcfa; }
+.lens-frame { fill: none; stroke: var(--ink); stroke-width: 1; }
+.lens-mark { fill: none; stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 2; }
+.lens-link { stroke: var(--ink); stroke-width: .8; stroke-dasharray: 2 3; opacity: .6; }
+#centering #plot text.lens-label { font-size: 11px; fill: var(--muted); }
+@keyframes appear { from { opacity: 0; } }
+@keyframes ripple { from { transform: scale(1); opacity: .9; } to { transform: scale(3); opacity: 0; } }
+
+/* Legend: below the plot, on wide screens as a card in its empty upper left corner. */
+#centering .legend { padding: 10px 0 6px; }
+.key.newton { height: 0; width: 15px; border-top: 2px dashed #77746c; }
+.key.current { background: var(--orange); border-radius: 50%; width: 9px; height: 9px; }
+.key.predictor { height: 0; width: 15px; border-top: 2px dashed #77746c; }
+.key.corrector { height: 0; width: 15px; border-top: 2px solid var(--blue); }
+@media (min-width: 640px) {
+  #centering .plot-wrap .legend { position: absolute; top: 12px; left: 12px; flex-direction: column; gap: 3px; padding: 8px 12px; font-size: 11px; background: rgba(253, 252, 250, .9); border: 1px solid var(--line); border-radius: 4px; }
+}
+
+/* Pseudocode like a debugger, in the colours of the code blocks on the site: the current line lit,
+   the lines run through faintly marked, the current values next to their line, the state below. */
+.code-panel { --code-bg: #efede7; --code-bar: #e7e4dc; --code-edge: #dcd8ce; --code-ink: var(--ink); --code-muted: var(--muted); --code-hint: var(--orange);
+  background: var(--code-bg); color: var(--code-ink); border: 1px solid var(--code-edge); border-top: 0; border-radius: 0 0 6px 6px; overflow: hidden; }
+.code-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; padding: 8px 10px 8px 14px; background: var(--code-bar); border-bottom: 1px solid var(--code-edge); }
+.code-tab { display: inline-flex; align-items: center; gap: 9px; font-size: 12px; letter-spacing: .03em; color: var(--muted); }
+.code-tab::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 3px rgba(185, 90, 40, .18); }
+.code-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+#centering .code-buttons button { min-width: 0; min-height: 0; padding: 5px 10px; font-size: 12px; color: var(--ink); background: var(--paper); border: 1px solid #bebbb3; border-radius: 4px; cursor: pointer; }
+#centering .code-buttons button:hover:not(:disabled) { background: #fdfcfa; border-color: #868177; }
+#centering .code-buttons button.primary { background: var(--blue); border-color: var(--blue); color: var(--paper); }
+#centering .code-buttons button.primary:hover:not(:disabled) { background: #10319a; }
+#centering .code-buttons button[aria-pressed="true"] { border-color: var(--blue); color: var(--blue); background: var(--paper); }
+#centering .code-buttons button:disabled { opacity: .45; cursor: default; }
+.code { --gutter: 3.4em; --indent: 1.7em; list-style: none; counter-reset: line; margin: 0; padding: 9px 0; font-size: 13px; line-height: 1.65; }
+.code li { counter-increment: line; position: relative; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 14px; padding: 0 14px 0 calc(var(--gutter) + var(--level, 0) * var(--indent)); transition: background-color .12s; }
+.code li::before { content: counter(line); position: absolute; left: 0; width: 2.4em; text-align: right; font-size: 11px; color: #9a968c; transition: color .12s; }
+.code .l1 { --level: 1; }
+.code .l2 { --level: 2; }
+.code .l1::after, .code .l2::after { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--gutter) + .3em); width: calc(var(--level) * var(--indent) - var(--indent) + 1px); background: repeating-linear-gradient(90deg, #d3cfc5 0 1px, transparent 1px var(--indent)); }
+.code b { color: var(--blue); }
+.code sub { font-size: .75em; line-height: 0; }
+.code .cm { color: var(--code-muted); font-style: italic; font-size: 12px; }
+.code .cm::before { content: "▹ "; font-style: normal; }
+.code .hint { margin-left: auto; color: var(--code-hint); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.code .hint:empty { display: none; }
+.code li.trace { background: rgba(37, 37, 37, .035); }
+.code li.active { background: linear-gradient(90deg, rgba(185, 90, 40, .2), rgba(185, 90, 40, .06)); box-shadow: inset 3px 0 0 var(--orange); }
+.code li.active::before, .code li.trace::before { color: var(--orange); }
+.code-foot { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 14px; padding: 9px 14px 10px; background: var(--code-bar); border-top: 1px solid var(--code-edge); }
+.code-foot span { display: block; font-size: 10px; letter-spacing: .04em; color: var(--code-muted); }
+.code-foot output { font-size: 14px; color: var(--code-ink); font-variant-numeric: tabular-nums; }
+#status { min-height: 3.2em; margin: 12px 0 6px; font-size: 13px; }
+@media (max-width: 560px) {
+  .code { --gutter: 2.6em; --indent: 1.1em; font-size: 11.5px; }
+  .code li { padding-right: 10px; }
+  .code li::before { width: 1.9em; }
+  .code-foot { grid-template-columns: 1fr 1fr; }
+  #centering .code-buttons button { padding-inline: 8px; }
+  #centering #plot { border-radius: 6px; }
+  .code-panel { border-radius: 6px; }
+  #status { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fresh, .ripple { animation: none; }
+  .code li, .code li::before { transition: none; }
+}

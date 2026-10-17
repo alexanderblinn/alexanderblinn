@@ -15,7 +15,7 @@ h1 { margin: 12px 0; font-size: clamp(18px, 3vw, 24px); line-height: 1.3; }
 .embedded .chart-page { padding: 0; }
 .embedded .chart-heading, .embedded .chart-source { display: none; }
 .embedded .chart-shell { height: 100vh; min-height: 0; max-width: none; }
-.chart-page-bands .chart-shell { min-width: 760px; min-height: 780px; }
+.chart-page-bands .chart-shell { min-height: 780px; }
 .chart-page .dist-stats-card { width: 290px; max-width: calc(100% - 75px); border-radius: 0; box-shadow: none; background: #faf9f6; font-family: "Courier New", Courier, monospace; }
 .chart-page .dist-stats-title { font-size: 16px; }
 .chart-page .dist-stats-line, .chart-page .dist-stats-formula, .chart-page .dist-stats-value-inline { font-size: 14px; line-height: 1.4; }

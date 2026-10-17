@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MSCI World: Sparplan — Alexander Blinn</title>
+  <link rel="canonical" href="https://alexanderblinn.com/img/projects/msci/sparplan.html">
+  <link rel="icon" href="/assets/site/favicon.svg" type="image/svg+xml">
+  
+  <link rel="stylesheet" href="/assets/projects/msci/charts.css">
+  <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
+  <link rel="stylesheet" href="/assets/projects/msci/sparplan.css">
+  <script src="/assets/vendor/plotly-3.0.1.min.js"></script>
+  <script type="module" src="/assets/projects/msci/sparplan.mjs"></script>
+</head>
+<body class="chart-page">
+  <header class="chart-heading">
+    <a href="/projects/msci.html#sparplan">← Zum Projekt</a>
+    <h1>MSCI World: Sparplan</h1>
+  </header>
+  <p id="chart-status" role="status">Diagramm wird geladen …</p>
+  <noscript><p>Dieses interaktive Diagramm benötigt JavaScript.</p></noscript>
+  <main class="plan-shell" aria-label="MSCI World: Sparplan">
+  <form class="plan-controls" onsubmit="return false">
+    <label for="plan-start">Startjahr (ab Januar)<select id="plan-start"></select></label>
+    <label for="plan-years">Dauer <output id="plan-years-value">20 Jahre</output><input id="plan-years" type="range" min="1" max="54" value="20"></label>
+    <div class="plan-view" role="radiogroup" aria-label="Ansicht">
+      <label><input type="radio" name="plan-view" id="plan-nominal" value="nominal" checked> nominal ($)</label>
+      <label><input type="radio" name="plan-view" id="plan-real" value="real"> real, USA ($)</label>
+      <label><input type="radio" name="plan-view" id="plan-real-de" value="real-de"> real, Deutschland (€)</label>
+    </div>
+  </form>
+  <div class="plan-readouts" aria-live="polite">
+    <div><span id="plan-paid-label">Eingezahlt, 100 $ im Monat</span><output id="plan-paid">—</output></div>
+    <div><span>Sparplan am Ende</span><output id="plan-end">—</output><small id="plan-rate">—</small></div>
+    <div><span>Einmalanlage derselben Summe</span><output id="plan-lump">—</output><small id="plan-lump-rate">—</small></div>
+  </div>
+  <div id="plan-chart"></div>
+</main>
+  <footer class="chart-source">MSCI World, Preisindex ohne Dividenden, USD · Datenstand: 16.10.2026 · Quellen: Yahoo Finance (^990100-USD-STRD), US-Verbraucherpreise des BLS über FRED (CPIAUCNS), deutsche Verbraucherpreise von Destatis über die Bundesbank (vor 1991 OECD, Westdeutschland), Wechselkurse über FRED (EXUSEU, EXGEUS)</footer>
+  
+</body>
+</html>

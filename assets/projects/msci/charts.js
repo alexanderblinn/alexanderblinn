@@ -53,13 +53,16 @@ window.addEventListener("load", function () {
   });
   if (menus.length) presentation.updatemenus = menus;
   const returnBands = chart.data.length > 0 && chart.data.every(trace => trace.type === "bar" && trace.text);
+  // On narrow screens the year blocks get smaller labels instead of a horizontal scrollbar.
+  const bandSize = width => (width < 640 ? 10 : fontSize);
+  let currentBandSize = bandSize(shell.clientWidth);
   if (returnBands) {
     document.body.classList.add("chart-page-bands");
-    presentation["uniformtext.minsize"] = fontSize;
+    presentation["uniformtext.minsize"] = currentBandSize;
     presentation["uniformtext.mode"] = "show";
     (chart.layout.annotations || []).forEach(function (_, i) {
       presentation[`annotations[${i}].font.family`] = family;
-      presentation[`annotations[${i}].font.size`] = fontSize;
+      presentation[`annotations[${i}].font.size`] = currentBandSize === fontSize ? fontSize : 11;
     });
   }
   (chart.layout.sliders || []).forEach(function (_, i) {
@@ -76,12 +79,19 @@ window.addEventListener("load", function () {
       scheduled = false;
       const width = shell.clientWidth;
       const height = shell.clientHeight;
+      if (returnBands && bandSize(width) !== currentBandSize) {
+        currentBandSize = bandSize(width);
+        const annotationSize = currentBandSize === fontSize ? fontSize : 11;
+        const sizes = { "uniformtext.minsize": currentBandSize };
+        (chart.layout.annotations || []).forEach(function (_, i) { sizes[`annotations[${i}].font.size`] = annotationSize; });
+        Plotly.restyle(chart, { "textfont.size": currentBandSize }).then(() => Plotly.relayout(chart, sizes));
+      }
       if (chart.layout.width === width && chart.layout.height === height) return;
       Plotly.relayout(chart, { width: width, height: height });
     });
   }
   const typography = returnBands
-    ? Plotly.restyle(chart, { "textfont.family": family, "textfont.size": fontSize })
+    ? Plotly.restyle(chart, { "textfont.family": family, "textfont.size": currentBandSize })
     : Promise.resolve();
   typography.then(() => Plotly.relayout(chart, presentation)).then(resize);
   new ResizeObserver(resize).observe(shell);

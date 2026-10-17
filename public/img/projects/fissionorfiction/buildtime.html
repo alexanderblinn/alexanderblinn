@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bauzeiten — Fission or Fiction</title>
+  <link rel="canonical" href="https://alexanderblinn.com/img/projects/fissionorfiction/buildtime.html">
+  <link rel="icon" href="/assets/site/favicon.svg" type="image/svg+xml">
+  <script>if (window.self !== window.top) document.documentElement.classList.add('embedded');</script>
+  <link rel="stylesheet" href="/assets/projects/fissionorfiction/charts.css">
+  <script src="/assets/vendor/plotly-3.0.1.min.js"></script>
+  <script type="module" src="/assets/projects/fissionorfiction/charts.mjs"></script>
+</head>
+<body class="chart-page" data-chart="buildtime">
+  <header class="chart-heading">
+    <a href="/projects/fissionorfiction.html#buildtime">← Zum Projekt</a>
+    <h1>Bauzeiten</h1>
+  </header>
+  <p id="chart-status" role="status">Diagramm wird geladen …</p>
+  <noscript><p>Dieses interaktive Diagramm benötigt JavaScript.</p></noscript>
+  <main class="chart-shell" aria-label="Bauzeiten">
+    <form class="chart-controls" id="chart-controls" onsubmit="return false"></form>
+    <div class="chart-readouts" id="chart-readouts" aria-live="polite"></div>
+    <div id="chart"></div>
+  </main>
+  <footer class="chart-source">Global Energy Monitor, Global Nuclear Power Tracker, August 2026 (CC BY 4.0) · Auswertung und Darstellung: Alexander Blinn</footer>
+</body>
+</html>

@@ -1,0 +1,21 @@
+/* Savings plan page: controls, four readouts and the chart below. */
+.plan-shell { max-width: 1400px; margin: auto; }
+.plan-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 14px 30px; margin: 0 0 12px; padding: 0; border: 0; font-size: 13px; }
+.plan-controls label { display: grid; gap: 4px; color: #65635d; }
+.plan-controls select, .plan-controls input { font: inherit; color: #252525; }
+.plan-controls select { padding: 6px 8px; border: 1px solid #bebbb3; background: #faf9f6; min-height: 34px; }
+.plan-controls input[type="range"] { width: 220px; accent-color: #456674; }
+.plan-controls output { color: #252525; }
+.plan-view { display: flex; gap: 14px; align-items: center; }
+.plan-view label { display: flex; align-items: center; gap: 6px; color: #252525; }
+.plan-readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 20px; padding: 12px 0; border-block: 1px dotted #c9c6be; }
+.plan-readouts span { display: block; font-size: 11px; color: #65635d; margin-bottom: 3px; }
+.plan-readouts output { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
+.plan-readouts small { display: block; font-size: 13px; color: #456674; font-variant-numeric: tabular-nums; }
+#plan-chart { height: 430px; margin-top: 6px; }
+@media (max-width: 640px) {
+  .plan-readouts { grid-template-columns: 1fr; }
+  .plan-controls input[type="range"] { width: 100%; }
+  .plan-controls label { flex: 1 1 100%; }
+  #plan-chart { height: 360px; }
+}

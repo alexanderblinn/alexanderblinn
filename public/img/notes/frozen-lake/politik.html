@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frozen Lake — Politik bewerten</title>
+  <link rel="stylesheet" href="/assets/notes/frozen-lake/style.css">
+  <script type="module" src="/assets/notes/frozen-lake/policy.mjs"></script>
+</head>
+<body>
+<main id="experiment">
+  <div class="experiment-heading"><span>FROZEN LAKE / POLITIK BEWERTEN</span><span id="live-state">Wird berechnet …</span></div>
+  <div class="layout">
+    <svg id="board" viewBox="0 0 400 400" role="group" aria-label="Spielfeld: je Feld die gewählte Aktion und die Wahrscheinlichkeit, von dort das Ziel zu erreichen"></svg>
+    <section class="panel" aria-label="Politik und Bewertung">
+      <label for="preset">Politik</label>
+      <select id="preset">
+        <option value="optimal">Optimale Politik (q*)</option>
+        <option value="custom" hidden>Eigene Politik</option>
+      </select>
+      <div class="readouts" aria-live="polite">
+        <div><span>Erfolg in 100 Schritten</span><output id="within">—</output></div>
+        <div><span>Erfolg ohne Schrittgrenze</span><output id="unlimited">—</output></div>
+        <div><span>Wert v<sub>π</sub>(s<sub>0</sub>) mit γ = 0,99</span><output id="value">—</output></div>
+      </div>
+      <div class="legend" aria-label="Legende">
+        <span><i class="key scale"></i>Zahl im Feld: Erfolg von dort, ohne Schrittgrenze</span>
+        <span><i class="key deviation"></i>Aktion anders als bei q*</span>
+      </div>
+    </section>
+  </div>
+  <noscript>Für die Bewertung ist JavaScript erforderlich. Die Zahlen der Verfahren stehen in der Tabelle im Beitrag.</noscript>
+</main>
+</body>
+</html>

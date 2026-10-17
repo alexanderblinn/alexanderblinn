@@ -40,8 +40,8 @@ jobs:
       - name: Check content and internal links
         run: python -m unittest discover -s tests -v
 
-      - name: Check central path calculations
-        run: node --test tests/central-path.test.mjs
+      - name: Check central path, Frozen Lake and savings plan calculations
+        run: node --test tests/central-path.test.mjs tests/frozen-lake-policy.test.mjs tests/msci-sparplan.test.mjs tests/fission-fleet.test.mjs
 
       - name: Upload website
         uses: actions/upload-pages-artifact@v5

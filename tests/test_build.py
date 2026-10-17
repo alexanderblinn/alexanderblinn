@@ -113,6 +113,17 @@ class BuildTests(unittest.TestCase):
         self.assert_not_published("article-to-unpublish")
         self.assert_not_published("article-to-delete")
 
+    def test_decimal_commas_and_signs_have_no_operator_gaps(self):
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from build import mathml
+        html = mathml(r"A=(-2{,}6,\,-1{,}9)^\top")
+        self.assertIn("<mn>2,6</mn>", html)
+        self.assertIn("<mn>1,9</mn>", html)
+        self.assertEqual(html.count('<mo lspace="0" rspace="0">&#x02212;</mo>'), 2)
+        self.assertIn('<mo lspace="0" rspace="0">&#x02212;</mo>', mathml(r"\Delta x\leftarrow-H^{-1}g"))
+        # A binary minus keeps its spacing.
+        self.assertIn("<mo>&#x02212;</mo>", mathml(r"f(x)-\mu"))
+
     def test_math_renders_but_fenced_code_stays_literal(self):
         self.contribution("notes", "math-regression", body=r"""
 $$

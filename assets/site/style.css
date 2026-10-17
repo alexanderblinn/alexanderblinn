@@ -30,9 +30,20 @@ body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monosp
 .interactive-figure iframe { display: block; width: 100%; height: 620px; border: 0; background: var(--paper); }
 .interactive-figure.figure-tall iframe { height: 960px; }
 .interactive-figure.figure-bands iframe { height: 820px; }
-.interactive-figure.figure-nuclear iframe { height: 920px; }
-.interactive-figure.figure-location-map iframe { height: 900px; }
+.interactive-figure.figure-nuclear iframe { height: 640px; }
+.interactive-figure.figure-nuclear-short iframe { height: 560px; }
+/* The world map page sets the height of its own frame from its width. */
+.interactive-figure.figure-nuclear-map iframe { height: 500px; }
+.interactive-figure.figure-location-map iframe { height: 640px; }
 .interactive-figure.figure-central-path iframe { height: 940px; }
+/* The centering page sets the height of its own frame from its content. */
+.interactive-figure.figure-method iframe { height: 900px; }
+.interactive-figure.figure-policy iframe { height: 560px; }
+.interactive-figure.figure-plan iframe { height: 790px; }
+/* A long code block folded away behind a summary line, e.g. a full script after its excerpts. */
+.code-details { margin: 18px 0; }
+.code-details summary { cursor: pointer; font-size: 14px; color: var(--link); padding: 6px 0; }
+.code-details[open] summary { margin-bottom: 8px; }
 .interactive-figure figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 20px; font-size: 12px; margin-top: 8px; color: var(--muted); }
 .interactive-figure figcaption a { white-space: nowrap; }
 .interactive-figure figcaption span { flex-basis: 100%; font-size: 14px; color: var(--ink); }
@@ -98,6 +109,8 @@ strong { font-weight: 700; }
 .article-body img { height: auto; }
 .article-body blockquote { border-left: 2px solid var(--line); margin: 20px 0; padding-left: 18px; color: var(--muted); }
 .article-body table { border-collapse: collapse; display: block; overflow-x: auto; font-size: 14px; margin-bottom: 20px; }
+/* "anywhere" would let narrow columns split short words ("Fakt|or"); tables scroll instead. */
+.article-body th, .article-body td { overflow-wrap: break-word; }
 th, td { text-align: left; border-bottom: 1px solid var(--line); padding: 8px 13px 8px 0; }
 code, pre, button, input, select { font: inherit; }
 code { font-size: .9em; background: #efede7; padding: 2px 4px; }
@@ -144,6 +157,8 @@ pre .nd { color: #685d94; }
   .figure-index { columns: 1; }
   .interactive-figure iframe { height: 540px; }
   .interactive-figure.figure-tall iframe { height: 850px; }
+  .interactive-figure.figure-plan iframe { height: 950px; }
+  .interactive-figure.figure-nuclear iframe, .interactive-figure.figure-nuclear-short iframe { height: 520px; }
   math { font-size: 1em; }
   body { font-size: 15px; }
   .page { padding: 28px 19px 20px; }
