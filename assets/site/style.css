@@ -40,8 +40,10 @@ body { margin: 0; font-family: "Courier New", Courier, "Liberation Mono", monosp
 .interactive-figure.figure-method iframe { height: 900px; }
 .interactive-figure.figure-policy iframe { height: 560px; }
 /* Both figures of the note on constrained optimisation also set the height of their frame. */
-.interactive-figure.figure-convex iframe { height: 720px; }
-.interactive-figure.figure-balance iframe { height: 805px; }
+.interactive-figure.figure-problem iframe { height: 650px; }
+.interactive-figure.figure-active iframe { height: 640px; }
+.interactive-figure.figure-descent iframe { height: 660px; }
+.interactive-figure.figure-balance iframe { height: 740px; }
 .interactive-figure.figure-plan iframe { height: 790px; }
 /* A long code block folded away behind a summary line, e.g. a full script after its excerpts. */
 .code-details { margin: 18px 0; }
@@ -120,7 +122,11 @@ code { font-size: .9em; background: #efede7; padding: 2px 4px; }
 pre { padding: 16px; background: #efede7; border: 1px solid #e1ddd4; overflow-x: auto; font-size: 13px; line-height: 1.6; }
 pre code { padding: 0; font-size: inherit; }
 .math-block { overflow-x: auto; padding: 18px 0; margin: 12px 0; }
-math { font-size: 1.12em; }
+/* Formulas are set in Latin Modern Math, the math font of LaTeX (assets/fonts/README.md), so they look
+   the same everywhere: many phones, Android above all, have no math font, and MathML then falls back
+   to text glyphs with poorly fitting fraction bars, roots and brackets. */
+@font-face { font-family: "Latin Modern Math"; src: url(/assets/fonts/latinmodern-math.woff2) format("woff2"); font-display: swap; }
+math { font-family: "Latin Modern Math", math; font-size: 1.15em; }
 /* \boxed{…} becomes <menclose notation="box">, which MathML Core (Chromium) draws without a frame. */
 menclose[notation="box"] { border: 1px solid currentColor; padding: .3em .45em; }
 .math-inline { white-space: nowrap; }
@@ -164,7 +170,7 @@ pre .nd { color: #685d94; }
   .interactive-figure.figure-tall iframe { height: 850px; }
   .interactive-figure.figure-plan iframe { height: 950px; }
   .interactive-figure.figure-nuclear iframe, .interactive-figure.figure-nuclear-short iframe { height: 520px; }
-  math { font-size: 1em; }
+  math { font-size: 1.1em; }
   body { font-size: 15px; }
   .page { padding: 28px 19px 20px; }
   .site-header { margin-bottom: 27px; }

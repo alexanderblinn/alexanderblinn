@@ -45,10 +45,11 @@ THIN_SPACE = '<mspace width="0.1667em"/>'
 FUNCTION_NAME = r"<mi>(?:cos|det|exp|ln|log|sin|tan)</mi>"
 # A decimal comma written as {,} belongs to the number; as an operator it gets a gap ("2, 6").
 DECIMAL_COMMA = re.compile(r"<mn>(\d+)</mn><mrow><mo>&#x0002C;</mo></mrow><mn>(\d+)</mn>")
-# A minus or plus right after an opening bracket, a comma, a relation or an assignment arrow is a
-# sign, without the gaps of a binary operator: "(−2", ", −1", "= −3", "Δx ← −H⁻¹g".
-SIGN = re.compile(r"(<mo(?: [^>]*)?>(?:&#x00028;|&#x0005B;|&#x0007B;|&#x0002C;|&#x0003D;|&#x02248;|&#x02264;|&#x02265;|&#x02190;)"
+# A minus or plus right after an opening bracket, a comma or semicolon, a relation or an assignment arrow is a
+# sign, without the gaps of a binary operator: "(−2", ", −1", "; −1", "= −3", "Δx ← −H⁻¹g".
+SIGN = re.compile(r"(<mo(?: [^>]*)?>(?:&#x00028;|&#x0005B;|&#x0007B;|&#x0002C;|&#x0003B;|&#x0003D;|&#x02248;|&#x02264;|&#x02265;|&#x02190;)"
                   r"</mo>(?:<mspace [^>]*/>)?)<mo>(&#x02212;|&#x0002B;)</mo>")
+UPRIGHT_GREEK = re.compile(r"<mi>(&#x003(?:9[1-9A-F]|A[0-9]);)</mi>")
 BOLD = {**{str(d): chr(0x1D7CE + d) for d in range(10)},
         **{chr(65 + i): chr(0x1D400 + i) for i in range(26)},
         **{chr(97 + i): chr(0x1D41A + i) for i in range(26)}}
@@ -60,7 +61,11 @@ def mathml(latex, display="inline"):
     html = re.sub(rf"({FUNCTION_NAME})(?=<m(?:i|n|sub|sup|subsup|sqrt|frac|row)\b)", rf"\1{THIN_SPACE}", html)
     html = html.replace("<mo>&#x0221E;</mo>", "<mi>&#x0221E;</mi>")
     html = html.replace("<mo>&#x0002F;</mo>", '<mo lspace="0" rspace="0">&#x0002F;</mo>')
+    # latex2mathml makes a semicolon an identifier; as a punctuation operator it gets TeX's space after it.
+    html = html.replace("<mi>;</mi>", "<mo>&#x0003B;</mo>")
     html = DECIMAL_COMMA.sub(r"<mn>\1,\2</mn>", html)
+    # TeX sets capital Greek letters upright (\Omega, \Phi); MathML would slant a lone <mi>.
+    html = UPRIGHT_GREEK.sub(r'<mi mathvariant="normal">\1</mi>', html)
     html = SIGN.sub(r'\1<mo lspace="0" rspace="0">\2</mo>', html)
     return re.sub(r'<(mi|mn) mathvariant="bold">([0-9A-Za-z])</\1>', lambda m: f"<{m[1]}>{BOLD[m[2]]}</{m[1]}>", html)
 

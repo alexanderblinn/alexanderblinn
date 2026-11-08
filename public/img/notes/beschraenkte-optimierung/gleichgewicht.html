@@ -3,24 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kräftegleichgewicht in der Ecke — interaktive Abbildung</title>
+  <title>Gleichgewicht der Gradienten in der Ecke — interaktive Abbildung</title>
   <link rel="stylesheet" href="/assets/notes/beschraenkte-optimierung/style.css">
   <script type="module" src="/assets/notes/beschraenkte-optimierung/gleichgewicht.mjs"></script>
 </head>
 <body>
 <main id="experiment">
-  <div class="experiment-heading"><span>GEWICHTETE NORMALEN / ECKE C</span><span id="live-state">Rest wird berechnet …</span></div>
-  <svg id="plot" class="plot" viewBox="0 0 680 440" role="group" aria-labelledby="plot-title plot-description">
-    <title id="plot-title">Negativer Gradient und gewichtete Randnormalen in der Ecke C</title>
-    <desc id="plot-description">Ausschnitt um die Ecke C des Vierecks, in der die Kanten BC und CD aktiv sind. Der violette Pfeil ist der negative Gradient der Zielfunktion. Die grünen Pfeile sind die nach außen zeigenden Normalen der beiden Kanten, gewichtet mit den Schiebereglern und Spitze an Fuß aneinandergesetzt. Der orangefarbene gestrichelte Pfeil ist der Rest bis zum negativen Gradienten. Die Spitze des violetten Pfeils lässt sich ziehen; liegt sie außerhalb des schattierten Normalenkegels, bleibt ein Rest, und ein blauer Pfeil zeigt eine zulässige Abstiegsrichtung.</desc>
+  <div class="experiment-heading"><span>GLEICHGEWICHT DER GRADIENTEN / ECKE x*</span><span id="live-state"></span></div>
+  <svg id="plot" class="plot" viewBox="0 0 680 450" role="group" aria-labelledby="plot-title plot-description">
+    <title id="plot-title">Negativer Gradient und gewichtete Gradienten der aktiven Nebenbedingungen in der Ecke x*</title>
+    <desc id="plot-description">Ausschnitt um die Ecke x* = (1,6; 1,2), in der die Nebenbedingungen c₁ und c₃ aktiv sind. Der violette Pfeil ist der negative Gradient der Zielfunktion. Die grünen Pfeile sind die Gradienten der beiden Nebenbedingungen, gewichtet mit den Schiebereglern und Spitze an Fuß aneinandergesetzt. Der orangefarbene gestrichelte Pfeil ist der Rest bis zum negativen Gradienten. Die Spitze des violetten Pfeils lässt sich ziehen; liegt sie außerhalb des schattierten Kegels, bleibt ein Rest, und ein blauer Pfeil d zeigt eine zulässige Abstiegsrichtung.</desc>
     <defs>
       <marker id="arrow-target" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a5979"/></marker>
       <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#426f6b"/></marker>
-      <marker id="arrow-light" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7da49e"/></marker>
       <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b95a28"/></marker>
       <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#173fbe"/></marker>
     </defs>
-    <rect width="680" height="440" fill="#faf9f6"/>
+    <rect width="680" height="450" fill="#faf9f6"/>
     <g id="grid" class="grid"></g>
     <polygon id="feasible" fill="#e5eeeb" fill-opacity=".85"/>
     <polygon id="cone" fill="#8a5979" fill-opacity=".08"/>
@@ -31,24 +30,22 @@
     </g>
   </svg>
   <div class="legend" aria-label="Legende">
-    <span><i class="key" style="border-color:#8a5979"></i>−∇f(x*)</span>
-    <span><i class="key" style="border-color:#426f6b"></i>λ<sub>BC</sub>a<sub>BC</sub>, dann λ<sub>CD</sub>a<sub>CD</sub></span>
+    <span><i class="key" style="border-color:#8a5979"></i>−∇f(x*), Spitze ziehbar</span>
+    <span><i class="key" style="border-color:#426f6b"></i>λ₁∇c₁(x*), dann λ₃∇c₃(x*)</span>
     <span><i class="key" style="border-color:#b95a28;border-top-style:dashed"></i>Rest</span>
-    <span><i class="key box" style="background:rgba(138,89,121,.1);border-color:#8a5979"></i>Normalenkegel</span>
+    <span><i class="key" style="border-color:#173fbe"></i>d: zulässig und abwärts</span>
   </div>
   <div class="sliders">
-    <div><label class="range-label" for="lambda-1"><span>λ<sub>BC</sub>, Gewicht der Kante BC</span> <output id="lambda-1-value">0,00</output></label>
-      <input id="lambda-1" type="range" min="0" max="2.5" step="0.01" value="0"></div>
-    <div><label class="range-label" for="lambda-2"><span>λ<sub>CD</sub>, Gewicht der Kante CD</span> <output id="lambda-2-value">0,00</output></label>
-      <input id="lambda-2" type="range" min="0" max="2.5" step="0.01" value="0"></div>
+    <div><label class="range-label" for="lambda-1"><span>λ₁, Gewicht von ∇c₁(x*)</span> <output id="lambda-1-value">0,00</output></label>
+      <input id="lambda-1" type="range" min="0" max="1.2" step="0.01" value="0"></div>
+    <div><label class="range-label" for="lambda-3"><span>λ₃, Gewicht von ∇c₃(x*)</span> <output id="lambda-3-value">0,00</output></label>
+      <input id="lambda-3" type="range" min="0" max="3" step="0.01" value="0"></div>
   </div>
-  <p id="status" class="status" role="status" aria-live="polite"></p>
   <div class="controls">
     <button id="solve" class="primary" type="button">Gleichgewicht einstellen</button>
     <button id="reset" type="button">Zurücksetzen ↺</button>
-    <span class="spacer"></span>
-    <p class="hint">Ziehe die Spitze von −∇f(x*), um eine andere Zielfunktion zu probieren.</p>
   </div>
+  <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
   <noscript>Für die Abbildung ist JavaScript erforderlich. Die Erklärung steht im Beitrag.</noscript>
 </main>
 </body>

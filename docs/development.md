@@ -55,7 +55,9 @@ Hier beginnt der Beitrag.
 
 Bilder liegen beim jeweiligen Beitrag unter `public/img/<Bereich>/<Slug>/`, beispielsweise `public/img/projects/mein-projekt/`. Formeln zwischen eigenen `$$`-Zeilen und Formeln im Text zwischen einfachen `$` werden beim Build in MathML umgewandelt, auch in eingebettetem HTML wie Bildunterschriften. Im Text darf direkt hinter dem öffnenden und vor dem schließenden `$` kein Leerzeichen stehen; `\$` ergibt ein Dollarzeichen. In Code bleiben `$` unverändert. Mehrzeilige Formeln setzt man mit `\begin{align*} … \end{align*}`.
 
-Der Konverter (latex2mathml) kennt nicht alles: `\(…\)` und `\[…\]` sind keine Formeltrenner, `aligned` und Zeilenabstände wie `\\[2mm]` versteht er nicht. `\mathbb{R}` und `\mathcal{L}` brauchen geschweifte Klammern, sonst zeigt Chrome ein gewöhnliches R bzw. L. Mengenklammern schreibt man als `\left\{ … \right\}`, denn `\Bigl\{` landet wörtlich im Text. `\boxed{…}` erhält seinen Rahmen über eine Regel in `assets/site/style.css`, weil Chrome ihn sonst nicht zeichnet.
+Der Konverter (latex2mathml) kennt nicht alles: `\(…\)` und `\[…\]` sind keine Formeltrenner, `aligned` und Zeilenabstände wie `\\[2mm]` versteht er nicht. `\mathbb{R}` und `\mathcal{L}` brauchen geschweifte Klammern, sonst zeigt Chrome ein gewöhnliches R bzw. L. Mengenklammern schreibt man als `\left\{ … \right\}`, denn `\Bigl\{` landet wörtlich im Text. `\boxed{…}` erhält seinen Rahmen über eine Regel in `assets/site/style.css`, weil Chrome ihn sonst nicht zeichnet. Grenzen unter `\min` setzt man mit `\underset{x}{\min}`, `\min_x` ergibt einen tiefgestellten Index.
+
+Alle Formeln erscheinen in Latin Modern Math, der Mathematikschrift von LaTeX, die unter `assets/fonts/` mitgeliefert wird (Lizenz in `assets/fonts/README.md`). So sehen sie auf allen Geräten gleich aus; viele Handys haben keine eigene Mathematikschrift. Der Build stellt große griechische Buchstaben wie in TeX aufrecht ($\Omega$) und macht ein Minus nach Klammer, Komma, Semikolon oder Relation zum Vorzeichen, etwa in $(1{,}6;\,-1{,}2)$.
 
 ```markdown
 ![Versuchsaufbau](/img/projects/mein-projekt/versuchsaufbau.jpg)
@@ -82,7 +84,7 @@ styles: [/assets/site/course.css]
 scripts: [/assets/site/course.js]
 ```
 
-Jede `##`-Überschrift beginnt dann einen Teil. Über dem Text stehen nummerierte Kästen zum Durchklicken, am Ende jedes Teils Verweise auf den vorigen und den nächsten. Die Adresse merkt sich den Teil (`#teil-3`), sodass Neuladen, Zurück-Taste und geteilte Links funktionieren. Bildunterschriften, die mit „Abbildung N:“ beginnen, geben ihrer Abbildung den Anker `#abbildung-N`, und jede Erwähnung „Abbildung N“ im Text wird zu einem Link in den passenden Teil. Gelesene Teile markiert ein Pixel im Kasten; das merkt sich nur der jeweilige Browser. Ohne JavaScript und beim Drucken erscheint der Beitrag als eine Seite mit Überschriften. Ein Teil beginnt am besten mit einem Satz, der nicht auf den vorigen Teil verweist („Diese Gleichung …“).
+Enthält der Beitrag `###`-Überschriften, ist jede `##`-Überschrift ein Kapitel und jede `###`-Überschrift beginnt eine Seite davon; sonst beginnt jede `##`-Überschrift eine Seite. Über dem Text stehen Kästen zum Durchklicken (1.1, 1.2, … je Kapitel in eigener Farbe, festgelegt über `data-chapter` in `course.css`), am Ende jeder Seite Verweise auf die vorige und die nächste. Eine Seite, unter deren Überschrift noch nichts steht, gilt als „in Arbeit“: Ihr Kasten ist gestrichelt, und sie zeigt einen Platzhalter. Die Adresse merkt sich die Seite (`#seite-1-3`), sodass Neuladen, Zurück-Taste und geteilte Links funktionieren. Bildunterschriften, die mit „Abbildung N:“ beginnen, geben ihrer Abbildung den Anker `#abbildung-N`, und jede Erwähnung „Abbildung N“ im Text wird zu einem Link auf die passende Seite. Gelesene Seiten markiert ein Pixel im Kasten; das merkt sich nur der jeweilige Browser. Ohne JavaScript und beim Drucken erscheint der Beitrag als eine Seite mit Überschriften. Eine Seite beginnt am besten mit einem Satz, der nicht auf die vorige verweist („Diese Gleichung …“).
 
 ### Codeblöcke mit Sprach-Reitern
 
@@ -183,9 +185,11 @@ node --test tests/central-path.test.mjs
 
 Sie prüfen die μ-Stützstellen, Anfang im analytischen Zentrum und Ende im Optimum, Zulässigkeit, Stationarität und Monotonie entlang des Pfads, die Unabhängigkeit vom Newton-Startpunkt, die Ableitungen, die Dualitätslücke mμ, die Abstoßung durch eine näher rückende Kante, die Entwicklung des Pfads am analytischen Zentrum, das exakte Optimum, die Begrenzung beim Verschieben des Vierecks, die Schritt-für-Schritt-Barrieremethode (Etappen und Newton-Schritte wie im Text, Zentren auf dem Pfad) sowie die Etappen und Prädiktor-Korrektor-Iterationen von Abbildung 4. Der Pages-Workflow führt sie vor der Veröffentlichung aus.
 
-### Konvexe Optimierung unter Nebenbedingungen
+### Optimierung unter Nebenbedingungen
 
-Der Beitrag liegt in `content/notes/beschraenkte-optimierung.md` und ist als Kurs in 17 Teile gegliedert (siehe „Lange Beiträge als Kurs“). Er verwendet dasselbe Viereck ABCD und dieselbe Matrix Q wie die Zentralpfad-Notiz; die Zahlen im Text (λ ≈ 0,34 an der Kante BC, λ ≈ 1,16 und 1,30 in der Ecke C) stammen aus diesem Beispiel.
+Der Beitrag liegt in `content/notes/beschraenkte-optimierung.md` und ist ein Kurs in sechs Kapiteln (siehe „Lange Beiträge als Kurs“): Grundlagen und Motivation, Lagrange-Funktion und Multiplikatoren, KKT-Bedingungen, Geometrie und Regularität, Bedingungen zweiter Ordnung, Dualität. Ausgeschrieben ist bisher Kapitel 1 mit vier Seiten; die übrigen Seiten bestehen nur aus ihrer Überschrift und erscheinen als „in Arbeit“. Der Text behandelt den allgemeinen, auch nichtkonvexen Fall mit $c_i(x)=0$ für $i\in\mathcal{E}$ und $c_i(x)\le0$ für $i\in\mathcal{I}$ und $\mathcal{L}=f+\sum_i\lambda_ic_i$. Die frühere Fassung für $Ax\le b$ (Commit 322fba0) ist Material für die späteren Kapitel.
+
+Das Beispiel von Kapitel 1 ist $f(x)=\tfrac12(x_1-3{,}2)^2+\tfrac32(x_2-2)^2$ mit der Kreisscheibe $c_1$, dem Biss $c_2$ (außerhalb des Einheitskreises um $(-1{,}3;\,-1{,}9)$) und der Geraden $c_3$ ($x_2\le1{,}2$). Das Optimum ist die Ecke $(1{,}6;\,1{,}2)$ mit $\lambda_1=0{,}5$ und $\lambda_3=1{,}2$; auf dem Kreis allein liegen die stationären Punkte bei $(1{,}42;\,1{,}41)$ mit $\lambda_1\approx0{,}63$ und $(-0{,}62;\,-1{,}90)$ mit $\lambda_1\approx-3{,}08$.
 
 **Erzähler.** Das Maskottchen Lambda, ein Pixel-λ mit Doktorhut, spricht in Dialogboxen im Stil alter Rollenspiele. Im Beitrag steht dafür HTML, Markdown wirkt darin nicht, Formeln mit `$…$` schon:
 
@@ -197,15 +201,28 @@ Der Beitrag liegt in `content/notes/beschraenkte-optimierung.md` und ist als Kur
 
 Ohne `data-pose` steht Lambda einfach da; weitere Posen sind `zeigt`, `staunt`, `denkt` und `schiebt`. Aussehen und Bildwechsel stehen in `assets/notes/beschraenkte-optimierung/narrator.css`, `narrator.js` lässt Lambda kurz sprechen, wenn eine Box zum ersten Mal ins Bild kommt. Beide Dateien bindet der Kopf des Beitrags über `styles` und `scripts` ein. Ohne JavaScript und bei reduzierter Bewegung bleiben die Boxen unbewegt sichtbar. Das Sprite-Blatt `public/img/notes/beschraenkte-optimierung/lambda.svg` enthält acht Bilder zu 20 × 27 Pixeln (Ruhe, Blinzeln, Sprechen, Zeigen, Zeigen und Sprechen, Staunen, Nachdenken, Schieben); gezeichnet wird es in `sprite_frame` des Abbildungsskripts.
 
-**Interaktive Abbildungen.** Abbildung 1 (`konvex.html`, Aufbau der zulässigen Menge aus vier Halbebenen mit Punkten und ihren Verbindungen) und Abbildung 3 (`gleichgewicht.html`, gewichtete Normalen in der Ecke C von Hand gegen −∇f abgleichen) liegen unter `public/img/notes/beschraenkte-optimierung/`. Ihr Code liegt unter `assets/notes/beschraenkte-optimierung/`: `geometry.mjs` mit den reinen Rechenfunktionen (Halbebenen, Kegelzerlegung, Zufallspunkte; die Grundfunktionen kommen aus `assets/notes/zentralpfad/math.mjs`), `konvex.mjs`, `gleichgewicht.mjs` und `style.css`. Beide Seiten passen die Höhe ihres iframes selbst an.
+**Merke-Karten.** Jede Seite endet mit dem Kernergebnis auf einer Karte in der Farbe des Kapitels (`narrator.css`). Darin darf eine `$$`-Formel stehen, umgeben von Leerzeilen:
 
-**Statische Abbildungen und GIFs.** `scripts/beschraenkte_optimierung_figures.py` erzeugt `richtungen.svg` (Abbildung 2), `lagen.svg` (4), `duale-funktion.svg` (6), `wand.gif` (5), `sattel.gif` (7), `schattenpreis.gif` (8, mit Lambda an der Wand) und das Sprite-Blatt und gibt die zitierten Multiplikatoren aus. Es braucht numpy, matplotlib und Pillow, etwa die virtuelle Umgebung von ReinforcementLearningExamples:
+```html
+<div class="merke">
+
+$$
+\mathcal{A}(x)=\mathcal{E}\cup\{i\in\mathcal{I}\mid c_i(x)=0\}
+$$
+
+<p>Text unter der Formel.</p>
+</div>
+```
+
+**Interaktive Abbildungen.** Unter `public/img/notes/beschraenkte-optimierung/` liegen Abbildung 1 (`problem.html`, das Ziel $x_\mathrm{ref}$ ziehen, das Minimum über $\Omega$ folgt und springt am Biss), 2 (`aktiv.html`, einen Punkt ziehen, der an Grenzen und Ecken einrastet, mit Werten $c_i(x)$ und aktiver Menge), 3 (`abstieg.html`, Richtungsrose auf dem Kreis $c_1$ als Gleichung oder Ungleichung) und 4 (`gleichgewicht.html`, die Gradienten von $c_1$ und $c_3$ in der Ecke von Hand gegen $-\nabla f$ abgleichen). Ihr Code liegt unter `assets/notes/beschraenkte-optimierung/`: `beispiel.mjs` mit den reinen Rechenfunktionen des Beispiels (Nebenbedingungen, Ecken, Einrasten, Randstücke, globales Minimum über $\Omega$, stationäre Punkte auf dem Kreis), `zeichnung.mjs` mit dem gemeinsamen Zeichnen von $\Omega$, die Seitenskripte und `style.css`. Alle Seiten passen die Höhe ihres iframes selbst an. `konvex.html` und `geometry.mjs` (Halbebenen des Vierecks ABCD) stammen aus der früheren Fassung und sind für spätere Kapitel aufgehoben; `gleichgewicht.mjs` nutzt daraus `coneProjection`.
+
+**Statische Abbildungen und GIFs.** `scripts/beschraenkte_optimierung_figures.py` erzeugt das Sprite-Blatt sowie `richtungen.svg`, `lagen.svg`, `duale-funktion.svg`, `wand.gif`, `sattel.gif` und `schattenpreis.gif` der früheren Fassung, die für die späteren Kapitel bereitliegen. Es braucht numpy, matplotlib und Pillow, etwa die virtuelle Umgebung von ReinforcementLearningExamples:
 
 ```sh
 <venv>/python scripts/beschraenkte_optimierung_figures.py
 ```
 
-`node --test tests/beschraenkte-optimierung.test.mjs` prüft die Multiplikatoren gegen den Text, dass außerhalb des Normalenkegels der kleinste Rest eine zulässige Abstiegsrichtung ist, dass alle Verbindungen in Abbildung 1 zulässig bleiben, und das eindimensionale Beispiel. Der Pages-Workflow führt den Test vor der Veröffentlichung aus.
+`node --test tests/beschraenkte-optimierung.test.mjs` prüft das Optimum und die Multiplikatoren gegen den Text, den Sprung von $x^\star$ am Biss, Ecken und Einrasten, die stationären Punkte auf dem Kreis, dass außerhalb des Kegels der kleinste Rest eine zulässige Abstiegsrichtung ist, sowie das Material der früheren Fassung. Der Pages-Workflow führt den Test vor der Veröffentlichung aus.
 
 ### Frozen Lake
 

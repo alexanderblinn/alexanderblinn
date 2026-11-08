@@ -37,17 +37,34 @@ button.primary[aria-pressed=true] { color: var(--paper); background: var(--blue)
 .range-label output { color: var(--green); font-weight: bold; font-variant-numeric: tabular-nums; }
 input[type=range] { display: block; width: 100%; margin: 0; height: 30px; accent-color: var(--green); cursor: pointer; }
 sub { font-size: .8em; line-height: 0; }
+/* figure 2: the values c_i(x) with their state */
+.readout { display: flex; flex-wrap: wrap; gap: 8px 10px; padding: 10px 0 14px; border-top: 1px solid var(--line); font-size: 13px; }
+.chip { display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 9px; border: 1px solid var(--line); background: #fffdf4; font-variant-numeric: tabular-nums; }
+.chip b { min-width: 5ch; text-align: right; }
+.chip i { font-style: normal; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.chip.aktiv { border-color: var(--orange); box-shadow: 2px 2px 0 var(--orange); }
+.chip.aktiv i { color: var(--orange); font-weight: bold; }
+.chip.verletzt { border-style: dashed; }
+.chip.verletzt i { color: var(--target); font-weight: bold; }
+/* segmented switch (figure 3) */
+.switch { display: inline-flex; border: 1px solid #bebbb3; border-radius: 2px; }
+.switch button { border: 0; border-right: 1px solid #d8d5cc; border-radius: 0; min-width: 96px; }
+.switch button:last-child { border-right: 0; }
+.switch button[aria-pressed=true] { background: var(--ink); color: var(--paper); }
 /* The name of the current set grows from ℝ² to 𝒳 = ℋ₁ ∩ … ∩ ℋ₄; a fixed width keeps the legend from reflowing. */
 #set-label { display: inline-block; min-width: 23ch; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.handle { cursor: grab; outline: none; }
+.handle { cursor: grab; outline: none; touch-action: none; }
 .handle:active { cursor: grabbing; }
 .handle .hit-area { fill: transparent; }
 .handle:focus .hit-area, .handle:hover .hit-area { fill: rgba(138, 89, 121, .12); }
 /* Embedded in the 790px text column the drawing is about 790px wide; below that the labels grow. */
 @media (max-width: 600px) {
-  svg.plot text { font-size: 19px; }
+  svg.plot text { font-size: 23px; }
   .sliders { grid-template-columns: 1fr; }
+  .readout { font-size: 12px; gap: 6px; }
+  .chip { padding: 3px 7px; gap: 4px; }
+  .chip i { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
