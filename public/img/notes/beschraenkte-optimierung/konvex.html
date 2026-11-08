@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Halbräume und Konvexität — interaktive Abbildung</title>
+  <link rel="stylesheet" href="/assets/notes/beschraenkte-optimierung/style.css">
+  <script type="module" src="/assets/notes/beschraenkte-optimierung/konvex.mjs"></script>
+</head>
+<body>
+<main id="experiment">
+  <div class="experiment-heading"><span>SCHNITT VON HALBRÄUMEN / KONVEXITÄT</span><span id="live-state">Schritt 0 von 4</span></div>
+  <svg id="plot" class="plot" viewBox="0 0 680 458" role="group" aria-labelledby="plot-title plot-description">
+    <title id="plot-title">Die zulässige Menge als Schnitt von vier Halbräumen</title>
+    <desc id="plot-description">Vier Ungleichungen aᵢᵀx ≤ bᵢ schneiden nacheinander je eine Halbebene aus der Ebene aus; übrig bleibt das Viereck ABCD. Blaue Punkte erfüllen alle bisherigen Ungleichungen und sind paarweise verbunden. Mit jeder neuen Ungleichung verschwinden die Punkte auf der falschen Seite, die Verbindungen der übrigen bleiben vollständig in der Menge. Ein Klick setzt einen neuen Punkt.</desc>
+    <defs>
+      <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#b9b5ab" stroke-width="1.1"/></pattern>
+      <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#426f6b"/></marker>
+    </defs>
+    <rect id="background" width="680" height="458" fill="#faf9f6"/>
+    <g id="grid" class="grid"></g>
+    <polygon id="feasible" fill="#e5eeeb" fill-opacity=".85"/>
+    <g id="cuts"></g>
+    <g id="segments"></g>
+    <g id="bounds"></g>
+    <g id="points"></g>
+    <g id="corners"></g>
+  </svg>
+  <div class="legend" aria-label="Legende">
+    <span><i class="key box"></i><span id="set-label">ℝ²</span></span>
+    <span><i class="key" style="border-color:#426f6b"></i>Grenze von ℋᵢ = {x | aᵢᵀx ≤ bᵢ}, Pfeil: Normale aᵢ</span>
+    <span><i class="key" style="border-color:#173fbe"></i>Verbindung zweier zulässiger Punkte</span>
+  </div>
+  <p id="status" class="visually-hidden" role="status" aria-live="polite"></p>
+  <div class="controls">
+    <button id="play" class="primary" type="button" aria-pressed="false">▶ Aufbau abspielen</button>
+    <div class="steps" role="group" aria-label="Anzahl der Halbräume">
+      <button type="button" data-step="0" title="Ohne Ungleichung">ℝ²</button><button type="button" data-step="1">1</button><button type="button" data-step="2">2</button><button type="button" data-step="3">3</button><button type="button" data-step="4">4</button>
+    </div>
+    <span class="spacer"></span>
+    <button id="shuffle" type="button">Neue Punkte</button>
+    <button id="clear" type="button">Punkte löschen</button>
+  </div>
+  <noscript>Für die Abbildung ist JavaScript erforderlich. Die Erklärung steht im Beitrag.</noscript>
+</main>
+</body>
+</html>

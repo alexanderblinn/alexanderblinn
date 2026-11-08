@@ -1,0 +1,38 @@
+/* Course layout for long notes (assets/site/course.js): numbered boxes above the text, one part
+   at a time, previous and next part at the end. Without JavaScript nothing of this appears and
+   the note is one long page with headings. */
+/* both are <nav> elements: undo the flex row and the [brackets] of the site navigation */
+.course-nav { display: block; margin: 4px 0 6px; }
+.course-nav a[aria-current="page"]::before { content: none; }
+.course-label { margin: 0 0 10px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.course-nav ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.course-nav li { margin: 0; }
+.course-nav a, .course-nav a:visited { position: relative; display: grid; place-items: center; width: 36px; height: 36px;
+  border: 2px solid var(--ink); background: #fffdf4; color: var(--ink); font-size: 14px; font-weight: 700; text-decoration: none;
+  box-shadow: 3px 3px 0 #e6e3db; }
+.course-nav a:hover { background: #eae7df; color: var(--ink); }
+/* a small pixel in the corner marks parts already read */
+.course-nav a.is-visited::after { content: ""; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; background: #b95a28; }
+.course-nav a[aria-current="page"] { background: var(--ink); color: var(--paper); box-shadow: 3px 3px 0 #b95a28; }
+.course-nav a[aria-current="page"]::after { background: var(--paper); }
+
+.course-pager { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; margin: 42px 0 8px; padding-top: 20px; border-top: 1px dotted var(--line); }
+.course-pager a, .course-pager a:visited { max-width: 48%; padding: 9px 14px 10px; border: 2px solid var(--ink); background: #fffdf4; color: var(--ink);
+  font-size: 14px; line-height: 1.4; text-decoration: none; box-shadow: 3px 3px 0 var(--ink); }
+.course-pager a:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); background: #fffdf4; color: var(--ink); }
+.course-pager a:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.course-pager .course-next { margin-left: auto; text-align: right; }
+.course-pager small { display: block; margin-bottom: 2px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+@media (max-width: 560px) {
+  .course-nav ol { gap: 6px; }
+  .course-nav a { width: 32px; height: 32px; font-size: 13px; }
+  .course-pager a { max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .course-pager a:hover, .course-pager a:active { transform: none; }
+}
+@media print {
+  .course-page[hidden] { display: block !important; }
+  .course-nav, .course-pager { display: none; }
+}

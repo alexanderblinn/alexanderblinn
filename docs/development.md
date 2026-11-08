@@ -55,6 +55,8 @@ Hier beginnt der Beitrag.
 
 Bilder liegen beim jeweiligen Beitrag unter `public/img/<Bereich>/<Slug>/`, beispielsweise `public/img/projects/mein-projekt/`. Formeln zwischen eigenen `$$`-Zeilen und Formeln im Text zwischen einfachen `$` werden beim Build in MathML umgewandelt, auch in eingebettetem HTML wie Bildunterschriften. Im Text darf direkt hinter dem öffnenden und vor dem schließenden `$` kein Leerzeichen stehen; `\$` ergibt ein Dollarzeichen. In Code bleiben `$` unverändert. Mehrzeilige Formeln setzt man mit `\begin{align*} … \end{align*}`.
 
+Der Konverter (latex2mathml) kennt nicht alles: `\(…\)` und `\[…\]` sind keine Formeltrenner, `aligned` und Zeilenabstände wie `\\[2mm]` versteht er nicht. `\mathbb{R}` und `\mathcal{L}` brauchen geschweifte Klammern, sonst zeigt Chrome ein gewöhnliches R bzw. L. Mengenklammern schreibt man als `\left\{ … \right\}`, denn `\Bigl\{` landet wörtlich im Text. `\boxed{…}` erhält seinen Rahmen über eine Regel in `assets/site/style.css`, weil Chrome ihn sonst nicht zeichnet.
+
 ```markdown
 ![Versuchsaufbau](/img/projects/mein-projekt/versuchsaufbau.jpg)
 
@@ -70,6 +72,17 @@ $$
 Statische Abbildungen (`<figure class="static-figure">`) werden in ihrer `width` gezeigt und nur verkleinert. Mit `class="static-figure full-width"` füllt die Grafik die Textspalte; das eignet sich für SVG-Diagramme.
 
 Markdown unterstützt Tabellen, Codeblöcke und HTML. Eingebettetes HTML wird unverändert übernommen.
+
+### Lange Beiträge als Kurs
+
+Ein langer Beitrag lässt sich in Teile gliedern, von denen jeweils nur einer zu sehen ist. Dazu im Kopf `assets/site/course.css` und `assets/site/course.js` einbinden:
+
+```markdown
+styles: [/assets/site/course.css]
+scripts: [/assets/site/course.js]
+```
+
+Jede `##`-Überschrift beginnt dann einen Teil. Über dem Text stehen nummerierte Kästen zum Durchklicken, am Ende jedes Teils Verweise auf den vorigen und den nächsten. Die Adresse merkt sich den Teil (`#teil-3`), sodass Neuladen, Zurück-Taste und geteilte Links funktionieren. Bildunterschriften, die mit „Abbildung N:“ beginnen, geben ihrer Abbildung den Anker `#abbildung-N`, und jede Erwähnung „Abbildung N“ im Text wird zu einem Link in den passenden Teil. Gelesene Teile markiert ein Pixel im Kasten; das merkt sich nur der jeweilige Browser. Ohne JavaScript und beim Drucken erscheint der Beitrag als eine Seite mit Überschriften. Ein Teil beginnt am besten mit einem Satz, der nicht auf den vorigen Teil verweist („Diese Gleichung …“).
 
 ### Codeblöcke mit Sprach-Reitern
 
@@ -169,6 +182,30 @@ node --test tests/central-path.test.mjs
 ```
 
 Sie prüfen die μ-Stützstellen, Anfang im analytischen Zentrum und Ende im Optimum, Zulässigkeit, Stationarität und Monotonie entlang des Pfads, die Unabhängigkeit vom Newton-Startpunkt, die Ableitungen, die Dualitätslücke mμ, die Abstoßung durch eine näher rückende Kante, die Entwicklung des Pfads am analytischen Zentrum, das exakte Optimum, die Begrenzung beim Verschieben des Vierecks, die Schritt-für-Schritt-Barrieremethode (Etappen und Newton-Schritte wie im Text, Zentren auf dem Pfad) sowie die Etappen und Prädiktor-Korrektor-Iterationen von Abbildung 4. Der Pages-Workflow führt sie vor der Veröffentlichung aus.
+
+### Konvexe Optimierung unter Nebenbedingungen
+
+Der Beitrag liegt in `content/notes/beschraenkte-optimierung.md` und ist als Kurs in 17 Teile gegliedert (siehe „Lange Beiträge als Kurs“). Er verwendet dasselbe Viereck ABCD und dieselbe Matrix Q wie die Zentralpfad-Notiz; die Zahlen im Text (λ ≈ 0,34 an der Kante BC, λ ≈ 1,16 und 1,30 in der Ecke C) stammen aus diesem Beispiel.
+
+**Erzähler.** Das Maskottchen Lambda, ein Pixel-λ mit Doktorhut, spricht in Dialogboxen im Stil alter Rollenspiele. Im Beitrag steht dafür HTML, Markdown wirkt darin nicht, Formeln mit `$…$` schon:
+
+```html
+<div class="narrator" role="note" data-pose="zeigt">
+<p>Text, den Lambda sagt.</p>
+</div>
+```
+
+Ohne `data-pose` steht Lambda einfach da; weitere Posen sind `zeigt`, `staunt`, `denkt` und `schiebt`. Aussehen und Bildwechsel stehen in `assets/notes/beschraenkte-optimierung/narrator.css`, `narrator.js` lässt Lambda kurz sprechen, wenn eine Box zum ersten Mal ins Bild kommt. Beide Dateien bindet der Kopf des Beitrags über `styles` und `scripts` ein. Ohne JavaScript und bei reduzierter Bewegung bleiben die Boxen unbewegt sichtbar. Das Sprite-Blatt `public/img/notes/beschraenkte-optimierung/lambda.svg` enthält acht Bilder zu 20 × 27 Pixeln (Ruhe, Blinzeln, Sprechen, Zeigen, Zeigen und Sprechen, Staunen, Nachdenken, Schieben); gezeichnet wird es in `sprite_frame` des Abbildungsskripts.
+
+**Interaktive Abbildungen.** Abbildung 1 (`konvex.html`, Aufbau der zulässigen Menge aus vier Halbebenen mit Punkten und ihren Verbindungen) und Abbildung 3 (`gleichgewicht.html`, gewichtete Normalen in der Ecke C von Hand gegen −∇f abgleichen) liegen unter `public/img/notes/beschraenkte-optimierung/`. Ihr Code liegt unter `assets/notes/beschraenkte-optimierung/`: `geometry.mjs` mit den reinen Rechenfunktionen (Halbebenen, Kegelzerlegung, Zufallspunkte; die Grundfunktionen kommen aus `assets/notes/zentralpfad/math.mjs`), `konvex.mjs`, `gleichgewicht.mjs` und `style.css`. Beide Seiten passen die Höhe ihres iframes selbst an.
+
+**Statische Abbildungen und GIFs.** `scripts/beschraenkte_optimierung_figures.py` erzeugt `richtungen.svg` (Abbildung 2), `lagen.svg` (4), `duale-funktion.svg` (6), `wand.gif` (5), `sattel.gif` (7), `schattenpreis.gif` (8, mit Lambda an der Wand) und das Sprite-Blatt und gibt die zitierten Multiplikatoren aus. Es braucht numpy, matplotlib und Pillow, etwa die virtuelle Umgebung von ReinforcementLearningExamples:
+
+```sh
+<venv>/python scripts/beschraenkte_optimierung_figures.py
+```
+
+`node --test tests/beschraenkte-optimierung.test.mjs` prüft die Multiplikatoren gegen den Text, dass außerhalb des Normalenkegels der kleinste Rest eine zulässige Abstiegsrichtung ist, dass alle Verbindungen in Abbildung 1 zulässig bleiben, und das eindimensionale Beispiel. Der Pages-Workflow führt den Test vor der Veröffentlichung aus.
 
 ### Frozen Lake
 
